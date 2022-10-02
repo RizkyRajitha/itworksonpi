@@ -1,4 +1,11 @@
-import { Box, Container, Spacer, Tag, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Container,
+  Spacer,
+  Tag,
+  Text,
+  useMediaQuery,
+} from "@chakra-ui/react";
 import Head from "next/head";
 import Image from "next/image";
 import Card from "../components/card";
@@ -30,6 +37,8 @@ export async function getStaticProps(context) {
 }
 
 export default function Home({ posts }) {
+  const [isLargerThan1280] = useMediaQuery("(min-width: 1280px)");
+
   return (
     <div>
       <Container mt="5" maxW={"container.xl"}>
@@ -43,17 +52,22 @@ export default function Home({ posts }) {
         </Text>
         <Box
           display={"flex"}
+          flexDirection={isLargerThan1280 ? "row" : "column"}
           // boxShadow={"outline"}
           justifyContent="space-between"
         >
-          <Box width={"80%"}>
+          <Box width={isLargerThan1280 ? "80%" : "100%"}>
             {posts.map((element, index) => {
               return <Card data={element} index={index} key={index} />;
             })}
           </Box>
-          <Box width={"10%"}>
-            {/* <Box>posts</Box>
+          <Box
+            width={isLargerThan1280 ? "10%" : "100%"}
+            // boxShadow={"outline"}
+          >
             <Box>posts</Box>
+
+            {/* <Box>posts</Box>
             <Box>posts</Box>
             <Box>posts</Box>
             <Box>posts</Box> */}

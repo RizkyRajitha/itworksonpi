@@ -27,15 +27,16 @@ export default function Card({ data, index }) {
           </Text>
         </NextLink>
         <Spacer />
+      </Box>
+      <Box>
         {data.categories.map((element, index) => {
           return (
-            <Tag m="2" key={index} colorScheme="green">
+            <Tag my={"2"} mr="2" key={index} colorScheme="green">
               {element}
             </Tag>
           );
         })}
       </Box>
-      {console.log(data)}
       <Box py={"2"}>
         {data.createdAt &&
           formatDistance(new Date(data.createdAt), new Date(), {
