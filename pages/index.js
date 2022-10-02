@@ -48,7 +48,7 @@ export default function Home({ posts }) {
         >
           <Box width={"80%"}>
             {posts.map((element, index) => {
-              return <Card data={element} index={index} />;
+              return <Card data={element} index={index} key={index} />;
             })}
           </Box>
           <Box width={"10%"}>
