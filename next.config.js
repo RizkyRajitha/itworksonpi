@@ -1,17 +1,19 @@
 /** @type {import('next').NextConfig} */
-const withMDX = require("@next/mdx")();
-// const nextConfig = {
-//   reactStrictMode: true,
-//   swcMinify: true,
-//   withMDX: withMDX(),
-// };
-
-// // module.exports = withMDX();
-
-// module.exports = nextConfig;
-
-module.exports = withMDX({
+const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  pageExtensions: ["js", "jsx", "md", "mdx"],
-});
+  images: {
+    remotePatterns: [
+      {
+        protocol: "http",
+        hostname: "**",
+      },
+      {
+        protocol: "https",
+        hostname: "**",
+      },
+    ],
+  },
+};
+
+module.exports = nextConfig;
