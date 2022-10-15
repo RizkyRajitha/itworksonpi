@@ -42,6 +42,7 @@ const GlobalStyle = ({ children }) => {
           code[class*="language-"] *::selection {
             text-shadow: none;
             background: #264f78;
+            
           }
 
           @media print {
@@ -55,14 +56,17 @@ const GlobalStyle = ({ children }) => {
             padding: 1em;
             margin: 0.5em 0;
             overflow: auto;
-            background: #1e1e1e;
+            background: #1a202c;
+            border-width: 1px;
+            border-radius: 0.3em;
           }
 
           :not(pre) > code[class*="language-"] {
             padding: 0.1em 0.3em;
             border-radius: 0.3em;
             color: #db4c69;
-            background: #1e1e1e;
+            background: #1a202c;
+            border-width: 1px;
           }
           /*********************************************************
        * Tokens

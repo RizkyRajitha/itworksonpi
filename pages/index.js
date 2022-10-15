@@ -11,6 +11,7 @@ import Image from "next/image";
 import Card from "../components/card";
 // import styles from '../styles/Home.module.css'
 const StrapiUrl = process.env.STRAPI_URL;
+import LandingBanner from "../public/images/landingbanner.png";
 
 export async function getStaticProps(context) {
   let res = await (await fetch(`${StrapiUrl}/api/posts?populate=*`)).json();
@@ -41,14 +42,18 @@ export default function Home({ posts }) {
 
   return (
     <div>
+      <Box>
+        <Image src={LandingBanner} placeholder="blur" layout="responsive" />
+      </Box>
       <Container mt="5" maxW={"container.xl"}>
         <Text
           align={"center"}
-          fontSize="6xl"
+          fontSize="2xl"
           pb="10"
           fontFamily={"Noto Sans Mono"}
         >
-          All things pi
+          Wander in the wonderful world of electronics, programming and in
+          between
         </Text>
         <Box
           display={"flex"}
@@ -65,7 +70,7 @@ export default function Home({ posts }) {
             width={isLargerThan1280 ? "10%" : "100%"}
             // boxShadow={"outline"}
           >
-            <Box>posts</Box>
+            <Box>Categories</Box>
 
             {/* <Box>posts</Box>
             <Box>posts</Box>
