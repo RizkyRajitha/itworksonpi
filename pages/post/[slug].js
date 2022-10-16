@@ -20,8 +20,10 @@ import { useState } from "react";
 import { formatDistance } from "date-fns";
 import Navbar from "../../components/navbar";
 import NextLink from "next/link";
+import MetaTags from "../../components/metatags";
 
 const StrapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL;
+const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL;
 
 export async function getStaticPaths() {
   try {
@@ -104,6 +106,7 @@ export async function getStaticProps(context) {
       post,
       readTime,
       coverArtPlaceholder: coverArtPlaceholder.base64,
+      slug: context.params.slug,
     },
   };
 }
@@ -114,6 +117,7 @@ export default function Post({
   post,
   readTime,
   coverArtPlaceholder,
+  slug,
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [modalImage, setmodalImage] = useState({
@@ -194,6 +198,12 @@ export default function Post({
 
   return (
     <>
+      <MetaTags
+        title={post.attributes.name}
+        description={post.attributes.overview}
+        image={`${StrapiUrl}${post.attributes?.coverArt?.data?.attributes?.formats?.small?.url}`}
+        url={`${PublicUrl}/post/${slug}`}
+      />
       <Navbar />
       <Container maxW={"container.xl"} mt="10">
         <Box>

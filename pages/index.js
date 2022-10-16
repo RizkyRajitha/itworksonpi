@@ -6,6 +6,7 @@ import Card from "../components/card";
 const StrapiUrl = process.env.STRAPI_URL;
 import LandingBanner from "../public/images/landingbanner.png";
 import NextLink from "next/link";
+import MetaTags from "../components/metatags";
 
 export async function getStaticProps(context) {
   let res = await (
@@ -39,40 +40,14 @@ export default function Home({ posts, categories }) {
   console.log(categories);
   return (
     <div>
-      <Head>
-        <title>It works on pi</title>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-        <meta name="theme-color" content="#000" />
-        <meta
-          name="description"
-          content="Wander in the wonderful world of electronics, programming and in between"
-        />
-        <meta property="og:title" content="It works on pi" />
-        <meta
-          property="og:description"
-          content="Wander in the wonderful world of electronics, programming and in between"
-        />
-        <meta
-          name="twitter:description"
-          content="Personal blog of Rajitha Gunathilake"
-          data-react-helmet="true"
-        />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary_large_image" />
-        {/* <meta name="twitter:creator" content="rizkyrajitha" /> */}
-        <meta name="twitter:title" content="It works on pi" />
-        <meta name="og:image" content="/images/landingbanner.png" />
-        <meta name="og:locale" content="si_LK" />
-        <meta name="og:site_name" content="It works on pi" />
-        <meta name="twitter:image:src" content="/images/landingbanner.png" />
-        <meta name="twitter:site" content="It works on pi" />
-        <meta name="twitter:widgets" content='new-embed-design: "on"' />
-        <meta
-          name="keywords"
-          content=" arduino , rasberrypi , nodemcu , software,programming, coding, development, engineering,"
-        />
-      </Head>
+      <MetaTags
+        title="It works on pi"
+        description={
+          "Wander in the wonderful world of electronics, programming and in between"
+        }
+        image="https://itworksonpi.vercel.app/images/landingbanner.png"
+        url={"https://itworksonpi.vercel.app"}
+      />
       <Box>
         <Image src={LandingBanner} placeholder="blur" layout="responsive" />
       </Box>
