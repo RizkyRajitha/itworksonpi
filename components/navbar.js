@@ -7,10 +7,13 @@ import {
   useDisclosure,
   useColorModeValue,
   Stack,
+  Spacer,
 } from "@chakra-ui/react";
-import { HamburgerIcon, CloseIcon, AddIcon } from "@chakra-ui/icons";
+import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
+import LandingBanner from "../public/images/Itworksonpi.png";
+import Image from "next/future/image";
 
-const Links = ["Dashboard", "Projects", "Team"];
+const Links = [];
 
 const NavLink = ({ children }) => (
   <Link
@@ -45,10 +48,11 @@ export default function Navbar() {
           display={{ md: "none" }}
           onClick={isOpen ? onClose : onOpen}
         />
-        <HStack spacing={8} alignItems={"center"}>
+        <HStack spacing={8} alignItems={"end"}>
           <Box as={"a"} href="/">
-            It works on pi
+            <Image src={LandingBanner} alt="logo" />
           </Box>
+          <Spacer />
           <HStack as={"nav"} spacing={4} display={{ base: "none", md: "flex" }}>
             {Links.map((link) => (
               <NavLink key={link}>{link}</NavLink>

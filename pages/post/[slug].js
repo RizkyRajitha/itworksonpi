@@ -1,13 +1,10 @@
 import {
   Box,
-  Button,
   Container,
   Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
-  ModalFooter,
-  ModalHeader,
   ModalOverlay,
   Spacer,
   Tag,
@@ -21,8 +18,8 @@ import Image from "next/future/image";
 import { getPlaiceholder } from "plaiceholder";
 import { useState } from "react";
 import { formatDistance } from "date-fns";
-import { css } from "@emotion/react";
 import Navbar from "../../components/navbar";
+import NextLink from "next/link";
 
 const StrapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL;
 
@@ -71,6 +68,8 @@ export async function getStaticProps(context) {
 
   let mdximages = text.match(imageregex);
 
+  let readTime = Math.round(text.trim().split(/\s+/).length / 183);
+
   // create image placeholders
   if (mdximages?.length) {
     for (let index = 0; index < mdximages.length; index++) {
@@ -84,19 +83,45 @@ export async function getStaticProps(context) {
       imagePlaceHolders.push(plaiceholder);
     }
   }
+
+  // create cover art placeholders
+  let coverArtPlaceholder = await getPlaiceholder(
+    `${StrapiUrl}${post.attributes.coverArt.data.attributes.url}`,
+    {
+      size: 32,
+    }
+  );
+
   // complile mdx
   const mdxSource = await serialize(text, {
     mdxOptions: { remarkPlugins: [require("remark-prism")] },
   });
 
   return {
-    props: { mdxSource, imagePlaceHolders, post },
+    props: {
+      mdxSource,
+      imagePlaceHolders,
+      post,
+      readTime,
+      coverArtPlaceholder: coverArtPlaceholder.base64,
+    },
   };
 }
 
-export default function Post({ mdxSource, imagePlaceHolders, post }) {
+export default function Post({
+  mdxSource,
+  imagePlaceHolders,
+  post,
+  readTime,
+  coverArtPlaceholder,
+}) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [image, setImage] = useState("");
+  const [modalImage, setmodalImage] = useState({
+    alt: "",
+    src: "",
+    placeholder: "",
+  });
+  // const [showCopy, setshowCopy] = useState(false);
 
   const [isLargerThan980] = useMediaQuery("(min-width: 980px)");
 
@@ -133,20 +158,45 @@ export default function Post({ mdxSource, imagePlaceHolders, post }) {
               onClick={() => {
                 console.log("click");
                 onOpen();
-                setImage(props.src);
+                setmodalImage({
+                  alt: props.alt,
+                  src: props.src,
+                  placeholder: imagePlaceHolders.filter(
+                    (img) => img.img === props.src
+                  )[0]?.base64,
+                });
               }}
             />
           </Box>
         </Box>
       );
     },
+    // pre: (props) => (
+    //   <Box
+    //     onMouseEnter={() => {
+    //       console.log("enterrrrrrr");
+    //       setshowCopy(true);
+    //     }}
+    //     onMouseLeave={() => {
+    //       console.log("leaveeeeee");
+    //       setshowCopy(false);
+    //     }}
+    //   >
+    //     <pre className={props.className}>
+    //       <Box>
+    //         <Button>copy</Button>
+    //       </Box>
+    //       {props.children}{" "}
+    //     </pre>
+    //   </Box>
+    // ),
   };
 
   return (
     <>
       <Navbar />
       <Container maxW={"container.xl"} mt="10">
-        <Box display={"flex"} justifyContent="space-between">
+        <Box>
           <Box maxW={"100%"}>
             <Box
               display={"flex"}
@@ -173,7 +223,16 @@ export default function Post({ mdxSource, imagePlaceHolders, post }) {
                 >
                   {post.attributes.name}
                 </Text>
+                <Text
+                  fontSize={"lg"}
+                  noOfLines={1}
+                  textAlign={isLargerThan980 ? "left" : "center"}
+                  pb="2"
+                >
+                  {readTime}ish minutes
+                </Text>
                 <Spacer />
+
                 <Box py={"2"}>
                   {post?.attributes?.createdAt &&
                     formatDistance(
@@ -188,7 +247,11 @@ export default function Post({ mdxSource, imagePlaceHolders, post }) {
                   {post.attributes.categories.data.map((element, index) => {
                     return (
                       <Tag mr="2" key={index} colorScheme="green">
-                        {element.attributes.name}
+                        <NextLink href={`/category/${element.attributes.name}`}>
+                          <Text casing={"capitalize"} as="a" cursor={"pointer"}>
+                            {element.attributes.name}
+                          </Text>
+                        </NextLink>
                       </Tag>
                     );
                   })}
@@ -199,7 +262,9 @@ export default function Post({ mdxSource, imagePlaceHolders, post }) {
                 <Image
                   width={960}
                   height={540}
-                  alt="cover"
+                  placeholder="blur"
+                  blurDataURL={coverArtPlaceholder}
+                  alt={`${post.attributes.name} cover`}
                   layout="responsive"
                   src={`${StrapiUrl}${post.attributes.coverArt.data.attributes.url}`}
                 />
@@ -217,8 +282,24 @@ export default function Post({ mdxSource, imagePlaceHolders, post }) {
           <ModalContent>
             <ModalCloseButton />
             <ModalBody>
-              <Box display={"flex"} justifyContent="center" p="8">
-                <Image src={image} width="800" height={"600"} />
+              <Box
+                display={"flex"}
+                flexDirection="column"
+                justifyContent="center"
+                p="8"
+                minW={"100%"}
+              >
+                <Image
+                  src={modalImage.src}
+                  alt={modalImage.alt}
+                  width="1920"
+                  height={"1080"}
+                  placeholder="blur"
+                  blurDataURL={modalImage.placeholder}
+                />
+                <Box textAlign={"center"}>
+                  <Text pt="4">{modalImage.alt}</Text>
+                </Box>
               </Box>
             </ModalBody>
           </ModalContent>

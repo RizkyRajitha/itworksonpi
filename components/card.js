@@ -32,7 +32,11 @@ export default function Card({ data, index }) {
         {data.categories.map((element, index) => {
           return (
             <Tag my={"2"} mr="2" key={index} colorScheme="green">
-              {element}
+              <NextLink href={`/category/${element}`}>
+                <Text casing={"capitalize"} cursor="pointer">
+                  {element}
+                </Text>
+              </NextLink>
             </Tag>
           );
         })}
