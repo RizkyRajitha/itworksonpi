@@ -1,12 +1,13 @@
 import { Box, Container, Tag, Text, useMediaQuery } from "@chakra-ui/react";
 import Head from "next/head";
-import Image from "next/image";
+import Image from "next/future/image";
 import Card from "../components/card";
 // import styles from '../styles/Home.module.css'
 const StrapiUrl = process.env.STRAPI_URL;
 import LandingBanner from "../public/images/landingbanner.png";
 import NextLink from "next/link";
 import MetaTags from "../components/metatags";
+import Footer from "../components/footer";
 
 export async function getStaticProps(context) {
   let res = await (
@@ -43,13 +44,18 @@ export default function Home({ posts, categories }) {
       <MetaTags
         title="It works on pi"
         description={
-          "Wander in the wonderful world of electronics, programming and in between"
+          "Wander in the wonderful world of electronics, programming, web dev and in between"
         }
-        image="https://itworksonpi.vercel.app/images/landingbanner.png"
+        image="https://itworksonpi.vercel.app/images/ogmetabanner.png"
         url={"https://itworksonpi.vercel.app"}
       />
-      <Box>
-        <Image src={LandingBanner} placeholder="blur" layout="responsive" />
+      <Box h={isLargerThan1280 ? "28vh" : "32vh"}>
+        <Image
+          src={LandingBanner}
+          style={{ height: "100%", width: "100%", objectFit: "cover" }}
+          alt="banner"
+          placeholder="blur"
+        />
       </Box>
       <Container mt="5" maxW={"8xl"}>
         <Text
@@ -58,8 +64,7 @@ export default function Home({ posts, categories }) {
           pb="10"
           fontFamily={"Noto Sans Mono"}
         >
-          Wander in the wonderful world of electronics, programming and in
-          between
+          Wander in the wonderful world of electronics, web dev and in between
         </Text>
         <Box
           display={"flex"}
@@ -94,6 +99,7 @@ export default function Home({ posts, categories }) {
           </Box>
         </Box>
       </Container>
+      <Footer />
     </div>
   );
 }

@@ -27,7 +27,7 @@ export default function MetaTags({ title, description, image, url }) {
 
       <meta
         name="keywords"
-        content=" arduino , rasberrypi , nodemcu , software,programming, coding, development, engineering,"
+        content="arduino, rasberrypi, nodemcu, software, programming, coding, development, engineering, web"
       />
     </Head>
   );

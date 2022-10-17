@@ -1,25 +1,8 @@
-import { useState } from "react";
-import {
-  Box,
-  Container,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalOverlay,
-  Spacer,
-  Tag,
-  Text,
-  useDisclosure,
-  useMediaQuery,
-} from "@chakra-ui/react";
-import { serialize } from "next-mdx-remote/serialize";
-import { MDXRemote } from "next-mdx-remote";
-import Image from "next/future/image";
-import { formatDistance } from "date-fns";
+import { Box, Container, Tag, Text } from "@chakra-ui/react";
 import CategoryCard from "../../components/categorycard";
 import Navbar from "../../components/navbar";
-// import { getPlaiceholder } from "plaiceholder";
+import MetaTags from "../../components/metatags";
+import { getPlaiceholder } from "plaiceholder";
 // import Navbar from "../../components/navbar";
 
 const StrapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL;
@@ -56,7 +39,7 @@ export async function getStaticProps(context) {
   ).json();
 
   let category = res.data[0];
-
+  getPlaiceholder("");
   console.log(category);
 
   return {
@@ -67,10 +50,14 @@ export async function getStaticProps(context) {
 }
 
 export default function Category({ category }) {
-  console.log(category);
-
   return (
     <>
+      <MetaTags
+        title={category.attributes.name}
+        description={`Posts belong to ${category.attributes.name} category`}
+        image="https://itworksonpi.vercel.app/images/ogmetabanner.png"
+        url={`https://itworksonpi.vercel.app/category/${category.attributes.name}`}
+      />
       <Navbar />
       <Container maxW={"container.xl"} mt="10">
         <Text casing={"capitalize"}>
