@@ -1,8 +1,9 @@
-import { Box, Container, Tag, Text } from "@chakra-ui/react";
+import { Box, Container, Text } from "@chakra-ui/react";
 import CategoryCard from "../../components/categorycard";
 import Navbar from "../../components/navbar";
 import MetaTags from "../../components/metatags";
 import { getPlaiceholder } from "plaiceholder";
+import Footer from "../../components/footer";
 // import Navbar from "../../components/navbar";
 
 const StrapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL;
@@ -60,10 +61,16 @@ export default function Category({ category }) {
       />
       <Navbar />
       <Container maxW={"container.xl"} mt="10">
-        <Text casing={"capitalize"}>
-          <Tag fontSize={"6xl"} my="8" colorScheme="green">
-            {category.attributes.name}
-          </Tag>
+        <Text
+          fontSize={"6xl"}
+          my="8"
+          // bgGradient="linear(to-l, #7928CA, #FF0080)"
+          bgGradient="linear(to-l, #DC2424,  #4A569D)"
+          bgClip="text"
+          fontWeight="extrabold"
+          casing={"capitalize"}
+        >
+          {category.attributes.name}
         </Text>
         <Box width={"100%"}>
           {category.attributes.posts.data.map((element, index) => {
@@ -78,6 +85,7 @@ export default function Category({ category }) {
           })}
         </Box>
       </Container>
+      <Footer />
     </>
   );
 }

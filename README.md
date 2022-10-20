@@ -1,5 +1,9 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
+add default cover image wiith vercel og image
+
+add landing banner with dynamic text overlay
+
 ## Getting Started
 
 First, run the development server:

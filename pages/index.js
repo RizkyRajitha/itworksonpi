@@ -3,7 +3,7 @@ import Head from "next/head";
 import Image from "next/future/image";
 import Card from "../components/card";
 // import styles from '../styles/Home.module.css'
-const StrapiUrl = process.env.STRAPI_URL;
+const StrapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL;
 import LandingBanner from "../public/images/landingbanner.png";
 import NextLink from "next/link";
 import MetaTags from "../components/metatags";
