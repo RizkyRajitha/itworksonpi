@@ -1,6 +1,8 @@
 import {
   Box,
   Container,
+  Heading,
+  Link,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -21,6 +23,8 @@ import { formatDistance } from "date-fns";
 import Navbar from "../../components/navbar";
 import NextLink from "next/link";
 import MetaTags from "../../components/metatags";
+import rehypeSlug from "rehype-slug";
+import Footer from "../../components/footer";
 
 const StrapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL;
 const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL;
@@ -96,7 +100,10 @@ export async function getStaticProps(context) {
 
   // complile mdx
   const mdxSource = await serialize(text, {
-    mdxOptions: { remarkPlugins: [require("remark-prism")] },
+    mdxOptions: {
+      remarkPlugins: [require("remark-prism")],
+      rehypePlugins: [rehypeSlug],
+    },
   });
 
   return {
@@ -110,6 +117,33 @@ export async function getStaticProps(context) {
     },
   };
 }
+
+const CustomHeading = ({ as, id, ...props }) => {
+  if (id) {
+    return (
+      <Link href={`#${id}`}>
+        <NextLink href={`#${id}`}>
+          <Heading
+            {...props}
+            as={as}
+            py="4"
+            id={id}
+            noOfLines="1"
+            lineHeight={"1em"}
+            _hover={{
+              _before: {
+                position: "relative",
+                marginLeft: "-1.2ch",
+                paddingRight: "0.2ch",
+              },
+            }}
+          />
+        </NextLink>
+      </Link>
+    );
+  }
+  return <Heading as={as} {...props} />;
+};
 
 export default function Post({
   mdxSource,
@@ -128,11 +162,15 @@ export default function Post({
   // const [showCopy, setshowCopy] = useState(false);
 
   const [isLargerThan980] = useMediaQuery("(min-width: 980px)");
+  const [isLargerThan268] = useMediaQuery("(min-width: 268px)");
 
   const components = {
-    h1: (props) => <Text fontSize={"4xl"} {...props} />,
-    h2: (props) => <Text fontSize={"2xl"} {...props} />,
-    h3: (props) => <Text fontSize={"xl"} {...props} />,
+    h1: (props) => <CustomHeading fontSize="4xl" as="h1" {...props} />,
+    h2: (props) => <CustomHeading fontSize="2xl" as="h2" {...props} />,
+    h3: (props) => <CustomHeading fontSize="xl" as="h3" {...props} />,
+    // h1: (props) => <Text as="h1" py="10" fontSize={"4xl"} {...props} />,
+    // h2: (props) => <Text py="4" fontSize={"2xl"} {...props} />,
+    // h3: (props) => <Text py="4" fontSize={"xl"} {...props} />,
     h4: (props) => <Text fontSize={"lg"} {...props} />,
     p: (props) => <Box textAlign={"justify"} {...props} />,
     img: (props) => {
@@ -230,12 +268,15 @@ export default function Post({
                   textAlign={isLargerThan980 ? "left" : "center"}
                   casing={"capitalize"}
                   pb="2"
+                  bgGradient="linear(to-br, #4ECDC4,  #1CB5E0)"
+                  bgClip="text"
+                  fontWeight="extrabold"
                 >
                   {post.attributes.name}
                 </Text>
                 <Text
                   fontSize={"lg"}
-                  noOfLines={1}
+                  noOfLines={2}
                   textAlign={isLargerThan980 ? "left" : "center"}
                   pb="2"
                 >
@@ -268,7 +309,14 @@ export default function Post({
                 </Box>
               </Box>
               <Spacer />
-              <Box borderRadius="lg" overflow={"hidden"} minW="40%">
+              <Box
+                borderRadius="lg"
+                overflow={"hidden"}
+                minW="40%"
+                // bgGradient="linear(to-br, #009FFF,  #ec2F4B)"
+                bgGradient="linear(to-br, #4ECDC4,  #1CB5E0)"
+                p={isLargerThan268 ? "6" : "2"}
+              >
                 <Image
                   width={960}
                   height={540}
@@ -277,6 +325,7 @@ export default function Post({
                   alt={`${post.attributes.name} cover`}
                   layout="responsive"
                   src={`${StrapiUrl}${post.attributes.coverArt.data.attributes.url}`}
+                  style={{ borderRadius: "0.5rem" }}
                 />
               </Box>
             </Box>
@@ -287,7 +336,7 @@ export default function Post({
           {/* <Box maxW={"15%"}>widgets</Box> */}
         </Box>
 
-        <Modal isOpen={isOpen} onClose={onClose} size="6xl">
+        <Modal isOpen={isOpen} onClose={onClose} size="full">
           <ModalOverlay />
           <ModalContent>
             <ModalCloseButton />
@@ -315,6 +364,7 @@ export default function Post({
           </ModalContent>
         </Modal>
       </Container>
+      <Footer />
     </>
   );
 }
