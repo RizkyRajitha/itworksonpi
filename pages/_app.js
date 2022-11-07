@@ -607,7 +607,7 @@ const GlobalStyle = ({ children }) => {
             font-style: normal;
             font-weight: 700;
             font-display: swap;
-            src: url("https://fonts.googleapis.com/css2?family=Inter+Tight&display=swap");
+            src: url("https://fonts.googleapis.com/css2?family=Inter+Tight");
           }
 
           @font-face {
@@ -615,7 +615,24 @@ const GlobalStyle = ({ children }) => {
             font-style: normal;
             font-weight: 700;
             font-display: swap;
-            src: url("https://fonts.googleapis.com/css2?family=Noto+Sans+Mono&display=swap");
+            src: url("https://fonts.googleapis.com/css2?family=Noto+Sans+Mono");
+          }
+
+          @font-face {
+            font-family: "VT323";
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url("https://fonts.googleapis.com/css2?family=VT323");
+          }
+
+          ::-moz-selection {
+            background-color: #1db6df;
+            color: white;
+          }
+          ::selection {
+            background-color: #1db6df;
+            color: white;
           }
         `}
       />

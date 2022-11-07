@@ -4,6 +4,14 @@ add default cover image wiith vercel og image
 
 add landing banner with dynamic text overlay
 
+add chakra ui google fonts
+
+add og image doodle bg
+
+
+add framer animations
+
+
 ## Getting Started
 
 First, run the development server:

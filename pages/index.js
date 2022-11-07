@@ -1,4 +1,11 @@
-import { Box, Container, Tag, Text, useMediaQuery } from "@chakra-ui/react";
+import {
+  Box,
+  Container,
+  Heading,
+  Tag,
+  Text,
+  useMediaQuery,
+} from "@chakra-ui/react";
 import Head from "next/head";
 import Image from "next/future/image";
 import Card from "../components/card";
@@ -38,6 +45,7 @@ export async function getStaticProps(context) {
 
 export default function Home({ posts, categories }) {
   const [isLargerThan1280] = useMediaQuery("(min-width: 1280px)");
+  const [isLargerThan400] = useMediaQuery("(min-width: 400px)");
   console.log(categories);
   return (
     <div>
@@ -49,15 +57,33 @@ export default function Home({ posts, categories }) {
         image="https://itworksonpi.vercel.app/images/ogmetabanner.png"
         url={"https://itworksonpi.vercel.app"}
       />
-      <Box h={isLargerThan1280 ? "28vh" : "32vh"}>
+      <Box
+        h={isLargerThan1280 ? "28vh" : "32vh"}
+        display="flex"
+        alignItems={"center"}
+        justifyContent="center"
+      >
         <Image
           src={LandingBanner}
-          style={{ height: "100%", width: "100%", objectFit: "cover" }}
+          style={{
+            height: isLargerThan1280 ? "28vh" : "32vh",
+            width: "100%",
+            objectFit: "cover",
+            position: "absolute",
+          }}
           alt="banner"
           placeholder="blur"
         />
+        <Text
+          position={"relative"}
+          textAlign="center"
+          fontSize={isLargerThan400 ?"8xl":"6xl"}
+          fontFamily={"VT323"}
+        >
+          it works on pi
+        </Text>
       </Box>
-      <Container mt="5" maxW={"8xl"}>
+      <Container mt="5" maxW={"8xl"} minH="82vh">
         <Text
           align={"center"}
           fontSize="2xl"
@@ -82,6 +108,7 @@ export default function Home({ posts, categories }) {
             pl={isLargerThan1280 ? "10" : "0"}
             // boxShadow={"outline"}
           >
+            <Text fontSize="4xl">Topics</Text>
             <Box>
               {categories.data.map((element, index) => {
                 return (
