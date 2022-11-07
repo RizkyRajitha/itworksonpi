@@ -109,8 +109,10 @@ export default function Home({ posts, categories }) {
             pl={isLargerThan1280 ? "10" : "0"}
             // boxShadow={"outline"}
           >
-            <Text fontSize="4xl">Topics</Text>
-            <Box>
+            <Text fontSize="4xl" align={isLargerThan1280 ? "left" : "center"}>
+              Topics
+            </Text>
+            <Box align={isLargerThan1280 ? "left" : "center"}>
               {categories.data.map((element, index) => {
                 return (
                   <Tag my={"2"} mr="2" key={index} colorScheme="green">
@@ -123,10 +125,14 @@ export default function Home({ posts, categories }) {
                 );
               })}
             </Box>
-            <Text fontSize="4xl" pt="10">
+            <Text
+              fontSize="4xl"
+              pt="10"
+              align={isLargerThan1280 ? "left" : "center"}
+            >
               Featured
             </Text>
-            <Box pt="4">
+            <Box pt="4" width={"100%"}>
               <Box>
                 {posts.map((element, index) => {
                   return (
