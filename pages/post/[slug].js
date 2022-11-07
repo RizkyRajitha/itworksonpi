@@ -26,6 +26,7 @@ import NextLink from "next/link";
 import MetaTags from "../../components/metatags";
 import rehypeSlug from "rehype-slug";
 import Footer from "../../components/footer";
+import { motion, useScroll } from "framer-motion";
 
 const StrapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL;
 const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL;
@@ -167,6 +168,8 @@ export default function Post({
   const [isLargerThan268] = useMediaQuery("(min-width: 268px)");
   const [isLargerThan1280] = useMediaQuery("(min-width: 1280px)");
 
+  const { scrollYProgress } = useScroll();
+
   const components = {
     h1: (props) => <CustomHeading fontSize="4xl" as="h1" {...props} />,
     h2: (props) => <CustomHeading fontSize="2xl" as="h2" {...props} />,
@@ -253,6 +256,19 @@ export default function Post({
         color={useColorModeValue("gray.700", "gray.100")}
       >
         <Box>
+          <motion.div
+            style={{
+              height: "1vh",
+              backgroundColor: "#fff",
+              scaleX: scrollYProgress,
+              top: "0px",
+              left: "0px",
+              right: "0px",
+              position: "fixed",
+              transformOrigin: "0%",
+              background: "linear-gradient(to left, #4ECDC4, #1CB5E0)",
+            }}
+          />
           <Box maxW={"100%"}>
             <Box
               display={"flex"}
@@ -380,7 +396,6 @@ export default function Post({
             </Box>
           </Box>
         </Box>
-
         <Modal isOpen={isOpen} onClose={onClose} size="full">
           <ModalOverlay />
           <ModalContent>
