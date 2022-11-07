@@ -35,10 +35,12 @@ export default function Navbar() {
 
   return (
     <Box
-      bg={"#1a202c"}
+      // bg={"#1a202c"}
       px={4}
       borderBottom="solid"
       borderBottomColor={"#2D3748"}
+      bg={useColorModeValue("gray.100", "gray.800")}
+      color={useColorModeValue("gray.700", "gray.100")}
     >
       <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
         <IconButton
