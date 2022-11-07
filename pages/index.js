@@ -15,6 +15,7 @@ import LandingBanner from "../public/images/landingbanner.png";
 import NextLink from "next/link";
 import MetaTags from "../components/metatags";
 import Footer from "../components/footer";
+import FeatureCard from "../components/featurecard";
 
 export async function getStaticProps(context) {
   let res = await (
@@ -77,7 +78,7 @@ export default function Home({ posts, categories }) {
         <Text
           position={"relative"}
           textAlign="center"
-          fontSize={isLargerThan400 ?"8xl":"6xl"}
+          fontSize={isLargerThan400 ? "8xl" : "6xl"}
           fontFamily={"VT323"}
         >
           it works on pi
@@ -122,7 +123,18 @@ export default function Home({ posts, categories }) {
                 );
               })}
             </Box>
-            {/* <Box pt="10">Trending</Box> */}
+            <Text fontSize="4xl" pt="10">
+              Featured
+            </Text>
+            <Box pt="4">
+              <Box>
+                {posts.map((element, index) => {
+                  return (
+                    <FeatureCard data={element} index={index} key={index} />
+                  );
+                })}
+              </Box>
+            </Box>
           </Box>
         </Box>
       </Container>

@@ -23,7 +23,11 @@ export default function Card({ data, index }) {
             casing={"capitalize"}
             cursor="pointer"
           >
-            <Link>{data.name}</Link>
+            <Link
+              href={`/post/${data.name.toLowerCase().replaceAll(" ", "-")}`}
+            >
+              {data.name}
+            </Link>
           </Text>
         </NextLink>
         <Spacer />
