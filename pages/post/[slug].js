@@ -188,33 +188,39 @@ export default function Post({
           borderRadius="lg"
           p={isLargerThan980 ? "12" : "8"}
         >
-          <Box
-            borderWidth="1px"
-            borderRadius="lg"
-            overflow={"hidden"}
-            cursor={"pointer"}
+          <motion.div
+            whileHover={{ scale: isLargerThan268 ? 1.06 : 1 }}
+            transition={{ duration: 0.2 }}
           >
-            <Image
-              {...props}
-              width="800"
-              height={"600"}
-              placeholder="blur"
-              blurDataURL={
-                imagePlaceHolders.filter((img) => img.img === props.src)[0]
-                  ?.base64
-              }
-              onClick={() => {
-                onOpen();
-                setmodalImage({
-                  alt: props.alt,
-                  src: props.src,
-                  placeholder: imagePlaceHolders.filter(
-                    (img) => img.img === props.src
-                  )[0]?.base64,
-                });
-              }}
-            />
-          </Box>
+            <Box
+              borderWidth="1px"
+              borderRadius="lg"
+              overflow={"hidden"}
+              cursor={"pointer"}
+            >
+              {" "}
+              <Image
+                {...props}
+                width="800"
+                height={"600"}
+                placeholder="blur"
+                blurDataURL={
+                  imagePlaceHolders.filter((img) => img.img === props.src)[0]
+                    ?.base64
+                }
+                onClick={() => {
+                  onOpen();
+                  setmodalImage({
+                    alt: props.alt,
+                    src: props.src,
+                    placeholder: imagePlaceHolders.filter(
+                      (img) => img.img === props.src
+                    )[0]?.base64,
+                  });
+                }}
+              />
+            </Box>
+          </motion.div>
         </Box>
       );
     },
@@ -351,25 +357,28 @@ export default function Post({
                 <Box
                   borderRadius="lg"
                   overflow={"hidden"}
-                  p={isLargerThan268 ? "6" : "2"}
+                  p={isLargerThan268 ? "10" : "2"}
                   bgGradient="linear(to-br, #4ECDC4,  #1CB5E0)"
                 >
-                  <Image
-                    width={960}
-                    height={540}
-                    placeholder="blur"
-                    blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAANCAIAAABHKvtLAAAACXBIWXMAAAsTAAALEwEAmpwYAAADlklEQVR4nGPgl1AlEnEIyIvJapvZeDDyyAhKqhOpi4EYRUKSaoxcMgmpRRW1ndPnLI1JymXkkhGS0iTBAkFJdWSEJigkpcktomRu693WPSUoItXK3odbWFFIShNNF6YJUAt4RZUYOKW5hRVBSESJW1iRV1RJUFKdW1iRlV8WwgUp5ZTiEJAHKWaXhCjjEJBn45fnE1PhEJDnEVWGqOQQApmDsIBDQF5dz6ahdYKKtqWKpoW8qomihpm0kgG3sKKsinFIVJqVvbeEop6YrLaIjEZgWLKSpoW0koGytqWCmom6gY2OiSO/mIqdS6CytqWihpmcqpGqjrWytiWfmArUAkYeGRsn/6UrN82Yt3z5mi1nz1+/dutBSESqlKL+3IWraxt7Kuu7VqzdtnzNlqWrNm/dfUhO1Sg+OX/5mi0Hjp7df/j0hKnz1m/eXVHfWVHbuWj5+pOnL6/buKujdwYokiTVQBZwCyuq6lg7uofGJxd4BcSW1bRVNXQbWboKSWrkFtfnFtVl5Fam5VTUNIBsyi2qE5fXdXAPLqtpKypvKqtps7D1Co1KS8kqS80pzymqLa1qTckqS8up4BCQh8QEKA74xFR4RZXY+OVZ+WUZGCUYGMQgocnAIsHALgUiWSQZOKUZuWQYOKVZ+WUZeWRAImBlfGKqDAyiDJxSIFkGcQYGMQZ2SQZ2SXg8gywQktJkYJds6pgcn1qoZ+bsF5qgqmMloajv6R9jYOZc29SXlFHCLawoLqtTVNEcFZ9l7einb+Hq5BmakF7kExRvau3p4B5sZOnq6R/j6R/j5hNpauPFLayI8AHEgulzlrZ2T9t/+PTpc9f1TB31zJzevP929caDb7//7z98WlJez8kz9OyFaz///D907NymbfuevXrfP2VuS9eUC5duXbp6++iJC89evt9z8NT0OcvXbtzJwCIJySggCwQl1bmElawd/QzMnN18Ihzdg7lFlERktEytPS3sfazsva0dfXlFleRUjdx9o+xcAlS0rYwt3QzMXBzcgh3cgjz9Y5o7JlvYeVvYelnYecupmlg7+kISNI+oMiIns/HLcwjIM3LJsPLLCkqq84mpMPPIsvLLsvHLM/PIQrILI5cMMw8oZzDzyHIIgOKMmQeknk9MBZJs5FSNZFQMwKSxnKqJjJIhwgIhSTVIpoUkL7gIcs6E515kKYgsn5iKopqZnUuAV0Csf0iiha2Xm0+EqY0XAPBrEj731S8JAAAAAElFTkSuQmCC"
-                    // blurDataURL={coverArtPlaceholder}
-                    alt={`${post.attributes.name} cover`}
-                    layout="responsive"
-                    src={`${PublicUrl}/api/og?title=${post.attributes.name}`}
-                    // src={`${StrapiUrl}${post.attributes.coverArt.data.attributes.url}`}
-                    style={{
-                      borderRadius: "0.5rem",
-                      // transitionDuration: "1s",
-                      // transitionTimingFunction: "cubic-bezier(.4,0,.2,1)",
-                    }}
-                  />
+                  <motion.div
+                    whileHover={{ scale: isLargerThan268 ? 1.06 : 1 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Image
+                      width={1200}
+                      height={630}
+                      placeholder="blur"
+                      blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAANCAIAAABHKvtLAAAACXBIWXMAAAsTAAALEwEAmpwYAAADlklEQVR4nGPgl1AlEnEIyIvJapvZeDDyyAhKqhOpi4EYRUKSaoxcMgmpRRW1ndPnLI1JymXkkhGS0iTBAkFJdWSEJigkpcktomRu693WPSUoItXK3odbWFFIShNNF6YJUAt4RZUYOKW5hRVBSESJW1iRV1RJUFKdW1iRlV8WwgUp5ZTiEJAHKWaXhCjjEJBn45fnE1PhEJDnEVWGqOQQApmDsIBDQF5dz6ahdYKKtqWKpoW8qomihpm0kgG3sKKsinFIVJqVvbeEop6YrLaIjEZgWLKSpoW0koGytqWCmom6gY2OiSO/mIqdS6CytqWihpmcqpGqjrWytiWfmArUAkYeGRsn/6UrN82Yt3z5mi1nz1+/dutBSESqlKL+3IWraxt7Kuu7VqzdtnzNlqWrNm/dfUhO1Sg+OX/5mi0Hjp7df/j0hKnz1m/eXVHfWVHbuWj5+pOnL6/buKujdwYokiTVQBZwCyuq6lg7uofGJxd4BcSW1bRVNXQbWboKSWrkFtfnFtVl5Fam5VTUNIBsyi2qE5fXdXAPLqtpKypvKqtps7D1Co1KS8kqS80pzymqLa1qTckqS8up4BCQh8QEKA74xFR4RZXY+OVZ+WUZGCUYGMQgocnAIsHALgUiWSQZOKUZuWQYOKVZ+WUZeWRAImBlfGKqDAyiDJxSIFkGcQYGMQZ2SQZ2SXg8gywQktJkYJds6pgcn1qoZ+bsF5qgqmMloajv6R9jYOZc29SXlFHCLawoLqtTVNEcFZ9l7einb+Hq5BmakF7kExRvau3p4B5sZOnq6R/j6R/j5hNpauPFLayI8AHEgulzlrZ2T9t/+PTpc9f1TB31zJzevP929caDb7//7z98WlJez8kz9OyFaz///D907NymbfuevXrfP2VuS9eUC5duXbp6++iJC89evt9z8NT0OcvXbtzJwCIJySggCwQl1bmElawd/QzMnN18Ihzdg7lFlERktEytPS3sfazsva0dfXlFleRUjdx9o+xcAlS0rYwt3QzMXBzcgh3cgjz9Y5o7JlvYeVvYelnYecupmlg7+kISNI+oMiIns/HLcwjIM3LJsPLLCkqq84mpMPPIsvLLsvHLM/PIQrILI5cMMw8oZzDzyHIIgOKMmQeknk9MBZJs5FSNZFQMwKSxnKqJjJIhwgIhSTVIpoUkL7gIcs6E515kKYgsn5iKopqZnUuAV0Csf0iiha2Xm0+EqY0XAPBrEj731S8JAAAAAElFTkSuQmCC"
+                      // blurDataURL={coverArtPlaceholder}
+                      alt={`${post.attributes.name} cover`}
+                      layout="responsive"
+                      src={`${PublicUrl}/api/og?title=${post.attributes.name}`}
+                      // src={`${StrapiUrl}${post.attributes.coverArt.data.attributes.url}`}
+                      style={{
+                        borderRadius: "0.5rem",
+                      }}
+                    />
+                  </motion.div>
                 </Box>
               </Box>
             </Box>
