@@ -29,7 +29,7 @@ import Footer from "../../components/footer";
 import { motion, useScroll } from "framer-motion";
 
 const StrapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL;
-const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL;
+const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
 
 export async function getStaticPaths() {
   try {
