@@ -27,6 +27,7 @@ import MetaTags from "../../components/metatags";
 import rehypeSlug from "rehype-slug";
 import Footer from "../../components/footer";
 import { motion, useScroll } from "framer-motion";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const StrapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL;
 const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
@@ -304,6 +305,7 @@ export default function Post({
                 >
                   {post.attributes.name}
                 </Text>
+                {/* <FontAwesomeIcon icon={["fas", "coffee"]} /> */}
                 <Text
                   fontSize={"lg"}
                   noOfLines={2}
