@@ -28,6 +28,11 @@ import rehypeSlug from "rehype-slug";
 import Footer from "../../components/footer";
 import { motion, useScroll } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faFacebookSquare,
+  faRedditSquare,
+  faTwitterSquare,
+} from "@fortawesome/free-brands-svg-icons";
 
 const StrapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL;
 const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
@@ -305,7 +310,6 @@ export default function Post({
                 >
                   {post.attributes.name}
                 </Text>
-                {/* <FontAwesomeIcon icon={["fas", "coffee"]} /> */}
                 <Text
                   fontSize={"lg"}
                   noOfLines={2}
@@ -314,38 +318,48 @@ export default function Post({
                 >
                   {readTime}ish minutes read
                 </Text>
-                <a
-                  target="_blank"
-                  rel="noreferrer"
-                  class="twitter-share-button"
-                  href={`https://twitter.com/intent/tweet?text=${post.attributes.name}&url=${PublicUrl}&hashtags=cloud,web,freeservices`}
-                >
-                  Tweet
-                </a>
-                <a
-                  target="_blank"
-                  rel="noreferrer"
-                  class="twitter-share-button"
-                  href={`http://www.reddit.com/submit?url=${PublicUrl}&title=${post.attributes.name}`}
-                >
-                  Reddit
-                </a>
-                {/* <a
-                  target="_blank"
-                  rel="noreferrer"
-                  class="twitter-share-button"
-                  href="https://news.ycombinator.com/submitlink?u=https://twitter.com/&t=Hello%20world"
-                >
-                  HN
-                </a> */}
-                <a
-                  target="_blank"
-                  rel="noreferrer"
-                  href={`https://www.facebook.com/sharer/sharer.php?u=${PublicUrl}`}
-                  class="fb-xfbml-parse-ignore"
-                >
-                  fb
-                </a>
+
+                <Box>
+                  <Link
+                    pr="2"
+                    target="_blank"
+                    rel="noreferrer"
+                    class="twitter-share-button"
+                    href={`https://twitter.com/intent/tweet?text=${post.attributes.name}&url=${PublicUrl}&hashtags=cloud,web,freeservices`}
+                  >
+                    <FontAwesomeIcon
+                      icon={faTwitterSquare}
+                      color="#009FFF"
+                      size="2x"
+                    />
+                  </Link>
+                  <Link
+                    p="2"
+                    target="_blank"
+                    rel="noreferrer"
+                    class="twitter-share-button"
+                    href={`http://www.reddit.com/submit?url=${PublicUrl}&title=${post.attributes.name}`}
+                  >
+                    <FontAwesomeIcon
+                      icon={faRedditSquare}
+                      color="#FF5700"
+                      size="2x"
+                    />
+                  </Link>
+                  <Link
+                    p="2"
+                    target="_blank"
+                    rel="noreferrer"
+                    href={`https://www.facebook.com/sharer/sharer.php?u=${PublicUrl}`}
+                    class="fb-xfbml-parse-ignore"
+                  >
+                    <FontAwesomeIcon
+                      icon={faFacebookSquare}
+                      color="#0b82e7"
+                      size="2x"
+                    />
+                  </Link>
+                </Box>
 
                 <Spacer />
                 <Box py={"2"}>
