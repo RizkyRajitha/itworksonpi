@@ -634,6 +634,20 @@ const GlobalStyle = ({ children }) => {
             background-color: #1db6df;
             color: white;
           }
+
+          body::-webkit-scrollbar {
+            width: 8px;
+          }
+
+          body::-webkit-scrollbar-track {
+            box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+          }
+
+          body::-webkit-scrollbar-thumb {
+            background-color: #404040;
+            outline: 1px solid slategrey;
+            border-radius: 3px;
+          }
         `}
       />
       {children}
