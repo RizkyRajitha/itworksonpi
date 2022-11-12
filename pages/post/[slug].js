@@ -200,6 +200,7 @@ export default function Post({
               {" "}
               <Image
                 {...props}
+                alt={props.alt}
                 width="800"
                 height={"600"}
                 placeholder="blur"
@@ -313,6 +314,7 @@ export default function Post({
                 </Text>
                 <a
                   target="_blank"
+                  rel="noreferrer"
                   class="twitter-share-button"
                   href={`https://twitter.com/intent/tweet?text=${post.attributes.name}&url=${PublicUrl}&hashtags=cloud,web,freeservices`}
                 >
@@ -320,6 +322,7 @@ export default function Post({
                 </a>
                 <a
                   target="_blank"
+                  rel="noreferrer"
                   class="twitter-share-button"
                   href={`http://www.reddit.com/submit?url=${PublicUrl}&title=${post.attributes.name}`}
                 >
@@ -327,6 +330,7 @@ export default function Post({
                 </a>
                 {/* <a
                   target="_blank"
+                  rel="noreferrer"
                   class="twitter-share-button"
                   href="https://news.ycombinator.com/submitlink?u=https://twitter.com/&t=Hello%20world"
                 >
@@ -334,6 +338,7 @@ export default function Post({
                 </a> */}
                 <a
                   target="_blank"
+                  rel="noreferrer"
                   href={`https://www.facebook.com/sharer/sharer.php?u=${PublicUrl}`}
                   class="fb-xfbml-parse-ignore"
                 >
