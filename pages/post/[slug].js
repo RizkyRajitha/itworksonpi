@@ -93,12 +93,13 @@ export async function getStaticProps(context) {
   }
 
   // create cover art placeholders
-  // let coverArtPlaceholder = await getPlaiceholder(
-  //   `${StrapiUrl}${post.attributes.coverArt.data.attributes.url}`,
-  //   {
-  //     size: 32,
-  //   }
-  // );
+  let coverArtPlaceholder = await getPlaiceholder(
+    // `${StrapiUrl}${post.attributes.coverArt.data.attributes.url}`,
+    `${PublicUrl}/api/og?title=${post.attributes.name}`,
+    {
+      size: 32,
+    }
+  );
 
   // console.log(coverArtPlaceholder.base64);
   // complile mdx
@@ -115,7 +116,7 @@ export async function getStaticProps(context) {
       imagePlaceHolders,
       post,
       readTime,
-      // coverArtPlaceholder: coverArtPlaceholder.base64,
+      coverArtPlaceholder: coverArtPlaceholder.base64,
       slug: context.params.slug,
     },
   };
@@ -153,7 +154,7 @@ export default function Post({
   imagePlaceHolders,
   post,
   readTime,
-  // coverArtPlaceholder,
+  coverArtPlaceholder,
   slug,
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -164,9 +165,7 @@ export default function Post({
   });
   // const [showCopy, setshowCopy] = useState(false);
 
-  const [isLargerThan980] = useMediaQuery("(min-width: 980px)");
   const [isLargerThan268] = useMediaQuery("(min-width: 268px)");
-  const [isLargerThan1280] = useMediaQuery("(min-width: 1280px)");
 
   const { scrollYProgress } = useScroll();
 
@@ -186,7 +185,7 @@ export default function Post({
           justifyContent="center"
           flexDir={"row"}
           borderRadius="lg"
-          p={isLargerThan980 ? "12" : "8"}
+          p={[8, 8, 12]}
         >
           <motion.div
             whileHover={{ scale: isLargerThan268 ? 1.06 : 1 }}
@@ -279,23 +278,23 @@ export default function Post({
             <Box
               display={"flex"}
               justifyContent="space-between"
-              flexDirection={isLargerThan980 ? "row" : "column"}
+              flexDirection={["column", "column", "column", "row"]}
               my="20"
             >
               <Box
                 display={"flex"}
                 flexDir="column"
-                justifyContent={isLargerThan980 ? "space-between" : "center"}
-                alignItems={isLargerThan980 ? "baseline" : "center"}
+                justifyContent={["center", "center", "center", "space-between"]}
+                alignItems={["center", "center", "center", "baseline"]}
                 mr="10"
-                minW={isLargerThan980 ? "40%" : "100%"}
+                minW={["100%", "100%", "100%", "20%"]}
                 maxW={"100%"}
-                pb={isLargerThan980 ? "0" : "8"}
+                pb={[8, 8, 8, 0]}
               >
                 <Text
                   fontSize={"4xl"}
                   noOfLines={5}
-                  textAlign={isLargerThan980 ? "left" : "center"}
+                  textAlign={["center", "center", "center", "left"]}
                   casing={"capitalize"}
                   pb="2"
                   bgGradient="linear(to-br, #4ECDC4,  #1CB5E0)"
@@ -307,13 +306,41 @@ export default function Post({
                 <Text
                   fontSize={"lg"}
                   noOfLines={2}
-                  textAlign={isLargerThan980 ? "left" : "center"}
+                  textAlign={["center", "center", "center", "left"]}
                   pb="2"
                 >
                   {readTime}ish minutes read
                 </Text>
-                <Spacer />
+                <a
+                  target="_blank"
+                  class="twitter-share-button"
+                  href={`https://twitter.com/intent/tweet?text=${post.attributes.name}&url=${PublicUrl}&hashtags=cloud,web,freeservices`}
+                >
+                  Tweet
+                </a>
+                <a
+                  target="_blank"
+                  class="twitter-share-button"
+                  href={`http://www.reddit.com/submit?url=${PublicUrl}&title=${post.attributes.name}`}
+                >
+                  Reddit
+                </a>
+                {/* <a
+                  target="_blank"
+                  class="twitter-share-button"
+                  href="https://news.ycombinator.com/submitlink?u=https://twitter.com/&t=Hello%20world"
+                >
+                  HN
+                </a> */}
+                <a
+                  target="_blank"
+                  href={`https://www.facebook.com/sharer/sharer.php?u=${PublicUrl}`}
+                  class="fb-xfbml-parse-ignore"
+                >
+                  fb
+                </a>
 
+                <Spacer />
                 <Box py={"2"}>
                   {post?.attributes?.createdAt &&
                     formatDistance(
@@ -349,56 +376,58 @@ export default function Post({
                 overflow={"hidden"}
                 minW="40%"
                 // bgGradient="linear(to-br, #009FFF,  #ec2F4B)"
-                bgGradient="linear(to-br, #4ECDC4,  #1CB5E0)"
+                // bgGradient="linear(to-br, #4ECDC4,  #1CB5E0)"
                 display={"flex"}
                 justifyContent="center"
                 alignItems={"center"}
               >
-                <Box
-                  borderRadius="lg"
-                  overflow={"hidden"}
-                  p={isLargerThan268 ? "10" : "2"}
-                  bgGradient="linear(to-br, #4ECDC4,  #1CB5E0)"
-                >
-                  <motion.div
-                    whileHover={{ scale: isLargerThan268 ? 1.06 : 1 }}
-                    transition={{ duration: 0.2 }}
+                <Box>
+                  <Box
+                    borderRadius="lg"
+                    overflow={"hidden"}
+                    p={[4, 6, 6, 8]}
+                    bgGradient="linear(to-br, #4ECDC4,  #1CB5E0)"
                   >
-                    <Image
-                      width={1200}
-                      height={630}
-                      placeholder="blur"
-                      blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAANCAIAAABHKvtLAAAACXBIWXMAAAsTAAALEwEAmpwYAAADlklEQVR4nGPgl1AlEnEIyIvJapvZeDDyyAhKqhOpi4EYRUKSaoxcMgmpRRW1ndPnLI1JymXkkhGS0iTBAkFJdWSEJigkpcktomRu693WPSUoItXK3odbWFFIShNNF6YJUAt4RZUYOKW5hRVBSESJW1iRV1RJUFKdW1iRlV8WwgUp5ZTiEJAHKWaXhCjjEJBn45fnE1PhEJDnEVWGqOQQApmDsIBDQF5dz6ahdYKKtqWKpoW8qomihpm0kgG3sKKsinFIVJqVvbeEop6YrLaIjEZgWLKSpoW0koGytqWCmom6gY2OiSO/mIqdS6CytqWihpmcqpGqjrWytiWfmArUAkYeGRsn/6UrN82Yt3z5mi1nz1+/dutBSESqlKL+3IWraxt7Kuu7VqzdtnzNlqWrNm/dfUhO1Sg+OX/5mi0Hjp7df/j0hKnz1m/eXVHfWVHbuWj5+pOnL6/buKujdwYokiTVQBZwCyuq6lg7uofGJxd4BcSW1bRVNXQbWboKSWrkFtfnFtVl5Fam5VTUNIBsyi2qE5fXdXAPLqtpKypvKqtps7D1Co1KS8kqS80pzymqLa1qTckqS8up4BCQh8QEKA74xFR4RZXY+OVZ+WUZGCUYGMQgocnAIsHALgUiWSQZOKUZuWQYOKVZ+WUZeWRAImBlfGKqDAyiDJxSIFkGcQYGMQZ2SQZ2SXg8gywQktJkYJds6pgcn1qoZ+bsF5qgqmMloajv6R9jYOZc29SXlFHCLawoLqtTVNEcFZ9l7einb+Hq5BmakF7kExRvau3p4B5sZOnq6R/j6R/j5hNpauPFLayI8AHEgulzlrZ2T9t/+PTpc9f1TB31zJzevP929caDb7//7z98WlJez8kz9OyFaz///D907NymbfuevXrfP2VuS9eUC5duXbp6++iJC89evt9z8NT0OcvXbtzJwCIJySggCwQl1bmElawd/QzMnN18Ihzdg7lFlERktEytPS3sfazsva0dfXlFleRUjdx9o+xcAlS0rYwt3QzMXBzcgh3cgjz9Y5o7JlvYeVvYelnYecupmlg7+kISNI+oMiIns/HLcwjIM3LJsPLLCkqq84mpMPPIsvLLsvHLM/PIQrILI5cMMw8oZzDzyHIIgOKMmQeknk9MBZJs5FSNZFQMwKSxnKqJjJIhwgIhSTVIpoUkL7gIcs6E515kKYgsn5iKopqZnUuAV0Csf0iiha2Xm0+EqY0XAPBrEj731S8JAAAAAElFTkSuQmCC"
-                      // blurDataURL={coverArtPlaceholder}
-                      alt={`${post.attributes.name} cover`}
-                      layout="responsive"
-                      src={`${PublicUrl}/api/og?title=${post.attributes.name}`}
-                      // src={`${StrapiUrl}${post.attributes.coverArt.data.attributes.url}`}
-                      style={{
-                        borderRadius: "0.5rem",
-                      }}
-                    />
-                  </motion.div>
+                    <motion.div
+                      whileHover={{ scale: isLargerThan268 ? 1.06 : 1 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Image
+                        width={1200}
+                        height={630}
+                        placeholder="blur"
+                        // blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAANCAIAAABHKvtLAAAACXBIWXMAAAsTAAALEwEAmpwYAAADlklEQVR4nGPgl1AlEnEIyIvJapvZeDDyyAhKqhOpi4EYRUKSaoxcMgmpRRW1ndPnLI1JymXkkhGS0iTBAkFJdWSEJigkpcktomRu693WPSUoItXK3odbWFFIShNNF6YJUAt4RZUYOKW5hRVBSESJW1iRV1RJUFKdW1iRlV8WwgUp5ZTiEJAHKWaXhCjjEJBn45fnE1PhEJDnEVWGqOQQApmDsIBDQF5dz6ahdYKKtqWKpoW8qomihpm0kgG3sKKsinFIVJqVvbeEop6YrLaIjEZgWLKSpoW0koGytqWCmom6gY2OiSO/mIqdS6CytqWihpmcqpGqjrWytiWfmArUAkYeGRsn/6UrN82Yt3z5mi1nz1+/dutBSESqlKL+3IWraxt7Kuu7VqzdtnzNlqWrNm/dfUhO1Sg+OX/5mi0Hjp7df/j0hKnz1m/eXVHfWVHbuWj5+pOnL6/buKujdwYokiTVQBZwCyuq6lg7uofGJxd4BcSW1bRVNXQbWboKSWrkFtfnFtVl5Fam5VTUNIBsyi2qE5fXdXAPLqtpKypvKqtps7D1Co1KS8kqS80pzymqLa1qTckqS8up4BCQh8QEKA74xFR4RZXY+OVZ+WUZGCUYGMQgocnAIsHALgUiWSQZOKUZuWQYOKVZ+WUZeWRAImBlfGKqDAyiDJxSIFkGcQYGMQZ2SQZ2SXg8gywQktJkYJds6pgcn1qoZ+bsF5qgqmMloajv6R9jYOZc29SXlFHCLawoLqtTVNEcFZ9l7einb+Hq5BmakF7kExRvau3p4B5sZOnq6R/j6R/j5hNpauPFLayI8AHEgulzlrZ2T9t/+PTpc9f1TB31zJzevP929caDb7//7z98WlJez8kz9OyFaz///D907NymbfuevXrfP2VuS9eUC5duXbp6++iJC89evt9z8NT0OcvXbtzJwCIJySggCwQl1bmElawd/QzMnN18Ihzdg7lFlERktEytPS3sfazsva0dfXlFleRUjdx9o+xcAlS0rYwt3QzMXBzcgh3cgjz9Y5o7JlvYeVvYelnYecupmlg7+kISNI+oMiIns/HLcwjIM3LJsPLLCkqq84mpMPPIsvLLsvHLM/PIQrILI5cMMw8oZzDzyHIIgOKMmQeknk9MBZJs5FSNZFQMwKSxnKqJjJIhwgIhSTVIpoUkL7gIcs6E515kKYgsn5iKopqZnUuAV0Csf0iiha2Xm0+EqY0XAPBrEj731S8JAAAAAElFTkSuQmCC"
+                        blurDataURL={coverArtPlaceholder}
+                        alt={`${post.attributes.name} cover`}
+                        layout="responsive"
+                        src={`${PublicUrl}/api/og?title=${post.attributes.name}`}
+                        // src={`${StrapiUrl}${post.attributes.coverArt.data.attributes.url}`}
+                        style={{
+                          borderRadius: "0.5rem",
+                        }}
+                      />
+                    </motion.div>
+                  </Box>
                 </Box>
               </Box>
             </Box>
             <Box
               display={"flex"}
-              flexDirection={isLargerThan1280 ? "row" : "column"}
+              flexDirection={["column", "column", "column", "column", "row"]}
               // boxShadow={"outline"}
               justifyContent="space-between"
             >
               <Box
-                // minW={isLargerThan980 ? "60%" : "100%"}
                 // boxShadow={"outline"}
+                minW={["100%", "100%", "100%", "85%"]}
                 mb="10"
               >
                 <MDXRemote {...mdxSource} components={components} />
               </Box>
               <Box
                 // boxShadow={"outline"}
-                my="5"
-                minW={isLargerThan980 ? "15%" : "100%"}
+                my={["6", "6", "6", "0"]}
+                minW={["100%", "100%", "100%", "15%"]}
               >
                 widgets
               </Box>
@@ -414,7 +443,7 @@ export default function Post({
                 display={"flex"}
                 flexDirection="column"
                 justifyContent="center"
-                p={isLargerThan268 ? "8" : "1"}
+                p={[0, 2, 3, 4, 6]}
                 minW={"100%"}
               >
                 <Box>

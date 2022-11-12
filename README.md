@@ -8,9 +8,15 @@ add chakra ui google fonts
 
 add og image doodle bg
 
-
 add framer animations
 
+add image card to categori cards
+
+add og image with more bg images and fancy stuff
+
+add social share buttons use fontawesome to get icons
+
+convert isLargerThan1280 to responsive array notation
 
 ## Getting Started
 

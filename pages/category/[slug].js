@@ -60,7 +60,7 @@ export default function Category({ category }) {
         url={`https://itworksonpi.vercel.app/category/${category.attributes.name}`}
       />
       <Navbar />
-      <Container maxW={"8xl"} mt="10" minH={'82vh'}>
+      <Container maxW={"8xl"} mt="10" minH={"82vh"}>
         <Text
           fontSize={"6xl"}
           my="8"

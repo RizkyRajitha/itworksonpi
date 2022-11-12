@@ -6,7 +6,6 @@ import {
   Text,
   useMediaQuery,
 } from "@chakra-ui/react";
-import Head from "next/head";
 import Image from "next/future/image";
 import Card from "../components/card";
 // import styles from '../styles/Home.module.css'
@@ -16,6 +15,10 @@ import NextLink from "next/link";
 import MetaTags from "../components/metatags";
 import Footer from "../components/footer";
 import FeatureCard from "../components/featurecard";
+import ExploreWidget from "../components/explorewidget";
+// import { getPlaiceholder } from "plaiceholder";
+
+const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
 
 export async function getStaticProps(context) {
   let res = await (
@@ -26,6 +29,11 @@ export async function getStaticProps(context) {
   console.log(res.data);
 
   let publishedPosts = res.data?.map((item) => {
+    // const { base64, img } = await getPlaiceholder(
+    //   `${PublicUrl}/api/og?title=${item.attributes.name}`,
+    //   { size: 32 }
+    // );
+
     return {
       name: item.attributes.name,
       createdAt: item.attributes.createdAt,
@@ -33,6 +41,8 @@ export async function getStaticProps(context) {
       categories: item.attributes.categories.data.map(
         (item) => item.attributes.name
       ),
+      // coverArtUrl: img,
+      // coverArtBlurData: base64,
     };
   });
 
@@ -46,8 +56,7 @@ export async function getStaticProps(context) {
 
 export default function Home({ posts, categories }) {
   const [isLargerThan1280] = useMediaQuery("(min-width: 1280px)");
-  const [isLargerThan400] = useMediaQuery("(min-width: 400px)");
-  console.log(categories);
+  // console.log(categories);
   return (
     <div>
       <MetaTags
@@ -59,7 +68,7 @@ export default function Home({ posts, categories }) {
         url={"https://itworksonpi.vercel.app"}
       />
       <Box
-        h={isLargerThan1280 ? "28vh" : "32vh"}
+        h={["28vh", "28vh", "28vh", "32vh", "32vh"]}
         display="flex"
         alignItems={"center"}
         justifyContent="center"
@@ -78,7 +87,7 @@ export default function Home({ posts, categories }) {
         <Text
           position={"relative"}
           textAlign="center"
-          fontSize={isLargerThan400 ? "8xl" : "6xl"}
+          fontSize={["6xl", "8xl"]}
           fontFamily={"VT323"}
         >
           it works on pi
@@ -89,30 +98,31 @@ export default function Home({ posts, categories }) {
           align={"center"}
           fontSize="2xl"
           pb="10"
+          pt={["6", "6", "6", "0"]}
           fontFamily={"Noto Sans Mono"}
         >
           Wander in the wonderful world of electronics, web dev and in between
         </Text>
         <Box
           display={"flex"}
-          flexDirection={isLargerThan1280 ? "row" : "column"}
+          flexDirection={["column", "column", "column", "row"]}
           // boxShadow={"outline"}
           justifyContent="space-between"
         >
-          <Box width={isLargerThan1280 ? "80%" : "100%"}>
+          <Box width={["100%", "100%", "100%", "75%"]}>
             {posts.map((element, index) => {
               return <Card data={element} index={index} key={index} />;
             })}
           </Box>
           <Box
-            width={isLargerThan1280 ? "20%" : "100%"}
-            pl={isLargerThan1280 ? "10" : "0"}
+            width={["100%", "100%", "100%", "25%"]}
+            pl={["0", "0", "0", "10"]}
             // boxShadow={"outline"}
           >
-            <Text fontSize="4xl" align={isLargerThan1280 ? "left" : "center"}>
+            <Text fontSize="4xl" align={["center", "center", "center", "left"]}>
               Topics
             </Text>
-            <Box align={isLargerThan1280 ? "left" : "center"}>
+            <Box textAlign={["center", "center", "center", "left"]}>
               {categories.data.map((element, index) => {
                 return (
                   <Tag my={"2"} mr="2" key={index} colorScheme="green">
@@ -128,7 +138,7 @@ export default function Home({ posts, categories }) {
             <Text
               fontSize="4xl"
               pt="10"
-              align={isLargerThan1280 ? "left" : "center"}
+              align={["center", "center", "center", "left"]}
             >
               Featured
             </Text>
@@ -141,6 +151,7 @@ export default function Home({ posts, categories }) {
                 })}
               </Box>
             </Box>
+            <ExploreWidget posts={posts} />
           </Box>
         </Box>
       </Container>
