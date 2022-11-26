@@ -1,5 +1,6 @@
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import { Global, css } from "@emotion/react";
+import "@fontsource/inter-tight";
 
 const theme = extendTheme({
   config: { initialColorMode: "dark", useSystemColorMode: false },
@@ -602,28 +603,15 @@ const GlobalStyle = ({ children }) => {
             z-index: 0;
           }
 
-          @font-face {
-            font-family: "Inter Tight";
-            font-style: normal;
-            font-weight: 700;
-            font-display: swap;
-            src: url("https://fonts.googleapis.com/css2?family=Inter+Tight");
-          }
+          // body {
+          //   background-color: #1a202c;
+          // }
 
-          @font-face {
-            font-family: "Noto Sans Mono";
-            font-style: normal;
-            font-weight: 700;
-            font-display: swap;
-            src: url("https://fonts.googleapis.com/css2?family=Noto+Sans+Mono");
-          }
-
-          @font-face {
-            font-family: "VT323";
-            font-style: normal;
-            font-weight: 400;
-            font-display: swap;
-            src: url("https://fonts.googleapis.com/css2?family=VT323");
+          div {
+            transition: all 0.2s;
+            -webkit-transition: all 0.2s;
+            -moz-transition: all 0.2s;
+            -o-transition: all 0.2s;
           }
 
           ::-moz-selection {
