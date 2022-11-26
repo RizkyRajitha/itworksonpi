@@ -9,9 +9,6 @@ import {
   Stack,
   Spacer,
   Input,
-  FormControl,
-  FormLabel,
-  FormHelperText,
 } from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 import LandingBanner from "../public/images/Itworksonpi.png";
@@ -87,17 +84,16 @@ export default function Navbar() {
               router.push(`/explore?text=${e.target?.search?.value}`);
             }}
           >
-            <FormControl>
-              <Input
-                type="text"
-                name="search"
-                placeholder="Explore..."
-                _placeholder={{
-                  opacity: 1,
-                  color: useColorModeValue("gray.700", "gray.200"),
-                }}
-              />
-            </FormControl>
+            <Input
+              display={{ base: "none", md: "flex" }}
+              type="text"
+              name="search"
+              placeholder="Explore..."
+              _placeholder={{
+                opacity: 1,
+                color: useColorModeValue("gray.700", "gray.200"),
+              }}
+            />
           </form>
         </Flex>
       </Flex>
@@ -108,22 +104,22 @@ export default function Navbar() {
             {Links.map((link) => (
               <NavLink key={link}>{link}</NavLink>
             ))}
-
-            <FormControl>
-              <FormLabel>Email address</FormLabel>
-              <Input type="email" />
-              <FormHelperText>We'll never share your email.</FormHelperText>
-            </FormControl>
-            <Input
-              placeholder="Explore..."
-              _placeholder={{
-                opacity: 1,
-                color: useColorModeValue("gray.700", "gray.200"),
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                console.log(e.target?.search?.value);
+                router.push(`/explore?text=${e.target?.search?.value}`);
               }}
-              onChange={(e) => {
-                handleChange(e.target.value);
-              }}
-            />
+            >
+              <Input
+                placeholder="Explore..."
+                _placeholder={{
+                  opacity: 1,
+                  // color: useColorModeValue("gray.700", "gray.200"),
+                  color: "gray.200",
+                }}
+              />
+            </form>
           </Stack>
         </Box>
       ) : null}
