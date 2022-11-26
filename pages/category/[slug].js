@@ -1,9 +1,10 @@
 import { Box, Container, Text } from "@chakra-ui/react";
-import CategoryCard from "../../components/categorycard";
+// import CategoryCard from "../../components/categorycard";
 import Navbar from "../../components/navbar";
 import MetaTags from "../../components/metatags";
 import { getPlaiceholder } from "plaiceholder";
 import Footer from "../../components/footer";
+import Card from "../../components/card";
 // import Navbar from "../../components/navbar";
 
 const StrapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL;
@@ -74,11 +75,15 @@ export default function Category({ category }) {
         </Text>
         <Box width={"100%"}>
           {category.attributes.posts.data.map((element, index) => {
-            console.log(element);
             return (
-              <CategoryCard
-                data={element.attributes}
+              <Card
+                name={element.attributes?.name}
+                createdAt={element?.createdAt}
+                categories={element.attributes.categories.data.map((ele) => {
+                  return ele.attributes.name;
+                })}
                 index={index}
+                overview={element.attributes.overview}
                 key={index}
               />
             );

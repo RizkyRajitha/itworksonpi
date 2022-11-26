@@ -18,6 +18,15 @@ add social share buttons use fontawesome to get icons
 
 convert isLargerThan1280 to responsive array notation
 
+add card blur image
+
+create category card with same card , reuse card componenet
+
+use slug from strapi
+
+    at Post (webpack-internal:///./pages/post/[slug].js:172:17)
+    at GlobalStyle (webpack-internal:///./pages/_app.js:283:24)
+
 ## Getting Started
 
 First, run the development server:

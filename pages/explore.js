@@ -5,6 +5,9 @@ import Footer from "../components/footer";
 import Card from "../components/card";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import "@fontsource/dancing-script";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHatWizard, faMagic } from "@fortawesome/free-solid-svg-icons";
 
 const StrapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL;
 
@@ -96,13 +99,19 @@ export default function Category({ posts }) {
               return <Card data={ele} index={index} key={index} />;
             })}
           {nomatches && (
-            <Heading
-              textAlign={"center"}
-              fontWeight="normal"
-              size={["md", "md", "md", "xl"]}
-            >
-              There are some who would not deem it wise
-            </Heading>
+            <Box textAlign={"center"}>
+              <Box p="10">
+                <FontAwesomeIcon icon={faHatWizard} size="6x" />
+              </Box>
+              <Heading
+                textAlign={"center"}
+                fontWeight="normal"
+                size={["md", "md", "md", "2xl"]}
+                fontFamily="Dancing Script"
+              >
+                I fear we do not posses such knowledge
+              </Heading>
+            </Box>
           )}
         </Box>
       </Container>

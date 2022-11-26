@@ -1,4 +1,12 @@
-import { Box, Link, Spacer, Tag, Text, useMediaQuery } from "@chakra-ui/react";
+import {
+  Box,
+  Link,
+  Spacer,
+  Tag,
+  Text,
+  useColorModeValue,
+  useMediaQuery,
+} from "@chakra-ui/react";
 import { formatDistance } from "date-fns";
 import NextLink from "next/link";
 import { motion } from "framer-motion";
@@ -21,10 +29,15 @@ export default function FeatureCard({ data, index }) {
         p="0.5"
         // mx={isLargerThan1280 ? "0" : "5"}
         mx={[5, 5, 5, 0]}
-        bgGradient="linear(to-l, #7928CA, #FF0080)"
+        bgGradient={useColorModeValue("", "linear(to-l, #7928CA, #FF0080)")}
         // bgClip={"text"}
       >
-        <Box p="3" bgColor={"#1a202c"} borderRadius="lg">
+        <Box
+          p="3"
+          bg={useColorModeValue("gray.100", "gray.800")}
+          color={useColorModeValue("gray.700", "gray.100")}
+          borderRadius="lg"
+        >
           <Box display={"flex"} justifyContent={"space-between"}>
             <NextLink
               href={`/post/${data.name.toLowerCase().replaceAll(" ", "-")}`}
@@ -35,7 +48,11 @@ export default function FeatureCard({ data, index }) {
                 noOfLines={[3, 2, 2]}
                 casing={"capitalize"}
                 cursor="pointer"
-                bgGradient="linear(to-l, #00ff87, #60efff)"
+                bgGradient={useColorModeValue(
+                  "linear(to-l, #DC2424,  #4A569D)",
+                  "linear(to-br, #4ECDC4,  #1CB5E0)"
+                )}
+                // bgGradient="linear(to-l, #00ff87, #60efff)"
                 // bgGradient="radial-gradient(circle, #ff1b6b 0%, #45caff 100%);"
                 bgClip="text"
                 _hover={{
@@ -53,7 +70,7 @@ export default function FeatureCard({ data, index }) {
             <Spacer />
           </Box>
 
-          <Text py={"2"} fontSize={"12px"} color="#fff">
+          <Text py={"2"} fontSize={"12px"}>
             {data.createdAt &&
               formatDistance(new Date(data.createdAt), new Date(), {
                 addSuffix: true,

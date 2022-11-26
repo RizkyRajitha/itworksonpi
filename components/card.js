@@ -1,11 +1,19 @@
-import { Box, Link, Spacer, Tag, Text, useMediaQuery } from "@chakra-ui/react";
+import {
+  Box,
+  Link,
+  Spacer,
+  Tag,
+  Text,
+  useColorModeValue,
+  useMediaQuery,
+} from "@chakra-ui/react";
 import { formatDistance } from "date-fns";
 import NextLink from "next/link";
 import Image from "next/future/image";
 
 const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
 
-export default function Card({ data, index }) {
+export default function Card({ createdAt, categories, name, overview, index }) {
   const [isLargerThan980] = useMediaQuery("(min-width: 720px)");
 
   return (
@@ -23,33 +31,33 @@ export default function Card({ data, index }) {
     >
       <Box>
         <Box display={"flex"} justifyContent={"space-between"}>
-          <NextLink
-            href={`/post/${data.name.toLowerCase().replaceAll(" ", "-")}`}
-          >
+          <NextLink href={`/post/${name.toLowerCase().replaceAll(" ", "-")}`}>
             <Text
               fontSize={"2xl"}
               noOfLines={[3, 2, 1]}
               // noOfLines={isLargerThan980 ? 1 : 2}
               casing={"capitalize"}
               cursor="pointer"
-              bgGradient="linear(to-l, #4ECDC4,  #1CB5E0)"
+              // bgGradient="linear(to-l, #4ECDC4,  #1CB5E0)"
+              bgGradient={useColorModeValue(
+                "linear(to-l, #DC2424,  #4A569D)",
+                "linear(to-br, #4ECDC4,  #1CB5E0)"
+              )}
               bgClip="text"
               _hover={{
                 textDecoration: "underline #a9b5af",
                 textDecorationStyle: "dashed",
               }}
             >
-              <Link
-                href={`/post/${data.name.toLowerCase().replaceAll(" ", "-")}`}
-              >
-                {data.name}
+              <Link href={`/post/${name.toLowerCase().replaceAll(" ", "-")}`}>
+                {name}
               </Link>
             </Text>
           </NextLink>
           <Spacer />
         </Box>
         <Box>
-          {data.categories.map((element, index) => {
+          {categories.map((element, index) => {
             return (
               <Tag my={"2"} mr="2" key={index} colorScheme="green">
                 <NextLink href={`/category/${element}`}>
@@ -62,13 +70,13 @@ export default function Card({ data, index }) {
           })}
         </Box>
         <Box py={"2"}>
-          {data.createdAt &&
-            formatDistance(new Date(data.createdAt), new Date(), {
+          {createdAt &&
+            formatDistance(new Date(createdAt), new Date(), {
               addSuffix: true,
             })}
         </Box>
         <Text fontSize={"xl"} noOfLines={3}>
-          {data.overview}
+          {overview}
         </Text>
       </Box>
       <Spacer />
@@ -78,10 +86,12 @@ export default function Card({ data, index }) {
         minW="40%"
         display={"flex"}
         alignItems="center"
+        borderRadius="lg"
+        overflow="hidden"
       >
         <Image
-          src={`${PublicUrl}/api/og?title=${data.name}`}
-          alt={`${data.name} cover art`}
+          src={`${PublicUrl}/api/og?title=${name}`}
+          alt={`${name} cover art`}
           width="1200"
           height="630"
           // placeholder="blur"

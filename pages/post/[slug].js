@@ -33,6 +33,7 @@ import {
   faRedditSquare,
   faTwitterSquare,
 } from "@fortawesome/free-brands-svg-icons";
+import { Icon } from "@chakra-ui/react";
 
 const StrapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL;
 const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
@@ -195,7 +196,7 @@ export default function Post({
         >
           <motion.div
             whileHover={{ scale: isLargerThan268 ? 1.06 : 1 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.15 }}
           >
             <Box
               borderWidth="1px"
@@ -214,6 +215,7 @@ export default function Post({
                   imagePlaceHolders.filter((img) => img.img === props.src)[0]
                     ?.base64
                 }
+                loading="lazy"
                 onClick={() => {
                   onOpen();
                   setmodalImage({
@@ -304,7 +306,10 @@ export default function Post({
                   textAlign={["center", "center", "center", "left"]}
                   casing={"capitalize"}
                   pb="2"
-                  bgGradient="linear(to-br, #4ECDC4,  #1CB5E0)"
+                  bgGradient={useColorModeValue(
+                    "linear(to-br, #4ECDC4,  #1CB5E0)",
+                    "linear(to-br, #4ECDC4,  #1CB5E0)"
+                  )}
                   bgClip="text"
                   fontWeight="extrabold"
                 >
@@ -319,45 +324,69 @@ export default function Post({
                   {readTime}ish minutes read
                 </Text>
 
-                <Box>
+                <Box textAlign={"center"}>
                   <Link
-                    pr="2"
                     target="_blank"
                     rel="noreferrer"
-                    class="twitter-share-button"
                     href={`https://twitter.com/intent/tweet?text=${post.attributes.name}&url=${PublicUrl}&hashtags=cloud,web,freeservices`}
                   >
-                    <FontAwesomeIcon
-                      icon={faTwitterSquare}
+                    <Icon
+                      viewBox="0 0 200 200"
+                      mr="1"
+                      fontSize={"2.5em"}
                       color="#009FFF"
-                      size="2x"
-                    />
+                    >
+                      <FontAwesomeIcon icon={faTwitterSquare} color="#009FFF" />
+                    </Icon>
                   </Link>
                   <Link
-                    p="2"
                     target="_blank"
                     rel="noreferrer"
-                    class="twitter-share-button"
                     href={`http://www.reddit.com/submit?url=${PublicUrl}&title=${post.attributes.name}`}
                   >
-                    <FontAwesomeIcon
-                      icon={faRedditSquare}
-                      color="#FF5700"
-                      size="2x"
-                    />
+                    <Icon
+                      viewBox="0 0 200 200"
+                      m="1"
+                      fontSize={"2.5em"}
+                      color="#0b82e7"
+                    >
+                      <FontAwesomeIcon icon={faRedditSquare} color="#FF5700" />
+                    </Icon>
                   </Link>
                   <Link
-                    p="2"
                     target="_blank"
                     rel="noreferrer"
                     href={`https://www.facebook.com/sharer/sharer.php?u=${PublicUrl}`}
-                    class="fb-xfbml-parse-ignore"
                   >
-                    <FontAwesomeIcon
+                    <Icon
+                      viewBox="0 0 200 200"
+                      m="1"
+                      fontSize={"2.5em"}
+                      color="#0b82e7"
+                    >
+                      <FontAwesomeIcon icon={faFacebookSquare} />
+                    </Icon>
+
+                    {/* <FontAwesomeIcon
+                        icon={faFacebookSquare}
+                        color="#0b82e7"
+                      /> */}
+                    {/* </Box> */}
+                    {/* <Icon
+                      as={
+                        <FontAwesomeIcon
+                          icon={faFacebookSquare}
+                          color="#0b82e7"
+                          size="2x"
+                        />
+                      }
+                    /> */}
+
+                    {/* <FontAwesomeIcon
                       icon={faFacebookSquare}
                       color="#0b82e7"
                       size="2x"
-                    />
+                    /> */}
                   </Link>
                 </Box>
 
@@ -410,7 +439,8 @@ export default function Post({
                     bgGradient="linear(to-br, #4ECDC4,  #1CB5E0)"
                   >
                     <motion.div
-                      whileHover={{ scale: isLargerThan268 ? 1.06 : 1 }}
+                      // whileHover={{ scaleX: isLargerThan268 ? 1.06 : 1 }}
+                      whileHover={{ scaleX: 1.06, scaleY: 1.115}}
                       transition={{ duration: 0.2 }}
                     >
                       <Image

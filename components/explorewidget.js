@@ -1,4 +1,11 @@
-import { Box, Input, Link, Spacer, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Input,
+  Link,
+  Spacer,
+  Text,
+  useColorModeValue,
+} from "@chakra-ui/react";
 import { formatDistance } from "date-fns";
 import NextLink from "next/link";
 import { useState } from "react";
@@ -20,11 +27,19 @@ export default function ExploreWidget({ posts }) {
   };
 
   return (
-    <Box py="3" bgColor={"#1a202c"} borderRadius="lg">
+    <Box
+      py="3"
+      bg={useColorModeValue("gray.100", "gray.800")}
+      color={useColorModeValue("gray.700", "gray.100")}
+      borderRadius="lg"
+    >
       <Box pt="2">
         <Input
           placeholder="Explore..."
-          _placeholder={{ opacity: 1, color: "gray.200" }}
+          _placeholder={{
+            opacity: 1,
+            color: useColorModeValue("gray.700", "gray.200"),
+          }}
           onChange={(e) => {
             handleChange(e.target.value);
           }}

@@ -42,7 +42,7 @@ export default function Footer() {
       <Container
         as={Stack}
         maxW={"8xl"}
-        py={4}
+        py={[0, 0, 0, , 0, 4]}
         direction={{ base: "column", md: "row" }}
         spacing={4}
         justify={{ base: "center", md: "space-between" }}

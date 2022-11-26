@@ -4,6 +4,7 @@ import {
   Heading,
   Tag,
   Text,
+  useColorModeValue,
   useMediaQuery,
 } from "@chakra-ui/react";
 import Image from "next/future/image";
@@ -17,6 +18,10 @@ import Footer from "../components/footer";
 import FeatureCard from "../components/featurecard";
 import ExploreWidget from "../components/explorewidget";
 // import { getPlaiceholder } from "plaiceholder";
+import { css } from "@emotion/react";
+import "@fontsource/vt323";
+import { useEffect, useState } from "react";
+import Navbar from "../components/navbar";
 
 const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
 
@@ -56,7 +61,33 @@ export async function getStaticProps(context) {
 
 export default function Home({ posts, categories }) {
   const [isLargerThan1280] = useMediaQuery("(min-width: 1280px)");
+  const [postState, setpostState] = useState(posts);
   // console.log(categories);
+
+  useEffect(() => {
+    window.addEventListener("scroll", scrollHandler);
+
+    return () => {
+      window.removeEventListener("scroll", scrollHandler);
+    };
+  }, []);
+
+  const scrollHandler = () => {
+    // console.log(window.innerHeight);
+    // console.log(document.documentElement.scrollTop);
+
+    if (
+      window.innerHeight + document.documentElement.scrollTop !==
+      document.documentElement.offsetHeight
+    ) {
+      return;
+    }
+    console.log("nani");
+    setpostState((preState) => {
+      return [...preState, ...posts];
+    });
+  };
+
   return (
     <div>
       <MetaTags
@@ -67,8 +98,17 @@ export default function Home({ posts, categories }) {
         image="https://itworksonpi.vercel.app/images/ogmetabanner.png"
         url={"https://itworksonpi.vercel.app"}
       />
+      {/* <Box
+        css={css`
+          padding: 32px;
+          font-size: 24px;
+        `}
+      >
+        wow nani
+      </Box> */}
+      <Navbar />
       <Box
-        h={["28vh", "28vh", "28vh", "32vh", "32vh"]}
+        h={["32vh", "32vh", "32vh", "28vh", "28vh"]}
         display="flex"
         alignItems={"center"}
         justifyContent="center"
@@ -76,7 +116,9 @@ export default function Home({ posts, categories }) {
         <Image
           src={LandingBanner}
           style={{
+            // height: "28vh",
             height: isLargerThan1280 ? "28vh" : "32vh",
+            marginTop: isLargerThan1280 ? "0vh" : "2vh",
             width: "100%",
             objectFit: "cover",
             position: "absolute",
@@ -84,21 +126,23 @@ export default function Home({ posts, categories }) {
           alt="banner"
           placeholder="blur"
         />
-        <Text
+        <Heading
+          as={"h1"}
           position={"relative"}
           textAlign="center"
-          fontSize={["6xl", "8xl"]}
+          fontSize={["6xl", "9xl"]}
           fontFamily={"VT323"}
+          color={useColorModeValue("#fff", "#fff")}
         >
           it works on pi
-        </Text>
+        </Heading>
       </Box>
       <Container mt="5" maxW={"8xl"} minH="82vh">
         <Text
           align={"center"}
           fontSize="2xl"
           pb="10"
-          pt={["6", "6", "6", "0"]}
+          pt={["6", "6", "6", "6", "0"]}
           fontFamily={"Noto Sans Mono"}
         >
           Wander in the wonderful world of electronics, web dev and in between
@@ -110,8 +154,17 @@ export default function Home({ posts, categories }) {
           justifyContent="space-between"
         >
           <Box width={["100%", "100%", "100%", "75%"]}>
-            {posts.map((element, index) => {
-              return <Card data={element} index={index} key={index} />;
+            {postState.map((element, index) => {
+              return (
+                <Card
+                  name={element?.name}
+                  createdAt={element?.createdAt}
+                  categories={element?.categories}
+                  overview={element?.overview}
+                  index={index}
+                  key={index}
+                />
+              );
             })}
           </Box>
           <Box
@@ -151,11 +204,27 @@ export default function Home({ posts, categories }) {
                 })}
               </Box>
             </Box>
-            <ExploreWidget posts={posts} />
+            {/* <Text
+              fontSize="4xl"
+              pt="10"
+              align={["center", "center", "center", "left"]}
+              href="/explore"
+              _hover={{
+                textDecoration: "underline #a9b5af",
+                textDecorationStyle: "dashed",
+              }}
+            >
+              <NextLink href="/explore">Explore</NextLink>
+            </Text> */}
+            {/* <ExploreWidget posts={posts} /> */}
+            <Box position={"sticky"} top="90vh">
+              <Footer />
+              {/* <Text>developed by rizky {new Date().getFullYear()}</Text> */}
+            </Box>
           </Box>
         </Box>
       </Container>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }
