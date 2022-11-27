@@ -17,7 +17,7 @@ export default function FeatureCard({ data, index }) {
   return (
     <motion.div
       whileHover={{ scale: isLargerThan1280 ? 1.1 : 1.03 }}
-      transition={{ duration: 0.2 }}
+      transition={{ duration: 0.14 }}
     >
       <Box
         maxW="8xl"

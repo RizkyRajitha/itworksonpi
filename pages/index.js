@@ -218,8 +218,12 @@ export default function Home({ posts, categories }) {
             </Text> */}
             {/* <ExploreWidget posts={posts} /> */}
             <Box position={"sticky"} top="90vh">
-              <Footer />
-              {/* <Text>developed by rizky {new Date().getFullYear()}</Text> */}
+              <Text>
+                <Text fontFamily={"VT323"} fontSize="4xl" textAlign={'center'} >
+                  CodeHiRise
+                </Text>
+                All rights reserved {new Date().getFullYear()}
+              </Text>
             </Box>
           </Box>
         </Box>

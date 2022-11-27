@@ -1,11 +1,20 @@
-import { ChakraProvider, extendTheme } from "@chakra-ui/react";
+import { ChakraProvider, extendTheme, useColorMode } from "@chakra-ui/react";
 import { Global, css } from "@emotion/react";
+import { mode } from "@chakra-ui/theme-tools";
+
 import "@fontsource/inter-tight";
 
 const theme = extendTheme({
   config: { initialColorMode: "dark", useSystemColorMode: false },
   fonts: {
     body: `'Inter Tight', sans-serif`,
+  },
+  styles: {
+    global: (props) => ({
+      body: {
+        bg: mode("#edf2f7", "#1a202c")(props),
+      },
+    }),
   },
 });
 

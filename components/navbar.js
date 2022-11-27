@@ -9,32 +9,39 @@ import {
   Stack,
   Spacer,
   Input,
+  Button,
+  useColorMode,
 } from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 import LandingBanner from "../public/images/Itworksonpi.png";
 import Image from "next/future/image";
 import { useRouter } from "next/router";
 
-const Links = [];
+const Links = ["explore"];
 
-const NavLink = ({ children }) => (
-  <Link
-    px={2}
-    py={1}
-    rounded={"md"}
-    _hover={{
-      textDecoration: "none",
-      bg: useColorModeValue("gray.200", "gray.700"),
-    }}
-    href={"#"}
-  >
-    {children}
-  </Link>
-);
+const NavLink = ({ link }) => {
+  const bg = useColorModeValue("gray.200", "gray.700");
 
+  return (
+    <Link
+      px={2}
+      py={1}
+      rounded={"md"}
+      _hover={{
+        textDecoration: "none",
+        bg: bg,
+      }}
+      href={`${link}`}
+    >
+      {link}
+    </Link>
+  );
+};
 export default function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-
+  const bg = useColorModeValue("gray.100", "gray.800");
+  const color = useColorModeValue("gray.700", "gray.100");
+  const { colorMode, toggleColorMode } = useColorMode();
   const router = useRouter();
 
   return (
@@ -43,8 +50,8 @@ export default function Navbar() {
       px={4}
       // borderBottom="solid"
       // borderBottomColor={"#2D3748"}
-      bg={useColorModeValue("gray.100", "gray.800")}
-      color={useColorModeValue("gray.700", "gray.100")}
+      bg={bg}
+      color={color}
     >
       <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
         <IconButton
@@ -66,17 +73,6 @@ export default function Navbar() {
           </HStack>
         </HStack>
         <Flex alignItems={"center"}>
-          {/* <Input
-            display={{ base: "none", md: "flex" }}
-            placeholder="Explore..."
-            _placeholder={{
-              opacity: 1,
-              color: useColorModeValue("gray.700", "gray.200"),
-            }}
-            onChange={(e) => {
-              handleChange(e.target.value);
-            }}
-          /> */}
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -91,10 +87,13 @@ export default function Navbar() {
               placeholder="Explore..."
               _placeholder={{
                 opacity: 1,
-                color: useColorModeValue("gray.700", "gray.200"),
+                color: color,
               }}
             />
           </form>
+          {/* <Button ml='4' onClick={toggleColorMode}>
+            Toggle {colorMode === "light" ? "Dark" : "Light"}
+          </Button> */}
         </Flex>
       </Flex>
 
@@ -113,10 +112,11 @@ export default function Navbar() {
             >
               <Input
                 placeholder="Explore..."
+                type="text"
+                name="search"
                 _placeholder={{
                   opacity: 1,
-                  // color: useColorModeValue("gray.700", "gray.200"),
-                  color: "gray.200",
+                  color: color,
                 }}
               />
             </form>

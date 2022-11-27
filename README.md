@@ -1,28 +1,37 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-add default cover image wiith vercel og image
+add default cover image wiith vercel og image ✅
 
-add landing banner with dynamic text overlay
+add landing banner with dynamic text overlay ✅
 
-add chakra ui google fonts
+add chakra ui google fonts (used fontsource) ✅
 
-add og image doodle bg
+add framer animations ✅
 
-add framer animations
+add image card to categori cards ✅
 
-add image card to categori cards
+add social share buttons use fontawesome to get icons ✅
 
-add og image with more bg images and fancy stuff
+convert isLargerThan1280 to responsive array notation ✅
 
-add social share buttons use fontawesome to get icons
+create category card with same card , reuse card componenet ✅
 
-convert isLargerThan1280 to responsive array notation
+add og image with more bg images and imagees with logos and fancy stuff
 
 add card blur image
 
-create category card with same card , reuse card componenet
+add og image doodle bg
 
 use slug from strapi
+
+fix colormore reuse for components
+
+add privacy plotcy and stuff
+
+add dynamic lazy loading for posts
+
+
+
 
     at Post (webpack-internal:///./pages/post/[slug].js:172:17)
     at GlobalStyle (webpack-internal:///./pages/_app.js:283:24)
