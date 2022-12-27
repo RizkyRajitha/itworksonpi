@@ -19,6 +19,7 @@ export async function getStaticProps(context) {
   let posts = res.data?.map((item) => {
     return {
       name: item.attributes.name,
+      slug: item.attributes.slug,
       createdAt: item.attributes.createdAt,
       overview: item.attributes.overview,
       categories: item.attributes.categories.data.map(
@@ -62,6 +63,7 @@ export default function Category({ posts }) {
 
     setnoMatches(matches.length === 0);
     setMatches(matches);
+    console.log(matches);
   };
 
   useEffect(() => {
@@ -96,7 +98,17 @@ export default function Category({ posts }) {
         <Box pt="6" width={"100%"}>
           {matches.length > 0 &&
             matches.map((ele, index) => {
-              return <Card data={ele} index={index} key={index} />;
+              return (
+                <Card
+                  name={ele.name}
+                  slug={ele.slug}
+                  createdAt={ele.createdAt}
+                  categories={ele.categories}
+                  overview={ele.overview}
+                  key={index}
+                  index={index}
+                />
+              );
             })}
           {nomatches && (
             <Box textAlign={"center"}>

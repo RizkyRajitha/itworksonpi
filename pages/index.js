@@ -41,6 +41,7 @@ export async function getStaticProps(context) {
 
     return {
       name: item.attributes.name,
+      slug: item.attributes.slug,
       createdAt: item.attributes.createdAt,
       overview: item.attributes.overview,
       categories: item.attributes.categories.data.map(
@@ -75,17 +76,16 @@ export default function Home({ posts, categories }) {
   const scrollHandler = () => {
     // console.log(window.innerHeight);
     // console.log(document.documentElement.scrollTop);
-
-    if (
-      window.innerHeight + document.documentElement.scrollTop !==
-      document.documentElement.offsetHeight
-    ) {
-      return;
-    }
-    console.log("nani");
-    setpostState((preState) => {
-      return [...preState, ...posts];
-    });
+    // if (
+    //   window.innerHeight + document.documentElement.scrollTop !==
+    //   document.documentElement.offsetHeight
+    // ) {
+    //   return;
+    // }
+    // console.log("nani");
+    // setpostState((preState) => {
+    //   return [...preState, ...posts];
+    // });
   };
 
   return (
@@ -158,6 +158,7 @@ export default function Home({ posts, categories }) {
               return (
                 <Card
                   name={element?.name}
+                  slug={element?.slug}
                   createdAt={element?.createdAt}
                   categories={element?.categories}
                   overview={element?.overview}
@@ -217,13 +218,21 @@ export default function Home({ posts, categories }) {
               <NextLink href="/explore">Explore</NextLink>
             </Text> */}
             {/* <ExploreWidget posts={posts} /> */}
-            <Box position={"sticky"} top="90vh">
-              <Text>
-                <Text fontFamily={"VT323"} fontSize="4xl" textAlign={'center'} >
+            <Box position={"sticky"} top="90vh" pb="4" px="4">
+              <Box
+                display={"flex"}
+                flexDirection={["row", "row", "row", "column"]}
+                // boxShadow={"outline"}
+                alignItems={["baseline", "baseline", "baseline","center"]}
+                justifyContent="space-between"
+              >
+                <Text fontFamily={"VT323"} fontSize="4xl" textAlign={"center"}>
                   CodeHiRise
                 </Text>
-                All rights reserved {new Date().getFullYear()}
-              </Text>
+                <Text align={"center"}>
+                  All rights reserved {new Date().getFullYear()}
+                </Text>
+              </Box>
             </Box>
           </Box>
         </Box>

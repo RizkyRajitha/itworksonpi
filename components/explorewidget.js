@@ -58,9 +58,7 @@ export default function ExploreWidget({ posts }) {
                 key={index}
               >
                 <Box display={"flex"} justifyContent={"space-between"}>
-                  <NextLink
-                    href={`/post/${ele.toLowerCase().replaceAll(" ", "-")}`}
-                  >
+                  <NextLink href={`/post/${ele.slug}`}>
                     <Text
                       fontSize={["md", "xl", "xl", "md"]}
                       noOfLines={[3, 2, 2]}
@@ -73,11 +71,7 @@ export default function ExploreWidget({ posts }) {
                         textDecorationStyle: "dashed",
                       }}
                     >
-                      <Link
-                        href={`/post/${ele.toLowerCase().replaceAll(" ", "-")}`}
-                      >
-                        {ele}
-                      </Link>
+                      <Link href={`/post/${ele.slug}`}>{ele}</Link>
                     </Text>
                   </NextLink>
                   <Spacer />

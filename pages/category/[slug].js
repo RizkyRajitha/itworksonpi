@@ -65,9 +65,11 @@ export default function Category({ category }) {
         <Text
           fontSize={"6xl"}
           my="8"
+          color={"#1CB5E0"}
+          // bgGradient="linear(to-l, #4ECDC4,  #1CB5E0)"
           // bgGradient="linear(to-l, #7928CA, #FF0080)"
-          bgGradient="linear(to-l, #DC2424,  #4A569D)"
-          bgClip="text"
+          // bgGradient="linear(to-l, #DC2424,  #4A569D)"
+          // bgClip="text"
           fontWeight="extrabold"
           casing={"capitalize"}
         >
@@ -78,6 +80,7 @@ export default function Category({ category }) {
             return (
               <Card
                 name={element.attributes?.name}
+                slug={element.attributes?.slug}
                 createdAt={element?.createdAt}
                 categories={element.attributes.categories.data.map((ele) => {
                   return ele.attributes.name;

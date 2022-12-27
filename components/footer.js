@@ -2,11 +2,14 @@ import {
   Box,
   chakra,
   Container,
+  Spacer,
   Stack,
   Text,
   useColorModeValue,
   VisuallyHidden,
 } from "@chakra-ui/react";
+import "@fontsource/vt323";
+
 // import { FaInstagram, FaTwitter, FaYoutube } from "react-icons/fa";
 
 // const SocialButton = ({ children, label, href }) => {
@@ -46,13 +49,16 @@ export default function Footer() {
         direction={{ base: "column", md: "row" }}
         spacing={4}
         justify={{ base: "center", md: "space-between" }}
-        align={{ base: "center", md: "center" }}
+        // align={{ base: "center", md: "center" }}
+        alignItems='baseline'
       >
-        <Text>
-          It works on pi. All rights reserved {new Date().getFullYear()}
+        <Text fontFamily={"VT323"} fontSize="4xl" textAlign={"center"}>
+          CodeHiRise
         </Text>
-        <Stack direction={"row"} spacing={6}>
-          {/* <SocialButton label={"Twitter"} href={"#"}>
+        <Spacer />
+        <Text>All rights reserved {new Date().getFullYear()}</Text>
+        {/* <Stack direction={"row"} spacing={6}> */}
+        {/* <SocialButton label={"Twitter"} href={"#"}>
             <FaTwitter />
           </SocialButton>
           <SocialButton label={"YouTube"} href={"#"}>
@@ -61,7 +67,6 @@ export default function Footer() {
           <SocialButton label={"Instagram"} href={"#"}>
             <FaInstagram />
           </SocialButton> */}
-        </Stack>
       </Container>
     </Box>
   );

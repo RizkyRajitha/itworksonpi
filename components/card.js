@@ -13,7 +13,14 @@ import Image from "next/future/image";
 
 const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
 
-export default function Card({ createdAt, categories, name, overview, index }) {
+export default function Card({
+  createdAt,
+  categories,
+  name,
+  slug,
+  overview,
+  index,
+}) {
   const [isLargerThan980] = useMediaQuery("(min-width: 720px)");
 
   return (
@@ -31,27 +38,25 @@ export default function Card({ createdAt, categories, name, overview, index }) {
     >
       <Box>
         <Box display={"flex"} justifyContent={"space-between"}>
-          <NextLink href={`/post/${name.toLowerCase().replaceAll(" ", "-")}`}>
+          <NextLink href={`/post/${slug}`}>
             <Text
               fontSize={"2xl"}
               noOfLines={[3, 2, 1]}
               // noOfLines={isLargerThan980 ? 1 : 2}
               casing={"capitalize"}
               cursor="pointer"
-              // bgGradient="linear(to-l, #4ECDC4,  #1CB5E0)"
-              bgGradient={useColorModeValue(
-                "linear(to-l, #DC2424,  #4A569D)",
-                "linear(to-br, #4ECDC4,  #1CB5E0)"
-              )}
+              bgGradient="linear(to-l, #4ECDC4,  #1CB5E0)"
+              // bgGradient={useColorModeValue(
+              //   "linear(to-l, #DC2424,  #4A569D)",
+              //   "linear(to-br, #4ECDC4,  #1CB5E0)"
+              // )}
               bgClip="text"
               _hover={{
                 textDecoration: "underline #a9b5af",
                 textDecorationStyle: "dashed",
               }}
             >
-              <Link href={`/post/${name.toLowerCase().replaceAll(" ", "-")}`}>
-                {name}
-              </Link>
+              <Link href={`/post/${slug}`}>{name}</Link>
             </Text>
           </NextLink>
           <Spacer />

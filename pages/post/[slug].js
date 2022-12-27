@@ -44,9 +44,7 @@ export async function getStaticPaths() {
     console.log(res.data);
 
     let posts = res?.data?.map((item) => {
-      let slug = item.attributes.name.toLowerCase().replaceAll(" ", "-");
-      console.log(slug);
-      return { params: { slug: slug } };
+      return { params: { slug: item.attributes.slug } };
     });
     return {
       paths: posts,
@@ -66,9 +64,7 @@ export async function getStaticProps(context) {
   let res = await (await fetch(`${StrapiUrl}/api/posts?populate=*`)).json();
 
   let post = res.data.filter(
-    (post) =>
-      post.attributes.name.toLowerCase().replaceAll(" ", "-") ===
-      context.params.slug
+    (post) => post.attributes.slug === context.params.slug
   )[0];
 
   // console.log(post.attributes.markdown.data[0].attributes.url);
@@ -401,10 +397,22 @@ export default function Post({
                       }
                     )}
                 </Box>
-                <Box pt="2">
-                  {post.attributes.categories.data.map((element, index) => {
+                <Box
+                  pt="2"
+                  textAlign={["center", "center", "left", "left", "left"]}
+                >
+                  {[
+                    ...post.attributes.categories.data,
+                    ...post.attributes.categories.data,
+                    ...post.attributes.categories.data,
+                  ].map((element, index) => {
                     return (
-                      <Tag mr="2" key={index} colorScheme="green">
+                      <Tag
+                        my={["2", "2", "2", "2", "2"]}
+                        mr="2"
+                        key={index}
+                        colorScheme="green"
+                      >
                         <NextLink href={`/category/${element.attributes.name}`}>
                           <Text
                             casing={"capitalize"}
@@ -440,7 +448,7 @@ export default function Post({
                   >
                     <motion.div
                       // whileHover={{ scaleX: isLargerThan268 ? 1.06 : 1 }}
-                      whileHover={{ scaleX: 1.06, scaleY: 1.115}}
+                      whileHover={{ scaleX: 1.06, scaleY: 1.115 }}
                       transition={{ duration: 0.2 }}
                     >
                       <Image

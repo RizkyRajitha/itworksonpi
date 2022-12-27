@@ -16,6 +16,7 @@ import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 import LandingBanner from "../public/images/Itworksonpi.png";
 import Image from "next/future/image";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
 const Links = ["explore"];
 
@@ -39,10 +40,16 @@ const NavLink = ({ link }) => {
 };
 export default function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [path, setPath] = useState(null);
   const bg = useColorModeValue("gray.100", "gray.800");
   const color = useColorModeValue("gray.700", "gray.100");
   const { colorMode, toggleColorMode } = useColorMode();
   const router = useRouter();
+
+  useEffect(() => {
+    console.log(router.pathname);
+    setPath(router.pathname);
+  }, [router.pathname]);
 
   return (
     <Box
@@ -72,7 +79,7 @@ export default function Navbar() {
             ))}
           </HStack>
         </HStack>
-        <Flex alignItems={"center"}>
+        <Flex alignItems={"center"} hidden={path === "/explore"}>
           <form
             onSubmit={(e) => {
               e.preventDefault();
