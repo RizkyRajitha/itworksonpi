@@ -325,7 +325,7 @@ export default function Post({
                   <Link
                     target="_blank"
                     rel="noreferrer"
-                    href={`https://twitter.com/intent/tweet?text=${post.attributes.name}&url=${PublicUrl}/${post.attributes.slug}&hashtags=cloud,web,freeservices`}
+                    href={`https://twitter.com/intent/tweet?text=${post.attributes.name}&url=${PublicUrl}/post/${post.attributes.slug}&hashtags=cloud,web,freeservices`}
                   >
                     <Icon
                       viewBox="0 0 200 200"
@@ -339,7 +339,7 @@ export default function Post({
                   <Link
                     target="_blank"
                     rel="noreferrer"
-                    href={`http://www.reddit.com/submit?url=${PublicUrl}/${post.attributes.slug}&title=${post.attributes.name}`}
+                    href={`http://www.reddit.com/submit?url=${PublicUrl}/post/${post.attributes.slug}&title=${post.attributes.name}`}
                   >
                     <Icon
                       viewBox="0 0 200 200"
@@ -353,7 +353,7 @@ export default function Post({
                   <Link
                     target="_blank"
                     rel="noreferrer"
-                    href={`https://www.facebook.com/sharer/sharer.php?u=${PublicUrl}/${post.attributes.slug}`}
+                    href={`https://www.facebook.com/sharer/sharer.php?u=${PublicUrl}/post/${post.attributes.slug}`}
                   >
                     <Icon
                       viewBox="0 0 200 200"
