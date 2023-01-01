@@ -22,16 +22,15 @@ add card blur image
 
 add og image doodle bg
 
-use slug from strapi
+use slug from strapi ✅
 
 fix colormore reuse for components
 
-add privacy plotcy and stuff
+add privacy policy and stuff
 
 add dynamic lazy loading for posts
 
-
-
+shot time when hover timeago in posts and cards
 
     at Post (webpack-internal:///./pages/post/[slug].js:172:17)
     at GlobalStyle (webpack-internal:///./pages/_app.js:283:24)

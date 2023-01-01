@@ -11,6 +11,7 @@ import {
   Spacer,
   Tag,
   Text,
+  Tooltip,
   useColorModeValue,
   useDisclosure,
   useMediaQuery,
@@ -20,7 +21,7 @@ import { MDXRemote } from "next-mdx-remote";
 import Image from "next/future/image";
 import { getPlaiceholder } from "plaiceholder";
 import { useState } from "react";
-import { formatDistance } from "date-fns";
+import { format, formatDistance, parseISO } from "date-fns";
 import Navbar from "../../components/navbar";
 import NextLink from "next/link";
 import MetaTags from "../../components/metatags";
@@ -324,7 +325,7 @@ export default function Post({
                   <Link
                     target="_blank"
                     rel="noreferrer"
-                    href={`https://twitter.com/intent/tweet?text=${post.attributes.name}&url=${PublicUrl}&hashtags=cloud,web,freeservices`}
+                    href={`https://twitter.com/intent/tweet?text=${post.attributes.name}&url=${PublicUrl}/${post.attributes.slug}&hashtags=cloud,web,freeservices`}
                   >
                     <Icon
                       viewBox="0 0 200 200"
@@ -338,7 +339,7 @@ export default function Post({
                   <Link
                     target="_blank"
                     rel="noreferrer"
-                    href={`http://www.reddit.com/submit?url=${PublicUrl}&title=${post.attributes.name}`}
+                    href={`http://www.reddit.com/submit?url=${PublicUrl}/${post.attributes.slug}&title=${post.attributes.name}`}
                   >
                     <Icon
                       viewBox="0 0 200 200"
@@ -352,7 +353,7 @@ export default function Post({
                   <Link
                     target="_blank"
                     rel="noreferrer"
-                    href={`https://www.facebook.com/sharer/sharer.php?u=${PublicUrl}`}
+                    href={`https://www.facebook.com/sharer/sharer.php?u=${PublicUrl}/${post.attributes.slug}`}
                   >
                     <Icon
                       viewBox="0 0 200 200"
@@ -388,14 +389,23 @@ export default function Post({
 
                 <Spacer />
                 <Box py={"2"}>
-                  {post?.attributes?.createdAt &&
-                    formatDistance(
-                      new Date(post.attributes.createdAt),
-                      new Date(),
-                      {
-                        addSuffix: true,
-                      }
-                    )}
+                  <Tooltip
+                    placement="top"
+                    label={`${format(
+                      parseISO(post?.attributes?.createdAt),
+                      "HH:MM MM/dd/yyyy"
+                    )}`}
+                    aria-label="A tooltip"
+                  >
+                    {post?.attributes?.createdAt &&
+                      formatDistance(
+                        new Date(post.attributes.createdAt),
+                        new Date(),
+                        {
+                          addSuffix: true,
+                        }
+                      )}
+                  </Tooltip>
                 </Box>
                 <Box
                   pt="2"
