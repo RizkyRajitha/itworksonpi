@@ -8,6 +8,7 @@ import Card from "../../components/card";
 // import Navbar from "../../components/navbar";
 
 const StrapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL;
+const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
 
 export async function getStaticPaths() {
   try {
@@ -57,7 +58,7 @@ export default function Category({ category }) {
       <MetaTags
         title={category.attributes.name}
         description={`Posts belong to ${category.attributes.name} category`}
-        image="https://itworksonpi.vercel.app/images/ogmetabanner.png"
+        image={`${PublicUrl}/api/og?title=${category.attributes.name}`}
         url={`https://itworksonpi.vercel.app/category/${category.attributes.name}`}
       />
       <Navbar />
@@ -81,7 +82,7 @@ export default function Category({ category }) {
               <Card
                 name={element.attributes?.name}
                 slug={element.attributes?.slug}
-                createdAt={element?.createdAt}
+                createdAt={element?.attributes?.createdAt}
                 categories={element.attributes.categories.data.map((ele) => {
                   return ele.attributes.name;
                 })}

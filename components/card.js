@@ -77,6 +77,7 @@ export default function Card({
         </Box>
         <Box py={"2"}>
           <Tooltip
+          placement="right"
             label={`${format(parseISO(createdAt), "HH:MM MM/dd/yyyy")}`}
             aria-label="Time"
           >
