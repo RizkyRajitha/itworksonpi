@@ -39,7 +39,7 @@ export default function FeatureCard({ data, index }) {
           borderRadius="lg"
         >
           <Box display={"flex"} justifyContent={"space-between"}>
-            <NextLink href={`/post/${data.name.slug}`}>
+            <NextLink href={`/post/${data.slug}`}>
               <Text
                 // fontSize={isLargerThan1280 ? "4xs" : "2xl"}
                 fontSize={["md", "xl", "xl", "md"]}
@@ -58,7 +58,7 @@ export default function FeatureCard({ data, index }) {
                   textDecorationStyle: "dashed",
                 }}
               >
-                <Link href={`/post/${data.name.slug}`}>{data.name}</Link>
+                <Link href={`/post/${data.slug}`}>{data.name}</Link>
               </Text>
             </NextLink>
             <Spacer />

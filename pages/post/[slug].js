@@ -399,33 +399,28 @@ export default function Post({
                 </Box>
                 <Box
                   pt="2"
-                  textAlign={["center", "center", "left", "left", "left"]}
+                  textAlign={["center", "center", "center", "left", "left"]}
                 >
-                  {[
-                    ...post.attributes.categories.data,
-                    ...post.attributes.categories.data,
-                    ...post.attributes.categories.data,
-                  ].map((element, index) => {
-                    return (
-                      <Tag
-                        my={["2", "2", "2", "2", "2"]}
-                        mr="2"
-                        key={index}
-                        colorScheme="green"
-                      >
-                        <NextLink href={`/category/${element.attributes.name}`}>
-                          <Text
-                            casing={"capitalize"}
-                            as="a"
-                            cursor={"pointer"}
-                            m="2"
+                  {[...post.attributes.categories.data].map(
+                    (element, index) => {
+                      return (
+                        <Tag mt="2" mr="2" key={index} colorScheme="green">
+                          <NextLink
+                            href={`/category/${element.attributes.name}`}
                           >
-                            {element.attributes.name}
-                          </Text>
-                        </NextLink>
-                      </Tag>
-                    );
-                  })}
+                            <Text
+                              casing={"capitalize"}
+                              as="a"
+                              cursor={"pointer"}
+                              m="2"
+                            >
+                              {element.attributes.name}
+                            </Text>
+                          </NextLink>
+                        </Tag>
+                      );
+                    }
+                  )}
                 </Box>
               </Box>
               <Spacer />
