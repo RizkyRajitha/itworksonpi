@@ -4,10 +4,11 @@ import {
   Spacer,
   Tag,
   Text,
+  Tooltip,
   useColorModeValue,
   useMediaQuery,
 } from "@chakra-ui/react";
-import { formatDistance } from "date-fns";
+import { format, formatDistance, parseISO } from "date-fns";
 import NextLink from "next/link";
 import Image from "next/future/image";
 
@@ -75,10 +76,15 @@ export default function Card({
           })}
         </Box>
         <Box py={"2"}>
-          {createdAt &&
-            formatDistance(new Date(createdAt), new Date(), {
-              addSuffix: true,
-            })}
+          <Tooltip
+            label={`${format(parseISO(createdAt), "HH:MM MM/dd/yyyy")}`}
+            aria-label="Time"
+          >
+            {createdAt &&
+              formatDistance(new Date(createdAt), new Date(), {
+                addSuffix: true,
+              })}
+          </Tooltip>
         </Box>
         <Text fontSize={"xl"} noOfLines={3}>
           {overview}

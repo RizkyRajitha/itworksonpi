@@ -112,6 +112,8 @@ export default function Home({ posts, categories }) {
         display="flex"
         alignItems={"center"}
         justifyContent="center"
+        transition={"all"}
+        transitionDuration="2s"
       >
         <Image
           src={LandingBanner}
@@ -137,7 +139,14 @@ export default function Home({ posts, categories }) {
           it works on pi
         </Heading>
       </Box>
-      <Container mt="5" maxW={"8xl"} minH="82vh">
+      <Container
+        mt="5"
+        maxW={"8xl"}
+        minH="82vh"
+        transition={"all"}
+        transitionDuration="2s"
+        animation={"normal"}
+      >
         <Text
           align={"center"}
           fontSize="2xl"
@@ -223,7 +232,7 @@ export default function Home({ posts, categories }) {
                 display={"flex"}
                 flexDirection={["row", "row", "row", "column"]}
                 // boxShadow={"outline"}
-                alignItems={["baseline", "baseline", "baseline","center"]}
+                alignItems={["baseline", "baseline", "baseline", "center"]}
                 justifyContent="space-between"
               >
                 <Text fontFamily={"VT323"} fontSize="4xl" textAlign={"center"}>

@@ -390,12 +390,11 @@ export default function Post({
                 <Spacer />
                 <Box py={"2"}>
                   <Tooltip
-                    placement="top"
                     label={`${format(
                       parseISO(post?.attributes?.createdAt),
                       "HH:MM MM/dd/yyyy"
                     )}`}
-                    aria-label="A tooltip"
+                    aria-label="Time"
                   >
                     {post?.attributes?.createdAt &&
                       formatDistance(

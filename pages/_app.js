@@ -623,6 +623,13 @@ const GlobalStyle = ({ children }) => {
             -o-transition: all 0.2s;
           }
 
+          div.chakra-portal * {
+            transition: none;
+            -webkit-transition: none;
+            -moz-transition: none;
+            -o-transition: none;
+          }
+
           ::-moz-selection {
             background-color: #1db6df;
             color: white;
