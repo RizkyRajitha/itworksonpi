@@ -38,6 +38,7 @@ import { Icon } from "@chakra-ui/react";
 
 const StrapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL;
 const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
+const VERCEL_ENV = process.env.VERCEL_ENV || "dev";
 
 export async function getStaticPaths() {
   try {
@@ -45,7 +46,9 @@ export async function getStaticPaths() {
     console.log(res.data);
 
     let posts = res?.data
-      ?.filter((ele) => ele.attributes.publish)
+      .filter((ele) =>
+        VERCEL_ENV === "production" ? ele.attributes.publish : true
+      )
       .map((item) => {
         return { params: { slug: item.attributes.slug } };
       });

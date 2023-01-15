@@ -24,6 +24,7 @@ import { useEffect, useState } from "react";
 import Navbar from "../components/navbar";
 
 const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
+const VERCEL_ENV = process.env.VERCEL_ENV || "dev";
 
 export async function getStaticProps(context) {
   let res = await (
@@ -33,24 +34,28 @@ export async function getStaticProps(context) {
 
   console.log(res.data);
 
-  let publishedPosts = res.data?.filter((ele) => ele.attributes.publish).map((item) => {
-    // const { base64, img } = await getPlaiceholder(
-    //   `${PublicUrl}/api/og?title=${item.attributes.name}`,
-    //   { size: 32 }
-    // );
+  let publishedPosts = res.data
+    .filter((ele) =>
+      VERCEL_ENV === "production" ? ele.attributes.publish : true
+    )
+    .map((item) => {
+      // const { base64, img } = await getPlaiceholder(
+      //   `${PublicUrl}/api/og?title=${item.attributes.name}`,
+      //   { size: 32 }
+      // );
 
-    return {
-      name: item.attributes.name,
-      slug: item.attributes.slug,
-      createdAt: item.attributes.createdAt,
-      overview: item.attributes.overview,
-      categories: item.attributes.categories.data.map(
-        (item) => item.attributes.name
-      ),
-      // coverArtUrl: img,
-      // coverArtBlurData: base64,
-    };
-  });
+      return {
+        name: item.attributes.name,
+        slug: item.attributes.slug,
+        createdAt: item.attributes.createdAt,
+        overview: item.attributes.overview,
+        categories: item.attributes.categories.data.map(
+          (item) => item.attributes.name
+        ),
+        // coverArtUrl: img,
+        // coverArtBlurData: base64,
+      };
+    });
 
   console.log(publishedPosts);
   console.log(categories);
