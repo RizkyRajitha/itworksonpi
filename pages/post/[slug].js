@@ -44,9 +44,13 @@ export async function getStaticPaths() {
     let res = await (await fetch(`${StrapiUrl}/api/posts`)).json();
     console.log(res.data);
 
-    let posts = res?.data?.map((item) => {
-      return { params: { slug: item.attributes.slug } };
-    });
+    let posts = res?.data
+      ?.filter((ele) => ele.attributes.publish)
+      .map((item) => {
+        return { params: { slug: item.attributes.slug } };
+      });
+    console.log(posts);
+
     return {
       paths: posts,
       fallback: false, // can also be true or 'blocking'

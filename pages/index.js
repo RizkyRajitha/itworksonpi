@@ -33,7 +33,7 @@ export async function getStaticProps(context) {
 
   console.log(res.data);
 
-  let publishedPosts = res.data?.map((item) => {
+  let publishedPosts = res.data?.filter((ele) => ele.attributes.publish).map((item) => {
     // const { base64, img } = await getPlaiceholder(
     //   `${PublicUrl}/api/og?title=${item.attributes.name}`,
     //   { size: 32 }
