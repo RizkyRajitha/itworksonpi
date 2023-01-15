@@ -7,9 +7,10 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import "@fontsource/dancing-script";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHatWizard, faMagic } from "@fortawesome/free-solid-svg-icons";
+import { faHatWizard } from "@fortawesome/free-solid-svg-icons";
 
 const StrapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL;
+const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
 
 export async function getStaticProps(context) {
   let res = await (
@@ -79,8 +80,8 @@ export default function Category({ posts }) {
       <MetaTags
         title="Explore"
         description={"Explore posts"}
-        image="https://itworksonpi.vercel.app/images/ogmetabanner.png"
-        url={`https://itworksonpi.vercel.app/explore`}
+        image={`${PublicUrl}/images/ogmetabanner.png`}
+        url={`${PublicUrl}`}
       />
       <Navbar />
       <Container maxW={"8xl"} mt="10" minH={"82vh"}>

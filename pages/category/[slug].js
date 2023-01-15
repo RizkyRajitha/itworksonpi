@@ -59,7 +59,7 @@ export default function Category({ category }) {
         title={category.attributes.name}
         description={`Posts belong to ${category.attributes.name} category`}
         image={`${PublicUrl}/api/og?title=${category.attributes.name}`}
-        url={`https://itworksonpi.vercel.app/category/${category.attributes.name}`}
+        url={`${PublicUrl}/category/${category.attributes.name}`}
       />
       <Navbar />
       <Container maxW={"8xl"} mt="10" minH={"82vh"}>

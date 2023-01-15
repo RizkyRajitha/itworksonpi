@@ -91,12 +91,12 @@ export default function Home({ posts, categories }) {
   return (
     <div>
       <MetaTags
-        title="It works on pi"
+        title="CodeHiRise"
         description={
           "Wander in the wonderful world of electronics, programming, web dev and in between"
         }
-        image="https://itworksonpi.vercel.app/images/ogmetabanner.png"
-        url={"https://itworksonpi.vercel.app"}
+        image={`${PublicUrl}/images/ogmetabanner.png`}
+        url={`${PublicUrl}`}
       />
       {/* <Box
         css={css`
@@ -136,7 +136,7 @@ export default function Home({ posts, categories }) {
           fontFamily={"VT323"}
           color={useColorModeValue("#fff", "#fff")}
         >
-          it works on pi
+          CodeHiRise
         </Heading>
       </Box>
       <Container

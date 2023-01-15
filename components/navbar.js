@@ -9,11 +9,12 @@ import {
   Stack,
   Spacer,
   Input,
-  Button,
   useColorMode,
+  Text,
 } from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 import LandingBanner from "../public/images/Itworksonpi.png";
+import Logo from "../public/images/codehiriselogo.png";
 import Image from "next/future/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -69,8 +70,16 @@ export default function Navbar() {
           onClick={isOpen ? onClose : onOpen}
         />
         <HStack spacing={8} alignItems={"end"}>
-          <Box as={"a"} href="/">
-            <Image src={LandingBanner} alt="logo" />
+          <Box as={"a"} display="flex" href="/">
+            <Image
+              src={Logo}
+              alt="logo"
+              width={"60"}
+              style={{ alignSelf: "center" }}
+            />
+            <Text fontFamily={"VT323"} fontSize="4xl" textAlign={"center"}>
+              CodeHiRise
+            </Text>
           </Box>
           <Spacer />
           <HStack as={"nav"} spacing={4} display={{ base: "none", md: "flex" }}>
