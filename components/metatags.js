@@ -10,6 +10,7 @@ export default function MetaTags({ title, description, image, url }) {
       <meta charSet="utf-8" />
       <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       <meta name="theme-color" content="#1a202c" />
+      <link rel="canonical" href={url} />
 
       {/* Open Graph / Facebook  */}
       <meta property="og:type" content="website" />

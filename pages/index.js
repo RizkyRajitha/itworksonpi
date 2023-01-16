@@ -117,8 +117,8 @@ export default function Home({ posts, categories }) {
         display="flex"
         alignItems={"center"}
         justifyContent="center"
-        transition={"all"}
-        transitionDuration="2s"
+        // transition={"all"}
+        // transitionDuration="2s"
       >
         <Image
           src={LandingBanner}
@@ -193,13 +193,16 @@ export default function Home({ posts, categories }) {
             <Box textAlign={["center", "center", "center", "left"]}>
               {categories.data.map((element, index) => {
                 return (
-                  <Tag my={"2"} mr="2" key={index} colorScheme="green">
-                    <NextLink href={`/category/${element.attributes.name}`}>
-                      <Text casing={"capitalize"} cursor="pointer">
+                  <NextLink
+                    href={`/category/${element.attributes.name}`}
+                    key={index}
+                  >
+                    <Tag my={"2"} mr="2" colorScheme="green" cursor="pointer">
+                      <Text casing={"capitalize"}>
                         {element.attributes.name}
                       </Text>
-                    </NextLink>
-                  </Tag>
+                    </Tag>
+                  </NextLink>
                 );
               })}
             </Box>

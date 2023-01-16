@@ -420,20 +420,21 @@ export default function Post({
                   {[...post.attributes.categories.data].map(
                     (element, index) => {
                       return (
-                        <Tag mt="2" mr="2" key={index} colorScheme="green">
-                          <NextLink
-                            href={`/category/${element.attributes.name}`}
+                        <NextLink
+                          href={`/category/${element.attributes.name}`}
+                          key={index}
+                        >
+                          <Tag
+                            mt="2"
+                            mr="2"
+                            colorScheme="green"
+                            cursor={"pointer"}
                           >
-                            <Text
-                              casing={"capitalize"}
-                              as="a"
-                              cursor={"pointer"}
-                              m="2"
-                            >
+                            <Text casing={"capitalize"} as="a" m="2">
                               {element.attributes.name}
                             </Text>
-                          </NextLink>
-                        </Tag>
+                          </Tag>
+                        </NextLink>
                       );
                     }
                   )}
@@ -499,7 +500,7 @@ export default function Post({
                 my={["6", "6", "6", "0"]}
                 minW={["100%", "100%", "100%", "15%"]}
               >
-                widgets
+                {/* widgets */}
               </Box>
             </Box>
           </Box>
