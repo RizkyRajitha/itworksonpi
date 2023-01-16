@@ -65,19 +65,21 @@ export default function Card({
         <Box>
           {categories.map((element, index) => {
             return (
-              <Tag my={"2"} mr="2" key={index} colorScheme="green">
-                <NextLink href={`/category/${element}`}>
-                  <Text casing={"capitalize"} cursor="pointer">
-                    {element}
-                  </Text>
-                </NextLink>
-              </Tag>
+              <NextLink
+                href={`/category/${element}`}
+                key={index}
+                cursor="pointer"
+              >
+                <Tag my={"2"} mr="2" colorScheme="green">
+                  <Text casing={"capitalize"}>{element}</Text>
+                </Tag>
+              </NextLink>
             );
           })}
         </Box>
         <Box py={"2"}>
           <Tooltip
-          placement="right"
+            placement="right"
             label={`${format(parseISO(createdAt), "HH:MM MM/dd/yyyy")}`}
             aria-label="Time"
           >

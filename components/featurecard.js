@@ -2,12 +2,12 @@ import {
   Box,
   Link,
   Spacer,
-  Tag,
   Text,
+  Tooltip,
   useColorModeValue,
   useMediaQuery,
 } from "@chakra-ui/react";
-import { formatDistance } from "date-fns";
+import { format, formatDistance, parseISO } from "date-fns";
 import NextLink from "next/link";
 import { motion } from "framer-motion";
 
@@ -64,12 +64,24 @@ export default function FeatureCard({ data, index }) {
             <Spacer />
           </Box>
 
-          <Text py={"2"} fontSize={"12px"}>
+          <Tooltip
+            label={`${format(parseISO(data.createdAt), "HH:MM MM/dd/yyyy")}`}
+            aria-label="Time"
+          >
+            <Text py={"2"} fontSize={"12px"} width='fit-content'>
+              {data.createdAt &&
+                formatDistance(new Date(data.createdAt), new Date(), {
+                  addSuffix: true,
+                })}
+            </Text>
+          </Tooltip>
+
+          {/* <Text py={"2"} fontSize={"12px"}>
             {data.createdAt &&
               formatDistance(new Date(data.createdAt), new Date(), {
                 addSuffix: true,
               })}
-          </Text>
+          </Text> */}
         </Box>
       </Box>
     </motion.div>

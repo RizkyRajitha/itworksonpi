@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 import LandingBanner from "../public/images/Itworksonpi.png";
-import Logo from "../public/images/codehiriselogo.png";
+import Logo from "../public/images/codehiriselogo.svg";
 import Image from "next/future/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -48,7 +48,7 @@ export default function Navbar() {
   const router = useRouter();
 
   useEffect(() => {
-    console.log(router.pathname);
+    // console.log(router.pathname);
     setPath(router.pathname);
   }, [router.pathname]);
 
@@ -92,7 +92,7 @@ export default function Navbar() {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              console.log(e.target?.search?.value);
+              // console.log(e.target?.search?.value);
               router.push(`/explore?text=${e.target?.search?.value}`);
             }}
           >
@@ -122,7 +122,7 @@ export default function Navbar() {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                console.log(e.target?.search?.value);
+                // console.log(e.target?.search?.value);
                 router.push(`/explore?text=${e.target?.search?.value}`);
               }}
             >
