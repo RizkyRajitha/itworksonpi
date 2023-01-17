@@ -119,8 +119,8 @@ export async function getStaticProps(context) {
     console.log(error);
   }
 
-  console.log(coverArtPlaceholder.base64);
-  console.log(imagePlaceHolders);
+  // console.log(coverArtPlaceholder.base64);
+  // console.log(imagePlaceHolders);
   // complile mdx
   const mdxSource = await serialize(text, {
     mdxOptions: {
@@ -128,7 +128,7 @@ export async function getStaticProps(context) {
       rehypePlugins: [rehypeSlug],
     },
   });
-
+  // console.log(mdxSource.compiledSource);
   return {
     props: {
       mdxSource,
@@ -192,58 +192,61 @@ export default function Post({
     h1: (props) => <CustomHeading fontSize="4xl" as="h1" {...props} />,
     h2: (props) => <CustomHeading fontSize="2xl" as="h2" {...props} />,
     h3: (props) => <CustomHeading fontSize="xl" as="h3" {...props} />,
-    // h1: (props) => <Text as="h1" py="10" fontSize={"4xl"} {...props} />,
-    // h2: (props) => <Text py="4" fontSize={"2xl"} {...props} />,
-    // h3: (props) => <Text py="4" fontSize={"xl"} {...props} />,
-    h4: (props) => <Text fontSize={"lg"} {...props} />,
-    p: (props) => <Box textAlign={"justify"} {...props} />,
-    img: (props) => {
-      return (
-        <Box
-          display={"flex"}
-          justifyContent="center"
-          flexDir={"row"}
-          borderRadius="lg"
-          p={[8, 8, 12]}
-        >
-          <motion.div
-            whileHover={{ scale: isLargerThan268 ? 1.06 : 1 }}
-            transition={{ duration: 0.15 }}
+    h4: (props) => <Text as="h4" fontSize={"lg"} {...props} />,
+    p: (props) => {
+      // console.log(props.children?.type);
+      if (props.children?.type === "img") {
+        return (
+          <Box
+            display={"flex"}
+            justifyContent="center"
+            flexDir={"row"}
+            borderRadius="lg"
+            p={[8, 8, 12]}
           >
-            <Box
-              borderWidth="1px"
-              borderRadius="lg"
-              overflow={"hidden"}
-              cursor={"pointer"}
+            <motion.div
+              whileHover={{ scale: isLargerThan268 ? 1.06 : 1 }}
+              transition={{ duration: 0.15 }}
             >
-              {" "}
-              <Image
-                {...props}
-                alt={props.alt}
-                width="800"
-                height={"600"}
-                placeholder="blur"
-                blurDataURL={
-                  imagePlaceHolders.filter((img) => img.img === props.src)[0]
-                    ?.base64
-                }
-                loading="lazy"
-                onClick={() => {
-                  onOpen();
-                  setmodalImage({
-                    alt: props.alt,
-                    src: props.src,
-                    placeholder: imagePlaceHolders.filter(
-                      (img) => img.img === props.src
-                    )[0]?.base64,
-                  });
-                }}
-              />
-            </Box>
-          </motion.div>
-        </Box>
-      );
+              <Box
+                borderWidth="1px"
+                borderRadius="lg"
+                overflow={"hidden"}
+                cursor={"pointer"}
+              >
+                {" "}
+                <Image
+                  {...props.children.props}
+                  alt={props.children.props.alt}
+                  width="800"
+                  height={"600"}
+                  placeholder="blur"
+                  blurDataURL={
+                    imagePlaceHolders.filter(
+                      (img) => img.img === props.children.props.src
+                    )[0]?.base64
+                  }
+                  loading="lazy"
+                  onClick={() => {
+                    onOpen();
+                    setmodalImage({
+                      alt: props.children.props.alt,
+                      src: props.children.props.src,
+                      placeholder: imagePlaceHolders.filter(
+                        (img) => img.img === props.children.props.src
+                      )[0]?.base64,
+                    });
+                  }}
+                />
+              </Box>
+            </motion.div>
+          </Box>
+        );
+      } else {
+        return <Box as={"p"} textAlign={"justify"} {...props} />;
+      }
     },
+    // p: (props) => <Box as={"p"} textAlign={"justify"} {...props} />,
     // pre: (props) => (
     //   <Box
     //     onMouseEnter={() => {
@@ -324,6 +327,7 @@ export default function Post({
                   )}
                   bgClip="text"
                   fontWeight="extrabold"
+                  as="h1"
                 >
                   {post.attributes.name}
                 </Text>
@@ -411,14 +415,21 @@ export default function Post({
                     )}`}
                     aria-label="Time"
                   >
-                    {post?.attributes?.createdAt &&
-                      formatDistance(
-                        new Date(post.attributes.createdAt),
-                        new Date(),
-                        {
-                          addSuffix: true,
-                        }
-                      )}
+                    <time
+                      dateTime={`${format(
+                        parseISO(post?.attributes?.createdAt),
+                        "yyyy-MM-dd HH:MM:SS"
+                      )}`}
+                    >
+                      {post?.attributes?.createdAt &&
+                        formatDistance(
+                          new Date(post.attributes.createdAt),
+                          new Date(),
+                          {
+                            addSuffix: true,
+                          }
+                        )}
+                    </time>
                   </Tooltip>
                 </Box>
                 <Box
@@ -431,14 +442,17 @@ export default function Post({
                         <NextLink
                           href={`/category/${element.attributes.name}`}
                           key={index}
+                          passHref
                         >
                           <Tag
                             mt="2"
                             mr="2"
                             colorScheme="green"
                             cursor={"pointer"}
+                            as="a"
+                            p="2"
                           >
-                            <Text casing={"capitalize"} as="a" m="2">
+                            <Text casing={"capitalize"} as="span">
                               {element.attributes.name}
                             </Text>
                           </Tag>
@@ -475,12 +489,10 @@ export default function Post({
                         width={1200}
                         height={630}
                         placeholder="blur"
-                        // blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAANCAIAAABHKvtLAAAACXBIWXMAAAsTAAALEwEAmpwYAAADlklEQVR4nGPgl1AlEnEIyIvJapvZeDDyyAhKqhOpi4EYRUKSaoxcMgmpRRW1ndPnLI1JymXkkhGS0iTBAkFJdWSEJigkpcktomRu693WPSUoItXK3odbWFFIShNNF6YJUAt4RZUYOKW5hRVBSESJW1iRV1RJUFKdW1iRlV8WwgUp5ZTiEJAHKWaXhCjjEJBn45fnE1PhEJDnEVWGqOQQApmDsIBDQF5dz6ahdYKKtqWKpoW8qomihpm0kgG3sKKsinFIVJqVvbeEop6YrLaIjEZgWLKSpoW0koGytqWCmom6gY2OiSO/mIqdS6CytqWihpmcqpGqjrWytiWfmArUAkYeGRsn/6UrN82Yt3z5mi1nz1+/dutBSESqlKL+3IWraxt7Kuu7VqzdtnzNlqWrNm/dfUhO1Sg+OX/5mi0Hjp7df/j0hKnz1m/eXVHfWVHbuWj5+pOnL6/buKujdwYokiTVQBZwCyuq6lg7uofGJxd4BcSW1bRVNXQbWboKSWrkFtfnFtVl5Fam5VTUNIBsyi2qE5fXdXAPLqtpKypvKqtps7D1Co1KS8kqS80pzymqLa1qTckqS8up4BCQh8QEKA74xFR4RZXY+OVZ+WUZGCUYGMQgocnAIsHALgUiWSQZOKUZuWQYOKVZ+WUZeWRAImBlfGKqDAyiDJxSIFkGcQYGMQZ2SQZ2SXg8gywQktJkYJds6pgcn1qoZ+bsF5qgqmMloajv6R9jYOZc29SXlFHCLawoLqtTVNEcFZ9l7einb+Hq5BmakF7kExRvau3p4B5sZOnq6R/j6R/j5hNpauPFLayI8AHEgulzlrZ2T9t/+PTpc9f1TB31zJzevP929caDb7//7z98WlJez8kz9OyFaz///D907NymbfuevXrfP2VuS9eUC5duXbp6++iJC89evt9z8NT0OcvXbtzJwCIJySggCwQl1bmElawd/QzMnN18Ihzdg7lFlERktEytPS3sfazsva0dfXlFleRUjdx9o+xcAlS0rYwt3QzMXBzcgh3cgjz9Y5o7JlvYeVvYelnYecupmlg7+kISNI+oMiIns/HLcwjIM3LJsPLLCkqq84mpMPPIsvLLsvHLM/PIQrILI5cMMw8oZzDzyHIIgOKMmQeknk9MBZJs5FSNZFQMwKSxnKqJjJIhwgIhSTVIpoUkL7gIcs6E515kKYgsn5iKopqZnUuAV0Csf0iiha2Xm0+EqY0XAPBrEj731S8JAAAAAElFTkSuQmCC"
                         blurDataURL={coverArtPlaceholder}
                         alt={`${post.attributes.name} cover`}
                         layout="responsive"
                         src={`${PublicUrl}/api/og?title=${post.attributes.name}`}
-                        // src={`${StrapiUrl}${post.attributes.coverArt.data.attributes.url}`}
                         style={{
                           borderRadius: "0.5rem",
                         }}

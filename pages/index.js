@@ -103,22 +103,12 @@ export default function Home({ posts, categories }) {
         image={`${PublicUrl}/images/ogmetabanner.png`}
         url={`${PublicUrl}`}
       />
-      {/* <Box
-        css={css`
-          padding: 32px;
-          font-size: 24px;
-        `}
-      >
-        wow nani
-      </Box> */}
       <Navbar />
       <Box
         h={["32vh", "32vh", "32vh", "28vh", "28vh"]}
         display="flex"
         alignItems={"center"}
         justifyContent="center"
-        // transition={"all"}
-        // transitionDuration="2s"
       >
         <Image
           src={LandingBanner}
@@ -196,9 +186,17 @@ export default function Home({ posts, categories }) {
                   <NextLink
                     href={`/category/${element.attributes.name}`}
                     key={index}
+                    passHref
                   >
-                    <Tag my={"2"} mr="2" colorScheme="green" cursor="pointer">
-                      <Text casing={"capitalize"}>
+                    <Tag
+                      mt="2"
+                      mr="2"
+                      colorScheme="green"
+                      cursor={"pointer"}
+                      as="a"
+                      p="1.5"
+                    >
+                      <Text casing={"capitalize"} as="span">
                         {element.attributes.name}
                       </Text>
                     </Tag>

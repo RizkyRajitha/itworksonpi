@@ -6,7 +6,6 @@ import {
   Text,
   Tooltip,
   useColorModeValue,
-  useMediaQuery,
 } from "@chakra-ui/react";
 import { format, formatDistance, parseISO } from "date-fns";
 import NextLink from "next/link";
@@ -22,8 +21,6 @@ export default function Card({
   overview,
   index,
 }) {
-  const [isLargerThan980] = useMediaQuery("(min-width: 720px)");
-
   return (
     <Box
       maxW="8xl"
@@ -35,7 +32,6 @@ export default function Card({
       p="4"
       display={"flex"}
       flexDirection={["column-reverse", "column-reverse", "row"]}
-      // flexDirection={isLargerThan980 ? "row" : "column-reverse"}
     >
       <Box>
         <Box display={"flex"} justifyContent={"space-between"}>
@@ -65,13 +61,18 @@ export default function Card({
         <Box>
           {categories.map((element, index) => {
             return (
-              <NextLink
-                href={`/category/${element}`}
-                key={index}
-                cursor="pointer"
-              >
-                <Tag my={"2"} mr="2" colorScheme="green">
-                  <Text casing={"capitalize"}>{element}</Text>
+              <NextLink href={`/category/${element}`} key={index} passHref>
+                <Tag
+                  mt="2"
+                  mr="2"
+                  colorScheme="green"
+                  cursor={"pointer"}
+                  as="a"
+                  p="1.5"
+                >
+                  <Text casing={"capitalize"} as="span">
+                    {element}
+                  </Text>
                 </Tag>
               </NextLink>
             );

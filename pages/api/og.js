@@ -64,6 +64,7 @@ export default async function (req) {
             style={{ alignSelf: "center" }}
             width="60"
             src={"https://codehirise.com/images/codehiriselogo.png"}
+            alt="logo"
           />
           <div
             style={{
