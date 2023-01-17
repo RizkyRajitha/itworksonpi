@@ -109,8 +109,8 @@ export async function getStaticProps(context) {
     );
     // create cover art placeholders
     coverArtPlaceholder = await getPlaiceholder(
-      `${StrapiUrl}${post.attributes.coverArt.data.attributes.url}`,
-      // `${PublicUrl}/api/og?title=${post.attributes.name}`,
+      // `${StrapiUrl}${post.attributes.coverArt.data.attributes.url}`,
+      `${PublicUrl}/api/og?title=${post.attributes.name}`,
       {
         size: 32,
       }
