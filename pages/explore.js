@@ -64,7 +64,7 @@ export default function Category({ posts }) {
 
     setnoMatches(matches.length === 0);
     setMatches(matches);
-    console.log(matches);
+    // console.log(matches);
   };
 
   useEffect(() => {
@@ -113,8 +113,8 @@ export default function Category({ posts }) {
             })}
           {nomatches && (
             <Box textAlign={"center"}>
-              <Box p="10">
-                <FontAwesomeIcon icon={faHatWizard} size="6x" />
+              <Box p="10" display={'flex'} justifyContent='center'>
+                <FontAwesomeIcon icon={faHatWizard} height='80px'/>
               </Box>
               <Heading
                 textAlign={"center"}
