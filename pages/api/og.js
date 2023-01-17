@@ -61,11 +61,9 @@ export default async function (req) {
           }}
         >
           <img
-            style={{alignSelf:'center' }}
-            width='60'
-            src={
-              "https://codehirise.com/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fcodehiriselogo.818c1612.png&w=128&q=75"
-            }
+            style={{ alignSelf: "center" }}
+            width="60"
+            src={"https://codehirise.com/images/codehiriselogo.png"}
           />
           <div
             style={{

@@ -88,31 +88,39 @@ export async function getStaticProps(context) {
   let mdximages = text.match(imageregex);
 
   let readTime = Math.round(text.trim().split(/\s+/).length / 183);
+  let coverArtPlaceholder = "";
 
-  // create image placeholders
-  if (mdximages?.length) {
-    for (let index = 0; index < mdximages.length; index++) {
-      const element = mdximages[index];
+  try {
+    // create image placeholders
+    if (mdximages?.length) {
+      for (let index = 0; index < mdximages.length; index++) {
+        const element = mdximages[index];
 
-      var urlregexp = /\(([^)]+)\)/;
-      var matches = urlregexp.exec(element)[1];
+        var urlregexp = /\(([^)]+)\)/;
+        var matches = urlregexp.exec(element)[1];
 
-      const { base64, img } = await getPlaiceholder(matches, { size: 32 });
-      let plaiceholder = { img: img.src, base64 };
-      imagePlaceHolders.push(plaiceholder);
+        const { base64, img } = await getPlaiceholder(matches, { size: 32 });
+        let plaiceholder = { img: img.src, base64 };
+        imagePlaceHolders.push(plaiceholder);
+      }
     }
+    console.log(
+      `cover art - - - ${PublicUrl}/api/og?title=${post.attributes.name}`
+    );
+    // create cover art placeholders
+    coverArtPlaceholder = await getPlaiceholder(
+      `${StrapiUrl}${post.attributes.coverArt.data.attributes.url}`,
+      // `${PublicUrl}/api/og?title=${post.attributes.name}`,
+      {
+        size: 32,
+      }
+    );
+  } catch (error) {
+    console.log(error);
   }
 
-  // create cover art placeholders
-  let coverArtPlaceholder = await getPlaiceholder(
-    // `${StrapiUrl}${post.attributes.coverArt.data.attributes.url}`,
-    `${PublicUrl}/api/og?title=${post.attributes.name}`,
-    {
-      size: 32,
-    }
-  );
-
-  // console.log(coverArtPlaceholder.base64);
+  console.log(coverArtPlaceholder.base64);
+  console.log(imagePlaceHolders);
   // complile mdx
   const mdxSource = await serialize(text, {
     mdxOptions: {
