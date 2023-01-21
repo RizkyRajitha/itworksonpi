@@ -16,10 +16,10 @@ import NextLink from "next/link";
 import MetaTags from "../components/metatags";
 import Footer from "../components/footer";
 import FeatureCard from "../components/featurecard";
-import ExploreWidget from "../components/explorewidget";
 // import { getPlaiceholder } from "plaiceholder";
 import { css } from "@emotion/react";
 import "@fontsource/vt323";
+import "@fontsource/noto-sans-mono";
 import { useEffect, useState } from "react";
 import Navbar from "../components/navbar";
 
@@ -49,6 +49,7 @@ export async function getStaticProps(context) {
         slug: item.attributes.slug,
         createdAt: item.attributes.createdAt,
         overview: item.attributes.overview,
+        featured: item.attributes.featured,
         categories: item.attributes.categories.data.map(
           (item) => item.attributes.name
         ),
@@ -147,7 +148,7 @@ export default function Home({ posts, categories }) {
           fontSize="2xl"
           pb="10"
           pt={["6", "6", "6", "6", "0"]}
-          fontFamily={"Noto Sans Mono"}
+          fontFamily={"Noto Sans Mono;monospace"}
         >
           Wander in the wonderful world of electronics, web dev and in between
         </Text>
@@ -213,11 +214,13 @@ export default function Home({ posts, categories }) {
             </Text>
             <Box pt="4" width={"100%"}>
               <Box>
-                {posts.map((element, index) => {
-                  return (
-                    <FeatureCard data={element} index={index} key={index} />
-                  );
-                })}
+                {posts
+                  .filter((post) => post.featured)
+                  .map((element, index) => {
+                    return (
+                      <FeatureCard data={element} index={index} key={index} />
+                    );
+                  })}
               </Box>
             </Box>
             {/* <Text
