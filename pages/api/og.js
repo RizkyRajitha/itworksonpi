@@ -1,4 +1,5 @@
 import { ImageResponse } from "@vercel/og";
+import Image from "next/future/image";
 
 export const config = {
   runtime: "experimental-edge",
@@ -16,7 +17,7 @@ export default async function (req) {
   const hasTitle = searchParams.has("title");
   const title = hasTitle
     ? searchParams.get("title")?.slice(0, 100)
-    : "My default title";
+    : "CodeHiRise";
 
   // console.log(title);
 
@@ -62,7 +63,7 @@ export default async function (req) {
         >
           <img
             style={{ alignSelf: "center" }}
-            width="60"
+            width="100"
             src={"https://codehirise.com/images/codehiriselogo.png"}
             alt="logo"
           />
@@ -73,6 +74,7 @@ export default async function (req) {
               display: "flex",
               alignItems: "center",
               justifyContent: "flex-end",
+              alignSelf: "center",
               // paddingRight: "10px",
             }}
           >
