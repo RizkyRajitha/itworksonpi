@@ -33,6 +33,7 @@ export default async function (req) {
           height: "100vh",
           paddingLeft: "20px",
           paddingRight: "20px",
+          paddingBottom: "20px",
         }}
       >
         <div
@@ -62,14 +63,21 @@ export default async function (req) {
           }}
         >
           <img
-            style={{ alignSelf: "center" }}
-            width="100"
-            src={"https://codehirise.com/images/codehiriselogo.png"}
+            style={{
+              alignSelf: "center",
+              border: "#33c0d3",
+              borderRadius: "4px",
+              borderWidth: "2px",
+            }}
+            width="75"
+            src={
+              "https://strapi.rizkyrajitha.xyz/uploads/codehirise_logo_3_dd0728baee.png"
+            }
             alt="logo"
           />
           <div
             style={{
-              fontSize: 36,
+              fontSize: 52,
               height: "10vh",
               display: "flex",
               alignItems: "center",

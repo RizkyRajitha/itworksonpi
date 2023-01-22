@@ -39,11 +39,14 @@ import { Icon } from "@chakra-ui/react";
 const StrapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL;
 const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
 const VERCEL_ENV = process.env.VERCEL_ENV || "dev";
+const CommitSha = process.env.VERCEL_GIT_COMMIT_SHA || "9977";
 
 export async function getStaticPaths() {
   try {
     let res = await (await fetch(`${StrapiUrl}/api/posts`)).json();
-    console.log(res.data);
+    // console.log(res.data);
+
+    console.log(`VERCEL_GIT_COMMIT_SHA : ${CommitSha}`);
 
     let posts = res?.data
       .filter((ele) =>
@@ -52,7 +55,7 @@ export async function getStaticPaths() {
       .map((item) => {
         return { params: { slug: item.attributes.slug } };
       });
-    console.log(posts);
+    // console.log(posts);
 
     return {
       paths: posts,
@@ -107,14 +110,14 @@ export async function getStaticProps(context) {
     console.log(
       `cover art - - - ${PublicUrl}/api/og?title=${encodeURIComponent(
         post.attributes.name
-      )}&id=${new Date().getTime()}`
+      )}&id=${new Date().CommitSha}`
     );
     // create cover art placeholders
     coverArtPlaceholder = await getPlaiceholder(
       // `${StrapiUrl}${post.attributes.coverArt.data.attributes.url}`,
       `${PublicUrl}/api/og?title=${encodeURIComponent(
         post.attributes.name
-      )}&id=${new Date().getTime()}`,
+      )}&id=${new Date().CommitSha}`,
       {
         size: 32,
       }
