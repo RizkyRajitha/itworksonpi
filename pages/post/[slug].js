@@ -105,12 +105,14 @@ export async function getStaticProps(context) {
       }
     }
     console.log(
-      `cover art - - - ${PublicUrl}/api/og?title=${post.attributes.name}`
+      `cover art - - - ${PublicUrl}/api/og?title=${encodeURIComponent(
+        post.attributes.name
+      )}`
     );
     // create cover art placeholders
     coverArtPlaceholder = await getPlaiceholder(
       // `${StrapiUrl}${post.attributes.coverArt.data.attributes.url}`,
-      `${PublicUrl}/api/og?title=${post.attributes.name}`,
+      `${PublicUrl}/api/og?title=${encodeURIComponent(post.attributes.name)}`,
       {
         size: 32,
       }

@@ -93,6 +93,7 @@ export default async function (req) {
           style: "normal",
         },
       ],
+      headers: { "cache-control": "no-cache, no-store" },
     }
   );
 }
