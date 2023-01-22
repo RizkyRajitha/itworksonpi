@@ -105,7 +105,7 @@ export default function Card({
         overflow="hidden"
       >
         <Image
-          src={`${PublicUrl}/api/og?title=${name}`}
+          src={`${PublicUrl}/api/og?title=${name}&id=${new Date().getTime()}`}
           alt={`${name} cover art`}
           width="1200"
           height="630"
