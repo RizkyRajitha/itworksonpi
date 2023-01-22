@@ -12,6 +12,7 @@ import NextLink from "next/link";
 import Image from "next/future/image";
 
 const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
+const CommitSha = process.env.VERCEL_GIT_COMMIT_SHA || "9977";
 
 export default function Card({
   createdAt,
@@ -105,7 +106,7 @@ export default function Card({
         overflow="hidden"
       >
         <Image
-          src={`${PublicUrl}/api/og?title=${name}`}
+          src={`${PublicUrl}/api/og?title=${name}&id=${CommitSha}`}
           alt={`${name} cover art`}
           width="1200"
           height="630"
