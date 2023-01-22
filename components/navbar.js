@@ -82,11 +82,11 @@ export default function Navbar() {
             </Text>
           </Box>
           <Spacer />
-          <HStack as={"nav"} spacing={4} display={{ base: "none", md: "flex" }}>
+          {/* <HStack as={"nav"} spacing={4} display={{ base: "none", md: "flex" }}>
             {Links.map((link) => (
               <NavLink key={link}>{link}</NavLink>
             ))}
-          </HStack>
+          </HStack> */}
         </HStack>
         <Flex alignItems={"center"} hidden={path === "/explore"}>
           <form

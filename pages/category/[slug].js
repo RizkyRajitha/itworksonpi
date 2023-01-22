@@ -2,7 +2,7 @@ import { Box, Container, Text } from "@chakra-ui/react";
 // import CategoryCard from "../../components/categorycard";
 import Navbar from "../../components/navbar";
 import MetaTags from "../../components/metatags";
-import { getPlaiceholder } from "plaiceholder";
+// import { getPlaiceholder } from "plaiceholder";
 import Footer from "../../components/footer";
 import Card from "../../components/card";
 // import Navbar from "../../components/navbar";
@@ -37,12 +37,12 @@ export async function getStaticPaths() {
 export async function getStaticProps(context) {
   let res = await (
     await fetch(
-      `${StrapiUrl}/api/categories?[filters][name]=${context.params.slug}&populate[posts][populate][0]=coverArt&populate[posts][populate][1]=categories`
+      `${StrapiUrl}/api/categories?[filters][name]=${context.params.slug}&populate[posts][filters][publish][$eq]=true&populate[posts][populate][1]=categories`
     )
   ).json();
 
   let category = res.data[0];
-  getPlaiceholder("");
+  // getPlaiceholder("");
   console.log(category);
 
   return {
@@ -56,7 +56,9 @@ export default function Category({ category }) {
   return (
     <>
       <MetaTags
-        title={category.attributes.name}
+        title={`${category.attributes.name
+          .charAt(0)
+          .toUpperCase()}${category.attributes.name.slice(1).toLowerCase()}`}
         description={`Posts belong to ${category.attributes.name} category`}
         image={`${PublicUrl}/api/og?title=${category.attributes.name}`}
         url={`${PublicUrl}/category/${category.attributes.name}`}
@@ -67,6 +69,7 @@ export default function Category({ category }) {
           fontSize={"6xl"}
           my="8"
           color={"#1CB5E0"}
+          as="h1"
           // bgGradient="linear(to-l, #4ECDC4,  #1CB5E0)"
           // bgGradient="linear(to-l, #7928CA, #FF0080)"
           // bgGradient="linear(to-l, #DC2424,  #4A569D)"

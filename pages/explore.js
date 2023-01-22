@@ -11,23 +11,28 @@ import { faHatWizard } from "@fortawesome/free-solid-svg-icons";
 
 const StrapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL;
 const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
+const VERCEL_ENV = process.env.VERCEL_ENV || "dev";
 
 export async function getStaticProps(context) {
   let res = await (
     await fetch(`${StrapiUrl}/api/posts?populate=*&sort[0]=createdAt:desc`)
   ).json();
 
-  let posts = res.data?.map((item) => {
-    return {
-      name: item.attributes.name,
-      slug: item.attributes.slug,
-      createdAt: item.attributes.createdAt,
-      overview: item.attributes.overview,
-      categories: item.attributes.categories.data.map(
-        (item) => item.attributes.name
-      ),
-    };
-  });
+  let posts = res.data
+    ?.filter((ele) =>
+      VERCEL_ENV === "production" ? ele.attributes.publish : true
+    )
+    .map((item) => {
+      return {
+        name: item.attributes.name,
+        slug: item.attributes.slug,
+        createdAt: item.attributes.createdAt,
+        overview: item.attributes.overview,
+        categories: item.attributes.categories.data.map(
+          (item) => item.attributes.name
+        ),
+      };
+    });
 
   console.log(posts);
   return {
@@ -113,13 +118,13 @@ export default function Category({ posts }) {
             })}
           {nomatches && (
             <Box textAlign={"center"}>
-              <Box p="10" display={'flex'} justifyContent='center'>
-                <FontAwesomeIcon icon={faHatWizard} height='80px'/>
+              <Box p="10" display={"flex"} justifyContent="center">
+                <FontAwesomeIcon icon={faHatWizard} height="80px" />
               </Box>
               <Heading
                 textAlign={"center"}
                 fontWeight="normal"
-                size={["md", "md", "md", "2xl"]}
+                size={["md", "xl", "2xl", "2xl", "2xl"]}
                 fontFamily="Dancing Script"
               >
                 I fear we do not posses such knowledge
