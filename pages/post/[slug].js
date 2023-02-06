@@ -197,9 +197,12 @@ export default function Post({
 
   const components = {
     h1: (props) => <CustomHeading fontSize="4xl" as="h1" {...props} />,
-    h2: (props) => <CustomHeading fontSize="2xl" as="h2" {...props} />,
-    h3: (props) => <CustomHeading fontSize="xl" as="h3" {...props} />,
-    h4: (props) => <Text as="h4" fontSize={"lg"} {...props} />,
+    h2: (props) => <CustomHeading fontSize="3xl" as="h2" {...props} />,
+    h3: (props) => <CustomHeading fontSize="2xl" as="h3" {...props} />,
+    h4: (props) => <CustomHeading as="h4" fontSize={"lg"} {...props} />,
+    a: (props) => {
+      return <Link color="#36c1d2" {...props} textTransform="capitalize" />;
+    },
     p: (props) => {
       // console.log(props.children?.type);
       if (props.children?.type === "img") {
@@ -250,7 +253,9 @@ export default function Post({
           </Box>
         );
       } else {
-        return <Box as={"p"} textAlign={"justify"} {...props} />;
+        return (
+          <Box as={"p"} fontSize="1.2em" textAlign={"justify"} {...props} />
+        );
       }
     },
     // p: (props) => <Box as={"p"} textAlign={"justify"} {...props} />,
