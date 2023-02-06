@@ -39,7 +39,7 @@ export default function Card({
           <NextLink href={`/post/${slug}`}>
             <Text
               fontSize={"2xl"}
-              noOfLines={[3, 2, 1]}
+              noOfLines={[3, 2, 2]}
               // noOfLines={isLargerThan980 ? 1 : 2}
               casing={"capitalize"}
               cursor="pointer"
