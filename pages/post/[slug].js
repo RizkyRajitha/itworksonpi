@@ -34,6 +34,7 @@ import {
   faRedditSquare,
   faTwitterSquare,
 } from "@fortawesome/free-brands-svg-icons";
+import { faInfoCircle, faWarning } from "@fortawesome/free-solid-svg-icons";
 import { Icon } from "@chakra-ui/react";
 
 const StrapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL;
@@ -156,10 +157,11 @@ const CustomHeading = ({ as, id, ...props }) => {
         <Heading
           {...props}
           as={as}
-          py="4"
+          py={4}
           id={id}
-          noOfLines="1"
+          noOfLines={3}
           lineHeight={"1em"}
+          color={"#4cccc5"}
           _hover={{
             _before: {
               position: "relative",
@@ -200,9 +202,51 @@ export default function Post({
     h2: (props) => <CustomHeading fontSize="3xl" as="h2" {...props} />,
     h3: (props) => <CustomHeading fontSize="2xl" as="h3" {...props} />,
     h4: (props) => <CustomHeading as="h4" fontSize={"lg"} {...props} />,
+    h6: (props) => {
+      let color = props.children.split("~");
+
+      return (
+        <Box
+          backgroundColor={color[1] === "warning" ? "red.500" : "blue.700"}
+          borderRadius={"lg"}
+          p={4}
+          my={6}
+          display="flex"
+          alignItems={"center"}
+        >
+          <Icon
+            viewBox="0 0 200 200"
+            mr="1"
+            fontSize={"1.5em"}
+            marginRight={2}
+            color={color[1] === "warning" ? "E53E3E" : "#009FFF"}
+          >
+            <FontAwesomeIcon
+              icon={color[1] === "warning" ? faWarning : faInfoCircle}
+              color={color[1] === "warning" ? "E53E3E" : "#009FFF"}
+            />
+          </Icon>
+          <Text>{color[2].trim()}</Text>
+        </Box>
+      );
+    },
     a: (props) => {
       return <Link color="#36c1d2" {...props} textTransform="capitalize" />;
     },
+    blockquote: (props) => (
+      <Text
+        {...props}
+        backgroundColor="blackAlpha.400"
+        fontSize="1.2em"
+        as="div"
+        fontStyle={"italic"}
+        borderLeft="4px"
+        borderColor={"#36c1d2"}
+        borderRightRadius={8}
+        my={4}
+        p={4}
+      />
+    ),
     p: (props) => {
       // console.log(props.children?.type);
       if (props.children?.type === "img") {
@@ -356,7 +400,13 @@ export default function Post({
                   <Link
                     target="_blank"
                     rel="noreferrer"
-                    href={`https://twitter.com/intent/tweet?text=${post.attributes.name}&url=${PublicUrl}/post/${post.attributes.slug}&hashtags=cloud,web,freeservices`}
+                    href={`https://twitter.com/intent/tweet?text=${
+                      post.attributes.name
+                    }&url=${PublicUrl}/post/${
+                      post.attributes.slug
+                    }&hashtags=${post.attributes.categories.data
+                      .map((hashtag) => hashtag.attributes.name)
+                      .join(",")}`}
                   >
                     <Icon
                       viewBox="0 0 200 200"
@@ -537,7 +587,12 @@ export default function Post({
             </Box>
           </Box>
         </Box>
-        <Modal isOpen={isOpen} onClose={onClose} size="full">
+        <Modal
+          isOpen={isOpen}
+          onClose={onClose}
+          size="full"
+          allowPinchZoom={true}
+        >
           <ModalOverlay />
           <ModalContent>
             <ModalCloseButton />

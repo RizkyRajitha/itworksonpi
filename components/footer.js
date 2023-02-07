@@ -45,12 +45,17 @@ export default function Footer() {
       <Container
         as={Stack}
         maxW={"8xl"}
-        py={[0, 0, 0, , 0, 4]}
-        direction={{ base: "column", md: "row" }}
+        py={[0, 0, 0, 0, 4]}
+        direction={["column", "row", "row", "row", "row"]}
         spacing={4}
-        justify={{ base: "center", md: "space-between" }}
-        // align={{ base: "center", md: "center" }}
-        alignItems='baseline'
+        justifyContent={[
+          "center",
+          "space-between",
+          "space-between",
+          "space-between",
+          "space-between",
+        ]}
+        alignItems={["center", "baseline", "baseline", "baseline", "baseline"]}
       >
         <Text fontFamily={"VT323"} fontSize="4xl" textAlign={"center"}>
           CodeHiRise
