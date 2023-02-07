@@ -114,9 +114,9 @@ export default function Home({ posts, categories }) {
         <Image
           src={LandingBanner}
           style={{
-            // height: "28vh",
-            height: isLargerThan1280 ? "28vh" : "32vh",
-            marginTop: isLargerThan1280 ? "0vh" : "2vh",
+            height: "28vh",
+            // height: isLargerThan1280 ? "28vh" : "32vh",
+            // marginTop: isLargerThan1280 ? "0vh" : "2vh",
             width: "100%",
             objectFit: "cover",
             position: "absolute",
