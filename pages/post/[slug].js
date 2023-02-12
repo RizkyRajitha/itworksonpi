@@ -1,8 +1,10 @@
 import {
   Box,
+  Code,
   Container,
   Heading,
   Link,
+  ListItem,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -12,6 +14,7 @@ import {
   Tag,
   Text,
   Tooltip,
+  UnorderedList,
   useColorModeValue,
   useDisclosure,
   useMediaQuery,
@@ -202,6 +205,18 @@ export default function Post({
     h2: (props) => <CustomHeading fontSize="3xl" as="h2" {...props} />,
     h3: (props) => <CustomHeading fontSize="2xl" as="h3" {...props} />,
     h4: (props) => <CustomHeading as="h4" fontSize={"lg"} {...props} />,
+    // code: (props) => {
+    //   console.log(props);
+    //   return <Box as='p' {...props} />;
+    // },
+    ol: (props) => {
+      console.log(props);
+      return (
+        <UnorderedList py={4}>
+          <Box {...props} />
+        </UnorderedList>
+      );
+    },
     h6: (props) => {
       let color = props.children.split("~");
 
