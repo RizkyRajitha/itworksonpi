@@ -11,7 +11,7 @@ import Image from "next/future/image";
 import Card from "../components/card";
 // import styles from '../styles/Home.module.css'
 const StrapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL;
-import LandingBanner from "../public/images/landingbanner.png";
+import LandingBanner from "../public/images/landingbanner.jpg";
 import NextLink from "next/link";
 import MetaTags from "../components/metatags";
 import Footer from "../components/footer";
