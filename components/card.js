@@ -91,7 +91,7 @@ export default function Card({
               })}
           </Tooltip>
         </Box>
-        <Text fontSize={"xl"} noOfLines={3}>
+        <Text fontSize={"xl"} noOfLines={4} align="justify">
           {overview}
         </Text>
       </Box>
