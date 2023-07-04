@@ -202,8 +202,8 @@ export default function Post({
 
   const components = {
     h1: (props) => <CustomHeading fontSize="4xl" as="h1" {...props} />,
-    h2: (props) => <CustomHeading fontSize="3xl" as="h2" {...props} />,
-    h3: (props) => <CustomHeading fontSize="2xl" as="h3" {...props} />,
+    h2: (props) => <CustomHeading fontSize="3xl" mt={4} as="h2" {...props} />,
+    h3: (props) => <CustomHeading fontSize="2xl" mt={4} as="h3" {...props} />,
     h4: (props) => <CustomHeading as="h4" fontSize={"lg"} {...props} />,
     // code: (props) => {
     //   console.log(props);
@@ -213,7 +213,7 @@ export default function Post({
       console.log(props);
       return (
         <UnorderedList py={4}>
-          <Box {...props} />
+          <Box {...props} fontSize="xl" />
         </UnorderedList>
       );
     },
@@ -312,31 +312,30 @@ export default function Post({
           </Box>
         );
       } else {
-        return (
-          <Box as={"p"} fontSize="1.2em" textAlign={"justify"} {...props} />
-        );
+        return <Box as={"p"} fontSize="xl" textAlign={"justify"} {...props} />;
       }
     },
     // p: (props) => <Box as={"p"} textAlign={"justify"} {...props} />,
-    // pre: (props) => (
-    //   <Box
-    //     onMouseEnter={() => {
-    //       console.log("enterrrrrrr");
-    //       setshowCopy(true);
-    //     }}
-    //     onMouseLeave={() => {
-    //       console.log("leaveeeeee");
-    //       setshowCopy(false);
-    //     }}
-    //   >
-    //     <pre className={props.className}>
-    //       <Box>
-    //         <Button>copy</Button>
-    //       </Box>
-    //       {props.children}{" "}
-    //     </pre>
-    //   </Box>
-    // ),
+    pre: (props) => (
+      <Box
+        // onMouseEnter={() => {
+        //   console.log("enterrrrrrr");
+        //   setshowCopy(true);
+        // }}
+        // onMouseLeave={() => {
+        //   console.log("leaveeeeee");
+        //   setshowCopy(false);
+        // }}
+        py={4}
+      >
+        <pre className={props.className}>
+          {/* <Box>
+            <Button>copy</Button>
+          </Box> */}
+          {props.children}
+        </pre>
+      </Box>
+    ),
   };
 
   return (
