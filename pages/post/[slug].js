@@ -1,4 +1,7 @@
 import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
   Box,
   Code,
   Container,
@@ -210,7 +213,7 @@ export default function Post({
     //   return <Box as='p' {...props} />;
     // },
     ol: (props) => {
-      console.log(props);
+      // console.log(props);
       return (
         <UnorderedList py={4}>
           <Box {...props} fontSize="xl" />
@@ -276,6 +279,7 @@ export default function Post({
             <motion.div
               whileHover={{ scale: isLargerThan268 ? 1.06 : 1 }}
               transition={{ duration: 0.15 }}
+              // style={{ width: "100%" }}
             >
               <Box
                 borderWidth="1px"
@@ -336,6 +340,14 @@ export default function Post({
         </pre>
       </Box>
     ),
+    Alert: (props) => {
+      return (
+        <Alert status={props?.type} p={4} borderRadius={"lg"} my={6}>
+          <AlertIcon />
+          <AlertDescription>{props.children}</AlertDescription>
+        </Alert>
+      );
+    },
   };
 
   return (

@@ -34,7 +34,7 @@ export async function getStaticProps(context) {
       };
     });
 
-  console.log(posts);
+  // console.log(posts);
   return {
     props: {
       posts,

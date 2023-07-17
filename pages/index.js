@@ -32,7 +32,7 @@ export async function getStaticProps(context) {
   ).json();
   let categories = await (await fetch(`${StrapiUrl}/api/categories`)).json();
 
-  console.log(res.data);
+  // console.log(res.data);
 
   let publishedPosts = res.data
     .filter((ele) =>
@@ -58,8 +58,8 @@ export async function getStaticProps(context) {
       };
     });
 
-  console.log(publishedPosts);
-  console.log(categories);
+  // console.log(publishedPosts);
+  // console.log(categories);
 
   return {
     props: { posts: publishedPosts, categories }, // will be passed to the page component as props
