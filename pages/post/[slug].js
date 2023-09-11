@@ -220,6 +220,13 @@ export default function Post({
         </UnorderedList>
       );
     },
+    ul: (props) => {
+      return (
+        <UnorderedList py={4} pl='6'>
+          <Box {...props} fontSize="xl" />
+        </UnorderedList>
+      );
+    },
     h6: (props) => {
       let color = props.children.split("~");
 
