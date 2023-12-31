@@ -4,7 +4,7 @@ export default async function handler(req, res) {
     return res.status(401).json({ message: "Invalid token" });
   }
   try {
-    // console.log(req.body);
+    console.log(req.body);
     // check model type is post
     if (req.body.model !== "post") {
       console.log(`not a post recived type : ${req.body.model}`);
@@ -14,8 +14,15 @@ export default async function handler(req, res) {
     console.log(`revalidate : ${req.body.entry.slug}`);
     // this should be the actual path not a rewritten path
     // e.g. for "/blog/[slug]" this should be "/blog/post-1"
+
+    for (const category of category.name) {
+      //revalidate category
+      console.log(category.name);
+      await res.revalidate(`/category/${req.body.entry.slug}`);
+    }
+
     await res.revalidate(`/post/${req.body.entry.slug}`);
-    // update index 
+    // update index
     await res.revalidate(`/`);
     return res.json({ revalidated: true });
   } catch (err) {
