@@ -4,6 +4,12 @@ export default async function handler(req, res) {
     return res.status(401).json({ message: "Invalid token" });
   }
   try {
+    // check model type is post
+    if (req.body.model !== "post") {
+      console.log(`not a post recived type : ${req.body.model}`);
+      return res.json({ revalidated: false });
+    }
+
     console.log(`revalidate : ${req.body.entry.slug}`);
     // this should be the actual path not a rewritten path
     // e.g. for "/blog/[slug]" this should be "/blog/post-1"
