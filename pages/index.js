@@ -27,6 +27,7 @@ const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
 const VERCEL_ENV = process.env.VERCEL_ENV || "dev";
 
 export async function getStaticProps(context) {
+  console.log("update index static props");
   let res = await (
     await fetch(`${StrapiUrl}/api/posts?populate=*&sort[0]=createdAt:desc`)
   ).json();
