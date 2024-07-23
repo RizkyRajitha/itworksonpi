@@ -8,31 +8,22 @@ import { useRouter } from "next/router";
 import "@fontsource/dancing-script";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHatWizard } from "@fortawesome/free-solid-svg-icons";
+import { getAllPosts } from "./lib/getPosts";
 
-const StrapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL;
 const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
-const VERCEL_ENV = process.env.VERCEL_ENV || "dev";
 
 export async function getStaticProps(context) {
-  let res = await (
-    await fetch(`${StrapiUrl}/api/posts?populate=*&sort[0]=createdAt:desc`)
-  ).json();
+  let res = getAllPosts();
 
-  let posts = res.data
-    ?.filter((ele) =>
-      VERCEL_ENV === "production" ? ele.attributes.publish : true
-    )
-    .map((item) => {
-      return {
-        name: item.attributes.name,
-        slug: item.attributes.slug,
-        createdAt: item.attributes.createdAt,
-        overview: item.attributes.overview,
-        categories: item.attributes.categories.data.map(
-          (item) => item.attributes.name
-        ),
-      };
-    });
+  let posts = res.map((item) => {
+    return {
+      name: item.title,
+      slug: item.slug,
+      createdAt: item.date,
+      overview: item.overview,
+      categories: item.categories.split(","),
+    };
+  });
 
   // console.log(posts);
   return {

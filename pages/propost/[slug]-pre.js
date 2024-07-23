@@ -42,20 +42,28 @@ import {
 } from "@fortawesome/free-brands-svg-icons";
 import { faInfoCircle, faWarning } from "@fortawesome/free-solid-svg-icons";
 import { Icon } from "@chakra-ui/react";
-import { getAllPosts, getPostBySlug } from "../lib/getPosts";
 
+const StrapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL;
 const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
+const VERCEL_ENV = process.env.VERCEL_ENV || "dev";
 const CommitSha = process.env.VERCEL_GIT_COMMIT_SHA || "9977";
 
 export async function getStaticPaths() {
   try {
-    let allPosts = getAllPosts();
-    // console.log(allPosts);
+    let res = await (await fetch(`${StrapiUrl}/api/posts`)).json();
+    // console.log(res.data);
 
-    let posts = allPosts.map((item) => {
-      return { params: { slug: item.slug } };
-    });
+    console.log(`VERCEL_GIT_COMMIT_SHA : ${CommitSha}`);
+
+    let posts = res?.data
+      .filter((ele) =>
+        VERCEL_ENV === "production" ? ele.attributes.publish : true
+      )
+      .map((item) => {
+        return { params: { slug: item.attributes.slug } };
+      });
     // console.log(posts);
+
     return {
       paths: posts,
       fallback: false, // can also be true or 'blocking'
@@ -71,17 +79,25 @@ export async function getStaticPaths() {
 
 // `getStaticPaths` requires using `getStaticProps`
 export async function getStaticProps(context) {
-  let post = getPostBySlug(context.params.slug);
+  let res = await (await fetch(`${StrapiUrl}/api/posts?populate=*`)).json();
 
-  console.log(post);
+  let post = res.data.filter(
+    (post) => post.attributes.slug === context.params.slug
+  )[0];
+
+  // console.log(post.attributes.markdown.data[0].attributes.url);
+
+  let text = await fetch(
+    `${StrapiUrl}${post.attributes.markdown.data[0].attributes.url}`
+  ).then((response) => response.text());
 
   let imagePlaceHolders = [];
 
   let imageregex = /!\[[^\]]*\]\((.*?)\s*("(?:.*[^"])")?\s*\)/g;
 
-  let mdximages = post.content.match(imageregex);
+  let mdximages = text.match(imageregex);
 
-  let readTime = Math.round(post.content.trim().split(/\s+/).length / 183);
+  let readTime = Math.round(text.trim().split(/\s+/).length / 183);
   let coverArtPlaceholder = "";
 
   try {
@@ -100,14 +116,14 @@ export async function getStaticProps(context) {
     }
     console.log(
       `cover art - - - ${PublicUrl}/api/og?title=${encodeURIComponent(
-        post.title
+        post.attributes.name
       )}&id=${CommitSha}`
     );
-
     // create cover art placeholders
     coverArtPlaceholder = await getPlaiceholder(
+      // `${StrapiUrl}${post.attributes.coverArt.data.attributes.url}`,
       `${PublicUrl}/api/og?title=${encodeURIComponent(
-        post.title
+        post.attributes.name
       )}&id=${CommitSha}`,
       {
         size: 32,
@@ -117,12 +133,16 @@ export async function getStaticProps(context) {
     console.log(error);
   }
 
-  const mdxSource = await serialize(post.content, {
+  // console.log(coverArtPlaceholder.base64);
+  // console.log(imagePlaceHolders);
+  // complile mdx
+  const mdxSource = await serialize(text, {
     mdxOptions: {
       remarkPlugins: [require("remark-prism")],
       rehypePlugins: [rehypeSlug],
     },
   });
+  // console.log(mdxSource.compiledSource);
   return {
     props: {
       mdxSource,
@@ -202,7 +222,7 @@ export default function Post({
     },
     ul: (props) => {
       return (
-        <UnorderedList py={4} pl="6">
+        <UnorderedList py={4} pl='6'>
           <Box {...props} fontSize="xl" />
         </UnorderedList>
       );
@@ -340,9 +360,9 @@ export default function Post({
   return (
     <>
       <MetaTags
-        title={post.title}
-        description={post.title}
-        image={`${PublicUrl}/api/og?title=${post.title}`}
+        title={post.attributes.name}
+        description={post.attributes.overview}
+        image={`${PublicUrl}/api/og?title=${post.attributes.name}`}
         url={`${PublicUrl}/post/${slug}`}
       />
       <Navbar />
@@ -398,7 +418,7 @@ export default function Post({
                   fontWeight="extrabold"
                   as="h1"
                 >
-                  {post.title}
+                  {post.attributes.name}
                 </Text>
                 <Text
                   fontSize={"lg"}
@@ -413,7 +433,13 @@ export default function Post({
                   <Link
                     target="_blank"
                     rel="noreferrer"
-                    href={`https://twitter.com/intent/tweet?text=${post.title}&url=${PublicUrl}/post/${post.slug}&hashtags=${post.categories}`}
+                    href={`https://twitter.com/intent/tweet?text=${
+                      post.attributes.name
+                    }&url=${PublicUrl}/post/${
+                      post.attributes.slug
+                    }&hashtags=${post.attributes.categories.data
+                      .map((hashtag) => hashtag.attributes.name)
+                      .join(",")}`}
                   >
                     <Icon
                       viewBox="0 0 200 200"
@@ -427,7 +453,7 @@ export default function Post({
                   <Link
                     target="_blank"
                     rel="noreferrer"
-                    href={`http://www.reddit.com/submit?url=${PublicUrl}/post/${post.slug}&title=${post.title}`}
+                    href={`http://www.reddit.com/submit?url=${PublicUrl}/post/${post.attributes.slug}&title=${post.attributes.name}`}
                   >
                     <Icon
                       viewBox="0 0 200 200"
@@ -441,7 +467,7 @@ export default function Post({
                   <Link
                     target="_blank"
                     rel="noreferrer"
-                    href={`https://www.facebook.com/sharer/sharer.php?u=${PublicUrl}/post/${post.slug}`}
+                    href={`https://www.facebook.com/sharer/sharer.php?u=${PublicUrl}/post/${post.attributes.slug}`}
                   >
                     <Icon
                       viewBox="0 0 200 200"
@@ -478,16 +504,26 @@ export default function Post({
                 <Spacer />
                 <Box py={"2"}>
                   <Tooltip
-                    label={`${format(parseISO(post.date), "yyyy-MM-dd")}`}
+                    label={`${format(
+                      parseISO(post?.attributes?.createdAt),
+                      "MM/dd/yyyy"
+                    )}`}
                     aria-label="Time"
                   >
                     <time
-                      dateTime={`${format(parseISO(post.date), "yyyy-MM-dd")}`}
+                      dateTime={`${format(
+                        parseISO(post?.attributes?.createdAt),
+                        "yyyy-MM-dd HH:MM:SS"
+                      )}`}
                     >
-                      {post.date &&
-                        formatDistance(new Date(post.date), new Date(), {
-                          addSuffix: true,
-                        })}
+                      {post?.attributes?.createdAt &&
+                        formatDistance(
+                          new Date(post.attributes.createdAt),
+                          new Date(),
+                          {
+                            addSuffix: true,
+                          }
+                        )}
                     </time>
                   </Tooltip>
                 </Box>
@@ -495,28 +531,30 @@ export default function Post({
                   pt="2"
                   textAlign={["center", "center", "center", "left", "left"]}
                 >
-                  {[...post.categories.split(",")].map((element, index) => {
-                    return (
-                      <NextLink
-                        href={`/category/${element}`}
-                        key={index}
-                        passHref
-                      >
-                        <Tag
-                          mt="2"
-                          mr="2"
-                          colorScheme="green"
-                          cursor={"pointer"}
-                          as="a"
-                          p="2"
+                  {[...post.attributes.categories.data].map(
+                    (element, index) => {
+                      return (
+                        <NextLink
+                          href={`/category/${element.attributes.name}`}
+                          key={index}
+                          passHref
                         >
-                          <Text casing={"capitalize"} as="span">
-                            {element}
-                          </Text>
-                        </Tag>
-                      </NextLink>
-                    );
-                  })}
+                          <Tag
+                            mt="2"
+                            mr="2"
+                            colorScheme="green"
+                            cursor={"pointer"}
+                            as="a"
+                            p="2"
+                          >
+                            <Text casing={"capitalize"} as="span">
+                              {element.attributes.name}
+                            </Text>
+                          </Tag>
+                        </NextLink>
+                      );
+                    }
+                  )}
                 </Box>
               </Box>
               <Spacer />
@@ -547,9 +585,9 @@ export default function Post({
                         height={630}
                         placeholder="blur"
                         blurDataURL={coverArtPlaceholder}
-                        alt={`${post.title} cover`}
+                        alt={`${post.attributes.name} cover`}
                         layout="responsive"
-                        src={`${PublicUrl}/api/og?title=${post.title}`}
+                        src={`${PublicUrl}/api/og?title=${post.attributes.name}`}
                         style={{
                           borderRadius: "0.5rem",
                         }}

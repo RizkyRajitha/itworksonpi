@@ -82,7 +82,7 @@ export default function Card({
         <Box py={"2"}>
           <Tooltip
             placement="right"
-            label={`${format(parseISO(createdAt), "HH:MM MM/dd/yyyy")}`}
+            label={`${format(parseISO(createdAt), "MM/dd/yyyy")}`}
             aria-label="Time"
           >
             {createdAt &&
@@ -104,6 +104,8 @@ export default function Card({
         alignItems="center"
         borderRadius="lg"
         overflow="hidden"
+        // border={'0.1px'}
+        // ml={'2'}
       >
         <Image
           src={`${PublicUrl}/api/og?title=${name}&id=${CommitSha}`}

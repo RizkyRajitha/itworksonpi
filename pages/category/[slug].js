@@ -5,18 +5,15 @@ import MetaTags from "../../components/metatags";
 // import { getPlaiceholder } from "plaiceholder";
 import Footer from "../../components/footer";
 import Card from "../../components/card";
+import { getAllCategories, getPostByCategories } from "../lib/getPosts";
 // import Navbar from "../../components/navbar";
 
-const StrapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL;
 const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
 
 export async function getStaticPaths() {
   try {
-    let res = await (await fetch(`${StrapiUrl}/api/categories`)).json();
-    console.log(res.data);
-
-    let categories = res?.data?.map((item) => {
-      let slug = item.attributes.name.toLowerCase();
+    let categories = getAllCategories().map((item) => {
+      let slug = item.toLowerCase();
       console.log(slug);
       return { params: { slug: slug } };
     });
@@ -35,14 +32,10 @@ export async function getStaticPaths() {
 
 // `getStaticPaths` requires using `getStaticProps`
 export async function getStaticProps(context) {
-  let res = await (
-    await fetch(
-      `${StrapiUrl}/api/categories?[filters][name]=${context.params.slug}&populate[posts][filters][publish][$eq]=true&populate[posts][populate][1]=categories`
-    )
-  ).json();
-
-  let category = res.data[0];
-  // getPlaiceholder("");
+  let category = {
+    name: context.params.slug,
+    posts: getPostByCategories(context.params.slug),
+  };
   console.log(category);
 
   return {
@@ -56,12 +49,12 @@ export default function Category({ category }) {
   return (
     <>
       <MetaTags
-        title={`${category.attributes.name
-          .charAt(0)
-          .toUpperCase()}${category.attributes.name.slice(1).toLowerCase()}`}
-        description={`Posts belong to ${category.attributes.name} category`}
-        image={`${PublicUrl}/api/og?title=${category.attributes.name}`}
-        url={`${PublicUrl}/category/${category.attributes.name}`}
+        title={`${category.name.charAt(0).toUpperCase()}${category.name
+          .slice(1)
+          .toLowerCase()}`}
+        description={`Posts belong to ${category.name} category`}
+        image={`${PublicUrl}/api/og?title=${category.name}`}
+        url={`${PublicUrl}/category/${category.name}`}
       />
       <Navbar />
       <Container maxW={"8xl"} mt="10" minH={"82vh"}>
@@ -77,20 +70,18 @@ export default function Category({ category }) {
           fontWeight="extrabold"
           casing={"capitalize"}
         >
-          {category.attributes.name}
+          {category.name}
         </Text>
         <Box width={"100%"}>
-          {category.attributes.posts.data.map((element, index) => {
+          {category.posts.map((element, index) => {
             return (
               <Card
-                name={element.attributes?.name}
-                slug={element.attributes?.slug}
-                createdAt={element?.attributes?.createdAt}
-                categories={element.attributes.categories.data.map((ele) => {
-                  return ele.attributes.name;
-                })}
+                name={element?.title}
+                slug={element?.slug}
+                createdAt={element?.date}
+                categories={element.categories.split(",")}
                 index={index}
-                overview={element.attributes.overview}
+                overview={element.overview}
                 key={index}
               />
             );

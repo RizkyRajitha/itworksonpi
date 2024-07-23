@@ -58,19 +58,19 @@ export default function FeatureCard({ data, index }) {
                   textDecorationStyle: "dashed",
                 }}
               >
-                <Link href={`/post/${data.slug}`}>{data.name}</Link>
+                <Link href={`/post/${data.slug}`}>{data.title}</Link>
               </Text>
             </NextLink>
             <Spacer />
           </Box>
 
           <Tooltip
-            label={`${format(parseISO(data.createdAt), "HH:MM MM/dd/yyyy")}`}
+            label={`${format(parseISO(data.date), "yyyy-MM-dd")}`}
             aria-label="Time"
           >
-            <Text py={"2"} fontSize={"12px"} width='fit-content'>
-              {data.createdAt &&
-                formatDistance(new Date(data.createdAt), new Date(), {
+            <Text py={"2"} fontSize={"12px"} width="fit-content">
+              {data.date &&
+                formatDistance(new Date(data.date), new Date(), {
                   addSuffix: true,
                 })}
             </Text>

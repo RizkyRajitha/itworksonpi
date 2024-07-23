@@ -10,7 +10,6 @@ import {
 import Image from "next/future/image";
 import Card from "../components/card";
 // import styles from '../styles/Home.module.css'
-const StrapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL;
 import LandingBanner from "../public/images/landingbanner.jpg";
 import NextLink from "next/link";
 import MetaTags from "../components/metatags";
@@ -26,44 +25,36 @@ import Navbar from "../components/navbar";
 const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
 const VERCEL_ENV = process.env.VERCEL_ENV || "dev";
 
+import { getAllCategories, getAllPosts } from "./lib/getPosts";
+
 export async function getStaticProps(context) {
   console.log("update index static props");
-  let res = await (
-    await fetch(`${StrapiUrl}/api/posts?populate=*&sort[0]=createdAt:desc`)
-  ).json();
-  let categories = await (await fetch(`${StrapiUrl}/api/categories`)).json();
+  let posts = getAllPosts();
+  let categories = getAllCategories();
 
-  // console.log(res.data);
+  let publishedPosts = posts.map((item) => {
+    // const { base64, img } = await getPlaiceholder(
+    //   `${PublicUrl}/api/og?title=${item.attributes.name}`,
+    //   { size: 32 }
+    // );
 
-  let publishedPosts = res.data
-    .filter((ele) =>
-      VERCEL_ENV === "production" ? ele.attributes.publish : true
-    )
-    .map((item) => {
-      // const { base64, img } = await getPlaiceholder(
-      //   `${PublicUrl}/api/og?title=${item.attributes.name}`,
-      //   { size: 32 }
-      // );
-
-      return {
-        name: item.attributes.name,
-        slug: item.attributes.slug,
-        createdAt: item.attributes.createdAt,
-        overview: item.attributes.overview,
-        featured: item.attributes.featured,
-        categories: item.attributes.categories.data.map(
-          (item) => item.attributes.name
-        ),
-        // coverArtUrl: img,
-        // coverArtBlurData: base64,
-      };
-    });
+    return {
+      title: item.title,
+      slug: item.slug,
+      date: item.date,
+      overview: item.overview,
+      featured: item.featured,
+      categories: item.categories.split(","),
+      // coverArtUrl: img,
+      // coverArtBlurData: base64,
+    };
+  });
 
   // console.log(publishedPosts);
   // console.log(categories);
 
   return {
-    props: { posts: publishedPosts, categories }, // will be passed to the page component as props
+    props: { posts: publishedPosts, categories: categories }, // will be passed to the page component as props
   };
 }
 
@@ -163,9 +154,9 @@ export default function Home({ posts, categories }) {
             {postState.map((element, index) => {
               return (
                 <Card
-                  name={element?.name}
+                  name={element?.title}
                   slug={element?.slug}
-                  createdAt={element?.createdAt}
+                  createdAt={element?.date}
                   categories={element?.categories}
                   overview={element?.overview}
                   index={index}
@@ -183,10 +174,10 @@ export default function Home({ posts, categories }) {
               Topics
             </Text>
             <Box textAlign={["center", "center", "center", "left"]}>
-              {categories.data.map((element, index) => {
+              {[...new Set(categories)].map((element, index) => {
                 return (
                   <NextLink
-                    href={`/category/${element.attributes.name}`}
+                    href={`/category/${String(element).toLowerCase()}`}
                     key={index}
                     passHref
                   >
@@ -199,7 +190,7 @@ export default function Home({ posts, categories }) {
                       p="1.5"
                     >
                       <Text casing={"capitalize"} as="span">
-                        {element.attributes.name}
+                        {element}
                       </Text>
                     </Tag>
                   </NextLink>
@@ -216,7 +207,7 @@ export default function Home({ posts, categories }) {
             <Box pt="4" width={"100%"}>
               <Box>
                 {posts
-                  .filter((post) => post.featured)
+                  .filter((post) => post.featured === "true")
                   .map((element, index) => {
                     return (
                       <FeatureCard data={element} index={index} key={index} />
