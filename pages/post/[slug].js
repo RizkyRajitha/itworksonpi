@@ -73,7 +73,7 @@ export async function getStaticPaths() {
 export async function getStaticProps(context) {
   let post = getPostBySlug(context.params.slug);
 
-  console.log(post);
+  // console.log(post);
 
   let imagePlaceHolders = [];
 
