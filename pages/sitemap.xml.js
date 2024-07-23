@@ -1,4 +1,4 @@
-import { getAllPosts } from "./lib/getPosts";
+import { getAllPosts } from "../lib/getPosts";
 
 const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
 

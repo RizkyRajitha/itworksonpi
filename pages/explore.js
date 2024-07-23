@@ -8,7 +8,7 @@ import { useRouter } from "next/router";
 import "@fontsource/dancing-script";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHatWizard } from "@fortawesome/free-solid-svg-icons";
-import { getAllPosts } from "./lib/getPosts";
+import { getAllPosts } from "../lib/getPosts";
 
 const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
 

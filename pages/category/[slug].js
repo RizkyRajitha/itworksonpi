@@ -5,7 +5,7 @@ import MetaTags from "../../components/metatags";
 // import { getPlaiceholder } from "plaiceholder";
 import Footer from "../../components/footer";
 import Card from "../../components/card";
-import { getAllCategories, getPostByCategories } from "../lib/getPosts";
+import { getAllCategories, getPostByCategories } from "../../lib/getPosts";
 // import Navbar from "../../components/navbar";
 
 const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL || "";

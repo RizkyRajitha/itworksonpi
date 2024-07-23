@@ -25,7 +25,7 @@ import Navbar from "../components/navbar";
 const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
 const VERCEL_ENV = process.env.VERCEL_ENV || "dev";
 
-import { getAllCategories, getAllPosts } from "./lib/getPosts";
+import { getAllCategories, getAllPosts } from "../lib/getPosts";
 
 export async function getStaticProps(context) {
   console.log("update index static props");
