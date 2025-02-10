@@ -54,7 +54,7 @@ export default function Category({ category }) {
           .toLowerCase()}`}
         description={`Posts belong to ${category.name} category`}
         image={`${PublicUrl}/api/og?title=${category.name}`}
-        url={`${PublicUrl}/category/${category.name}`}
+        url={`${PublicUrl}/category/${String(category.name).toLowerCase()}`}
       />
       <Navbar />
       <Container maxW={"8xl"} mt="10" minH={"82vh"}>

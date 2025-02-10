@@ -44,7 +44,7 @@ import { faInfoCircle, faWarning } from "@fortawesome/free-solid-svg-icons";
 import { Icon } from "@chakra-ui/react";
 import { getAllPosts, getPostBySlug } from "../../lib/getPosts";
 
-const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
+const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 const CommitSha = process.env.VERCEL_GIT_COMMIT_SHA || "9977";
 
 export async function getStaticPaths() {
@@ -498,7 +498,7 @@ export default function Post({
                   {[...post.categories.split(",")].map((element, index) => {
                     return (
                       <NextLink
-                        href={`/category/${element}`}
+                        href={`/category/${String(element).toLowerCase()}`}
                         key={index}
                         passHref
                       >
@@ -509,6 +509,7 @@ export default function Post({
                           cursor={"pointer"}
                           as="a"
                           p="2"
+                          data-umami-event="Categories"
                         >
                           <Text casing={"capitalize"} as="span">
                             {element}
@@ -599,7 +600,12 @@ export default function Post({
                 p={[0, 2, 3, 4, 6]}
                 minW={"100%"}
               >
-                <Box>
+                <Box
+                 display={"flex"}
+                 flexDirection="column"
+                 justifyContent="center"
+                 alighItems="center"
+                 >
                   <Image
                     src={modalImage.src}
                     alt={modalImage.alt}
@@ -607,6 +613,9 @@ export default function Post({
                     height={"1080"}
                     placeholder="blur"
                     blurDataURL={modalImage.placeholder}
+                    style={{
+                      alignSelf: "center",
+                    }}
                   />
                   <Box textAlign={"center"}>
                     <Text pt="4">{modalImage.alt}</Text>

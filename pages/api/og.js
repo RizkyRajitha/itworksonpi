@@ -1,5 +1,5 @@
 import { ImageResponse } from "@vercel/og";
-import Image from "next/future/image";
+// import Image from "next/future/image";
 const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
 export const config = {
@@ -20,7 +20,7 @@ export default async function (req) {
     ? searchParams.get("title")?.slice(0, 100)
     : "CodeHiRise";
 
-  // console.log(title);
+  console.log(title);
 
   return new ImageResponse(
     (

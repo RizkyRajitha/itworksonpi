@@ -123,6 +123,7 @@ export default function Home({ posts, categories }) {
           fontSize={["6xl", "9xl"]}
           fontFamily={"VT323"}
           color={useColorModeValue("#fff", "#fff")}
+          data-umami-event="Logo"
         >
           CodeHiRise
         </Heading>
@@ -182,6 +183,7 @@ export default function Home({ posts, categories }) {
                     passHref
                   >
                     <Tag
+                      data-umami-event="Categories"
                       mt="2"
                       mr="2"
                       colorScheme="green"
