@@ -1,5 +1,6 @@
 import { ImageResponse } from "@vercel/og";
-import Image from "next/future/image";
+// import Image from "next/future/image";
+const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://codehirise.com";
 
 export const config = {
   runtime: "experimental-edge",
@@ -19,7 +20,7 @@ export default async function (req) {
     ? searchParams.get("title")?.slice(0, 100)
     : "CodeHiRise";
 
-  // console.log(title);
+  console.log(title);
 
   return new ImageResponse(
     (
@@ -70,9 +71,7 @@ export default async function (req) {
               borderWidth: "2px",
             }}
             width="75"
-            src={
-              "https://strapi.rizkyrajitha.xyz/uploads/codehirise_logo_3_dd0728baee.png"
-            }
+            src={`${PublicUrl}/images/codehiriselogo.png`}
             alt="logo"
           />
           <div
