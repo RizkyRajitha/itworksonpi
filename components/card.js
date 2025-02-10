@@ -11,7 +11,7 @@ import { format, formatDistance, parseISO } from "date-fns";
 import NextLink from "next/link";
 import Image from "next/future/image";
 
-const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
+const PublicUrl = "http://localhost:3000" //process.env.NEXT_PUBLIC_SITE_URL || "";
 const CommitSha = process.env.VERCEL_GIT_COMMIT_SHA || "9977";
 
 export default function Card({
@@ -34,10 +34,14 @@ export default function Card({
       display={"flex"}
       flexDirection={["column-reverse", "column-reverse", "row"]}
     >
-      <Box>
+      <Box
+      // border={'1px'}
+      // borderRadius="lg"
+      >
         <Box display={"flex"} justifyContent={"space-between"}>
-          <NextLink href={`/post/${slug}`}>
+          <NextLink href={`/post/${slug}` }>
             <Text
+              data-umami-event="Posts"
               fontSize={"2xl"}
               noOfLines={[3, 2, 2]}
               // noOfLines={isLargerThan980 ? 1 : 2}
@@ -62,9 +66,9 @@ export default function Card({
         <Box>
           {categories.map((element, index) => {
             return (
-              <NextLink href={`/category/${element}`} key={index} passHref>
+              <NextLink href={`/category/${String(element).toLowerCase()}`} key={index} passHref>
                 <Tag
-                  mt="2"
+                  data-umami-event="Categories"
                   mr="2"
                   colorScheme="green"
                   cursor={"pointer"}
@@ -82,7 +86,7 @@ export default function Card({
         <Box py={"2"}>
           <Tooltip
             placement="right"
-            label={`${format(parseISO(createdAt), "HH:MM MM/dd/yyyy")}`}
+            label={`${format(parseISO(createdAt), "MM/dd/yyyy")}`}
             aria-label="Time"
           >
             {createdAt &&
@@ -104,6 +108,8 @@ export default function Card({
         alignItems="center"
         borderRadius="lg"
         overflow="hidden"
+        // border={'1px'}
+        ml={["0", "0", "4"]}
       >
         <Image
           src={`${PublicUrl}/api/og?title=${name}&id=${CommitSha}`}

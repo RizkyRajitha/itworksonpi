@@ -42,28 +42,20 @@ import {
 } from "@fortawesome/free-brands-svg-icons";
 import { faInfoCircle, faWarning } from "@fortawesome/free-solid-svg-icons";
 import { Icon } from "@chakra-ui/react";
+import { getAllPosts, getPostBySlug } from "../../lib/getPosts";
 
-const StrapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL;
-const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
-const VERCEL_ENV = process.env.VERCEL_ENV || "dev";
+const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 const CommitSha = process.env.VERCEL_GIT_COMMIT_SHA || "9977";
 
 export async function getStaticPaths() {
   try {
-    let res = await (await fetch(`${StrapiUrl}/api/posts`)).json();
-    // console.log(res.data);
+    let allPosts = getAllPosts();
+    // console.log(allPosts);
 
-    console.log(`VERCEL_GIT_COMMIT_SHA : ${CommitSha}`);
-
-    let posts = res?.data
-      .filter((ele) =>
-        VERCEL_ENV === "production" ? ele.attributes.publish : true
-      )
-      .map((item) => {
-        return { params: { slug: item.attributes.slug } };
-      });
+    let posts = allPosts.map((item) => {
+      return { params: { slug: item.slug } };
+    });
     // console.log(posts);
-
     return {
       paths: posts,
       fallback: false, // can also be true or 'blocking'
@@ -79,25 +71,17 @@ export async function getStaticPaths() {
 
 // `getStaticPaths` requires using `getStaticProps`
 export async function getStaticProps(context) {
-  let res = await (await fetch(`${StrapiUrl}/api/posts?populate=*`)).json();
+  let post = getPostBySlug(context.params.slug);
 
-  let post = res.data.filter(
-    (post) => post.attributes.slug === context.params.slug
-  )[0];
-
-  // console.log(post.attributes.markdown.data[0].attributes.url);
-
-  let text = await fetch(
-    `${StrapiUrl}${post.attributes.markdown.data[0].attributes.url}`
-  ).then((response) => response.text());
+  // console.log(post);
 
   let imagePlaceHolders = [];
 
   let imageregex = /!\[[^\]]*\]\((.*?)\s*("(?:.*[^"])")?\s*\)/g;
 
-  let mdximages = text.match(imageregex);
+  let mdximages = post.content.match(imageregex);
 
-  let readTime = Math.round(text.trim().split(/\s+/).length / 183);
+  let readTime = Math.round(post.content.trim().split(/\s+/).length / 183);
   let coverArtPlaceholder = "";
 
   try {
@@ -116,14 +100,14 @@ export async function getStaticProps(context) {
     }
     console.log(
       `cover art - - - ${PublicUrl}/api/og?title=${encodeURIComponent(
-        post.attributes.name
+        post.title
       )}&id=${CommitSha}`
     );
+
     // create cover art placeholders
     coverArtPlaceholder = await getPlaiceholder(
-      // `${StrapiUrl}${post.attributes.coverArt.data.attributes.url}`,
       `${PublicUrl}/api/og?title=${encodeURIComponent(
-        post.attributes.name
+        post.title
       )}&id=${CommitSha}`,
       {
         size: 32,
@@ -133,16 +117,12 @@ export async function getStaticProps(context) {
     console.log(error);
   }
 
-  // console.log(coverArtPlaceholder.base64);
-  // console.log(imagePlaceHolders);
-  // complile mdx
-  const mdxSource = await serialize(text, {
+  const mdxSource = await serialize(post.content, {
     mdxOptions: {
       remarkPlugins: [require("remark-prism")],
       rehypePlugins: [rehypeSlug],
     },
   });
-  // console.log(mdxSource.compiledSource);
   return {
     props: {
       mdxSource,
@@ -222,7 +202,7 @@ export default function Post({
     },
     ul: (props) => {
       return (
-        <UnorderedList py={4} pl='6'>
+        <UnorderedList py={4} pl="6">
           <Box {...props} fontSize="xl" />
         </UnorderedList>
       );
@@ -360,9 +340,9 @@ export default function Post({
   return (
     <>
       <MetaTags
-        title={post.attributes.name}
-        description={post.attributes.overview}
-        image={`${PublicUrl}/api/og?title=${post.attributes.name}`}
+        title={post.title}
+        description={post.title}
+        image={`${PublicUrl}/api/og?title=${post.title}`}
         url={`${PublicUrl}/post/${slug}`}
       />
       <Navbar />
@@ -418,7 +398,7 @@ export default function Post({
                   fontWeight="extrabold"
                   as="h1"
                 >
-                  {post.attributes.name}
+                  {post.title}
                 </Text>
                 <Text
                   fontSize={"lg"}
@@ -433,13 +413,7 @@ export default function Post({
                   <Link
                     target="_blank"
                     rel="noreferrer"
-                    href={`https://twitter.com/intent/tweet?text=${
-                      post.attributes.name
-                    }&url=${PublicUrl}/post/${
-                      post.attributes.slug
-                    }&hashtags=${post.attributes.categories.data
-                      .map((hashtag) => hashtag.attributes.name)
-                      .join(",")}`}
+                    href={`https://twitter.com/intent/tweet?text=${post.title}&url=${PublicUrl}/post/${post.slug}&hashtags=${post.categories}`}
                   >
                     <Icon
                       viewBox="0 0 200 200"
@@ -453,7 +427,7 @@ export default function Post({
                   <Link
                     target="_blank"
                     rel="noreferrer"
-                    href={`http://www.reddit.com/submit?url=${PublicUrl}/post/${post.attributes.slug}&title=${post.attributes.name}`}
+                    href={`http://www.reddit.com/submit?url=${PublicUrl}/post/${post.slug}&title=${post.title}`}
                   >
                     <Icon
                       viewBox="0 0 200 200"
@@ -467,7 +441,7 @@ export default function Post({
                   <Link
                     target="_blank"
                     rel="noreferrer"
-                    href={`https://www.facebook.com/sharer/sharer.php?u=${PublicUrl}/post/${post.attributes.slug}`}
+                    href={`https://www.facebook.com/sharer/sharer.php?u=${PublicUrl}/post/${post.slug}`}
                   >
                     <Icon
                       viewBox="0 0 200 200"
@@ -504,26 +478,16 @@ export default function Post({
                 <Spacer />
                 <Box py={"2"}>
                   <Tooltip
-                    label={`${format(
-                      parseISO(post?.attributes?.createdAt),
-                      "HH:MM MM/dd/yyyy"
-                    )}`}
+                    label={`${format(parseISO(post.date), "yyyy-MM-dd")}`}
                     aria-label="Time"
                   >
                     <time
-                      dateTime={`${format(
-                        parseISO(post?.attributes?.createdAt),
-                        "yyyy-MM-dd HH:MM:SS"
-                      )}`}
+                      dateTime={`${format(parseISO(post.date), "yyyy-MM-dd")}`}
                     >
-                      {post?.attributes?.createdAt &&
-                        formatDistance(
-                          new Date(post.attributes.createdAt),
-                          new Date(),
-                          {
-                            addSuffix: true,
-                          }
-                        )}
+                      {post.date &&
+                        formatDistance(new Date(post.date), new Date(), {
+                          addSuffix: true,
+                        })}
                     </time>
                   </Tooltip>
                 </Box>
@@ -531,30 +495,29 @@ export default function Post({
                   pt="2"
                   textAlign={["center", "center", "center", "left", "left"]}
                 >
-                  {[...post.attributes.categories.data].map(
-                    (element, index) => {
-                      return (
-                        <NextLink
-                          href={`/category/${element.attributes.name}`}
-                          key={index}
-                          passHref
+                  {[...post.categories.split(",")].map((element, index) => {
+                    return (
+                      <NextLink
+                        href={`/category/${String(element).toLowerCase()}`}
+                        key={index}
+                        passHref
+                      >
+                        <Tag
+                          mt="2"
+                          mr="2"
+                          colorScheme="green"
+                          cursor={"pointer"}
+                          as="a"
+                          p="2"
+                          data-umami-event="Categories"
                         >
-                          <Tag
-                            mt="2"
-                            mr="2"
-                            colorScheme="green"
-                            cursor={"pointer"}
-                            as="a"
-                            p="2"
-                          >
-                            <Text casing={"capitalize"} as="span">
-                              {element.attributes.name}
-                            </Text>
-                          </Tag>
-                        </NextLink>
-                      );
-                    }
-                  )}
+                          <Text casing={"capitalize"} as="span">
+                            {element}
+                          </Text>
+                        </Tag>
+                      </NextLink>
+                    );
+                  })}
                 </Box>
               </Box>
               <Spacer />
@@ -585,9 +548,9 @@ export default function Post({
                         height={630}
                         placeholder="blur"
                         blurDataURL={coverArtPlaceholder}
-                        alt={`${post.attributes.name} cover`}
+                        alt={`${post.title} cover`}
                         layout="responsive"
-                        src={`${PublicUrl}/api/og?title=${post.attributes.name}`}
+                        src={`${PublicUrl}/api/og?title=${post.title}`}
                         style={{
                           borderRadius: "0.5rem",
                         }}
@@ -637,7 +600,12 @@ export default function Post({
                 p={[0, 2, 3, 4, 6]}
                 minW={"100%"}
               >
-                <Box>
+                <Box
+                 display={"flex"}
+                 flexDirection="column"
+                 justifyContent="center"
+                 alighItems="center"
+                 >
                   <Image
                     src={modalImage.src}
                     alt={modalImage.alt}
@@ -645,6 +613,9 @@ export default function Post({
                     height={"1080"}
                     placeholder="blur"
                     blurDataURL={modalImage.placeholder}
+                    style={{
+                      alignSelf: "center",
+                    }}
                   />
                   <Box textAlign={"center"}>
                     <Text pt="4">{modalImage.alt}</Text>
