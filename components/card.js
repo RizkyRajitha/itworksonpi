@@ -11,7 +11,7 @@ import { format, formatDistance, parseISO } from "date-fns";
 import NextLink from "next/link";
 import Image from "next/future/image";
 
-const PublicUrl = "http://localhost:3000" //process.env.NEXT_PUBLIC_SITE_URL || "";
+const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://codehirise.com";
 const CommitSha = process.env.VERCEL_GIT_COMMIT_SHA || "9977";
 
 export default function Card({
