@@ -44,7 +44,7 @@ import { faInfoCircle, faWarning } from "@fortawesome/free-solid-svg-icons";
 import { Icon } from "@chakra-ui/react";
 import { getAllPosts, getPostBySlug } from "../../lib/getPosts";
 
-const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+const PublicUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://codehirise.com";
 const CommitSha = process.env.VERCEL_GIT_COMMIT_SHA || "9977";
 
 export async function getStaticPaths() {
