@@ -37,7 +37,7 @@ When you click New self hosted runner button you will get below page with all re
   
 It outlines downloading and setting up action runner but in our case we will take some extra steps to make sure our setup is more secure and configure runner as a systemd service.
 
-### Step 1: Create a Dedicated System User for GitHub action runner
+## Step 1: Create a Dedicated System User for GitHub action runner
 
 we will create new system user user in our ubuntu vm.
 
@@ -164,7 +164,7 @@ if you now visit runners page you can see our brand new github action self hoste
 
 ![](/assets/github-private-runner/image_8.png)
 
-also action runner systemd service comes enabled by default meaning it will automatically start after a reboot.
+Action runner systemd service comes enabled by default so it will automatically start after a system reboot.
 
 ![](/assets/github-private-runner/image_9.png)
 
