@@ -92,6 +92,7 @@ export async function getStaticProps(context) {
 
         var urlregexp = /\(([^)]+)\)/;
         var matches = urlregexp.exec(element)[1];
+        // console.log(matches)
 
         const { base64, img } = await getPlaiceholder(matches, { size: 32 });
         let plaiceholder = { img: img.src, base64 };
@@ -188,10 +189,18 @@ export default function Post({
     h2: (props) => <CustomHeading fontSize="3xl" mt={4} as="h2" {...props} />,
     h3: (props) => <CustomHeading fontSize="2xl" mt={4} as="h3" {...props} />,
     h4: (props) => <CustomHeading as="h4" fontSize={"lg"} {...props} />,
-    // code: (props) => {
-    //   console.log(props);
-    //   return <Box as='p' {...props} />;
-    // },
+    code: (props) => {
+      // console.log(props);
+      if (!props?.className) {
+        return (
+            <Code as='span' variant={'subtle'} colorScheme={'blue'} fontSize={'medium'}{...props} />
+        );
+      }else{
+        return (
+          <span {...props} />
+        );
+      }
+    },
     ol: (props) => {
       // console.log(props);
       return (
