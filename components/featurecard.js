@@ -42,6 +42,7 @@ export default function FeatureCard({ data, index }) {
             <NextLink href={`/post/${data.slug}`}>
               <Text
                 // fontSize={isLargerThan1280 ? "4xs" : "2xl"}
+                data-umami-event="FeatureCard"
                 fontSize={["md", "xl", "xl", "md"]}
                 noOfLines={[3, 2, 2]}
                 casing={"capitalize"}
