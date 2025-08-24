@@ -9,7 +9,7 @@ overview: "Learn to integrate Home Assistant with InfluxDB v2 and Grafana to cre
 
 ## **Hi everyone,**
 
-In this post we wil dive in to integrating [Home Assistant](https://www.home-assistant.io/) with [InfluxDB V2](https://docs.influxdata.com/influxdb/v2/), and [Grafana](https://grafana.com/grafana/) to store sensor data and create beautiful, real-time dashboards. 
+In this post we will dive in to integrating [Home Assistant](https://www.home-assistant.io/) with [InfluxDB V2](https://docs.influxdata.com/influxdb/v2/), and [Grafana](https://grafana.com/grafana/) to store sensor data and create beautiful, real-time dashboards. 
 
 This step-by-step guide is perfect for home automation enthusiasts and IoT developers looking to monitor and visualize sensor data efficiently.
 
@@ -211,7 +211,7 @@ Customize your dashboard:
 ### Final Thoughts
 
 Congratulations! 🥳 You’ve successfully integrated Home Assistant with InfluxDB and Grafana to create stunning, real-time dashboards. 
-From here, your imagination is the only limit—build dashboards to monitor energy usage, track indoor climate, or visualize smart home trends over time.
+From here, your imagination is the only limit build dashboards to monitor energy usage, track indoor climate, or visualize smart home trends over time.
 
 ### Additional Tips
 
