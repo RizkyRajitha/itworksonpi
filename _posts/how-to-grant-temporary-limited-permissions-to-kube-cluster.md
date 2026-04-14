@@ -116,7 +116,7 @@ kubectl apply -f dev-reader-rolebinding.yaml
 
 The RoleBinding connects the permissions (Role) to the identity (ServiceAccount). Without it, the ServiceAccount has zero permissions.
 
-## Step 5: Generate a Temporary Token (This is the “Temporary” Part)
+## Step 5: Generate a Temporary Token
 Kubernetes now supports short-lived tokens out of the box.
 
 ```bash
