@@ -1,6 +1,6 @@
 ---
 title: "How to Grant Temporary Read-Only Access to a Kubernetes Cluster"
-date: "2026-04-03"
+date: "2026-04-14"
 categories: "Kubernetes,DevOps,Security"
 featured: "true"
 overview: "Learn how to safely give temporary read-only access to Kubernetes pods, deployments, and pod logs using RBAC, ServiceAccounts, and a custom kubeconfig file. This beginner-friendly guide follows the principle of least privilege and includes step-by-step commands, YAML examples, and cleanup instructions."
