@@ -1,0 +1,26 @@
+---
+interface Props {
+  src: string;
+  alt?: string;
+}
+const { src, alt = "" } = Astro.props;
+---
+
+<button
+  type="button"
+  class="post-image-trigger group block w-full p-2 md:p-6 cursor-zoom-in"
+  data-src={src}
+  data-alt={alt}
+>
+  <span
+    class="block rounded-lg border border-gray-300 dark:border-gray-700 overflow-hidden transition-transform duration-300 ease-out group-hover:scale-105"
+  >
+    <img
+      src={src}
+      alt={alt}
+      loading="lazy"
+      decoding="async"
+      class="w-full h-auto block"
+    />
+  </span>
+</button>

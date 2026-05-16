@@ -1,0 +1,25 @@
+---
+// Top-of-page reading progress bar.
+---
+
+<div
+  id="scroll-progress"
+  class="fixed top-0 left-0 h-1 w-full origin-left scale-x-0 z-50 pointer-events-none"
+  style="background: linear-gradient(to left, #4ECDC4, #1CB5E0);"
+></div>
+
+<script is:inline>
+  (() => {
+    const el = document.getElementById('scroll-progress');
+    if (!el) return;
+    const update = () => {
+      const h = document.documentElement;
+      const max = h.scrollHeight - h.clientHeight;
+      const v = max > 0 ? h.scrollTop / max : 0;
+      el.style.transform = `scaleX(${v})`;
+    };
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+  })();
+</script>

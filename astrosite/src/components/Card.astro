@@ -1,0 +1,55 @@
+---
+import { DateTime } from 'luxon';
+import { categorySlug } from '../lib/categories';
+
+interface Props {
+  title: string;
+  slug: string;
+  date: Date;
+  overview: string;
+  categories: string[];
+}
+
+const { title, slug, date, overview, categories } = Astro.props;
+const ogUrl = `/og/post/${slug}.png`;
+const formattedDate = DateTime.fromJSDate(date).toFormat('MM/dd/yyyy');
+const relative = DateTime.fromJSDate(date).toRelative();
+---
+
+<article class="mb-5 p-4 rounded-lg border border-gray-300 dark:border-gray-700 overflow-hidden flex flex-col-reverse md:flex-row gap-4">
+  <div class="flex-1 min-w-0">
+    <a href={`/post/${slug}`} data-umami-event="Posts" class="block">
+      <h2
+        class="text-2xl font-semibold capitalize bg-gradient-to-l from-[var(--color-brand-cyan)] to-[var(--color-brand-blue)] bg-clip-text text-transparent line-clamp-2 hover:underline decoration-dotted decoration-2 underline-offset-4 decoration-gray-400"
+      >
+        {title}
+      </h2>
+    </a>
+    <div class="mt-2 flex flex-wrap gap-2">
+      {categories.map((c) => (
+        <a
+          href={`/category/${categorySlug(c)}`}
+          data-umami-event="Categories"
+          class="inline-block px-2 py-1 rounded bg-green-700/20 text-green-700 dark:text-green-300 capitalize hover:bg-green-700/30"
+        >
+          {c}
+        </a>
+      ))}
+    </div>
+    <div class="py-2 text-sm opacity-75">
+      <time datetime={date.toISOString()} title={formattedDate}>{relative}</time>
+    </div>
+    <p class="text-lg text-justify line-clamp-4">{overview}</p>
+  </div>
+  <div class="md:max-w-[40%] md:min-w-[40%] flex items-center rounded-lg overflow-hidden">
+    <img
+      src={ogUrl}
+      alt={`${title} cover art`}
+      width="1200"
+      height="630"
+      loading="lazy"
+      decoding="async"
+      class="w-full h-auto"
+    />
+  </div>
+</article>
