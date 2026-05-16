@@ -1,0 +1,106 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Card from '../components/Card.astro';
+import FeatureCard from '../components/FeatureCard.astro';
+import {
+  postCategories,
+  uniqueCategories,
+  sortPostsByDateDesc,
+  categorySlug,
+} from '../lib/categories';
+
+const allPosts = sortPostsByDateDesc(await getCollection('blog'));
+const categories = uniqueCategories(allPosts);
+const featured = allPosts.filter((p) => p.data.featured);
+
+const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? '';
+const url = `${siteUrl}/`;
+const image = `${siteUrl}/images/ogmetabanner.png`;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Blog',
+  name: 'CodeHiRise',
+  url,
+  description:
+    'Wander in the wonderful world of electronics, programming, web dev and in between',
+  blogPost: allPosts.slice(0, 10).map((p) => ({
+    '@type': 'Article',
+    headline: p.data.title,
+    datePublished: p.data.date.toISOString(),
+    url: `${siteUrl}/post/${p.id.replace(/\.(md|mdx)$/, '')}`,
+  })),
+};
+---
+
+<BaseLayout
+  title="CodeHiRise"
+  description="Wander in the wonderful world of electronics, programming, web dev and in between"
+  image={image}
+  url={url}
+  jsonLd={jsonLd}
+>
+  <section class="relative h-[28vh] flex items-center justify-center overflow-hidden">
+    <img
+      src="/images/landingbanner.jpg"
+      alt="banner"
+      class="absolute inset-0 w-full h-full object-cover"
+      loading="eager"
+      fetchpriority="high"
+    />
+    <h1
+      class="relative text-6xl md:text-9xl text-center text-white"
+      style="font-family: var(--font-display)"
+      data-umami-event="Logo"
+    >
+      CodeHiRise
+    </h1>
+  </section>
+
+  <div class="mx-auto max-w-7xl px-4 mt-5 min-h-[82vh]">
+    <p class="text-center text-2xl py-10" style="font-family: var(--font-mono)">
+      Wander in the wonderful world of electronics, web dev and in between
+    </p>
+
+    <div class="flex flex-col lg:flex-row justify-between gap-8">
+      <div class="w-full lg:w-3/4">
+        {allPosts.map((post) => (
+          <Card
+            title={post.data.title}
+            slug={post.id.replace(/\.(md|mdx)$/, '')}
+            date={post.data.date}
+            overview={post.data.overview}
+            categories={postCategories(post)}
+          />
+        ))}
+      </div>
+
+      <aside class="w-full lg:w-1/4 lg:pl-8">
+        <h2 class="text-4xl text-center lg:text-left">Topics</h2>
+        <div class="flex flex-wrap gap-2 mt-3 justify-center lg:justify-start">
+          {categories.map((c) => (
+            <a
+              href={`/category/${categorySlug(c)}`}
+              data-umami-event="Categories"
+              class="inline-block px-2 py-1 rounded bg-green-700/20 text-green-700 dark:text-green-300 capitalize hover:bg-green-700/30"
+            >
+              {c}
+            </a>
+          ))}
+        </div>
+
+        <h2 class="text-4xl text-center lg:text-left mt-10">Featured</h2>
+        <div class="mt-4">
+          {featured.map((p) => (
+            <FeatureCard
+              title={p.data.title}
+              slug={p.id.replace(/\.(md|mdx)$/, '')}
+              date={p.data.date}
+            />
+          ))}
+        </div>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>

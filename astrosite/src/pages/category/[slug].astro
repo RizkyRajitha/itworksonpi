@@ -1,0 +1,55 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Card from '../../components/Card.astro';
+import {
+  postCategories,
+  postsByCategory,
+  uniqueCategories,
+  sortPostsByDateDesc,
+  categorySlug,
+} from '../../lib/categories';
+
+export async function getStaticPaths() {
+  const all = await getCollection('blog');
+  const cats = uniqueCategories(all);
+  return cats.map((name) => ({
+    params: { slug: categorySlug(name) },
+    props: { name },
+  }));
+}
+
+const { slug } = Astro.params;
+const { name } = Astro.props as { name: string };
+
+const all = sortPostsByDateDesc(await getCollection('blog'));
+const posts = postsByCategory(all, slug!);
+
+const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? '';
+const url = `${siteUrl}/category/${slug}`;
+const image = `${siteUrl}/og/category/${slug}.png`;
+---
+
+<BaseLayout
+  title={`${name} · CodeHiRise`}
+  description={`Posts about ${name} on CodeHiRise.`}
+  image={image}
+  url={url}
+>
+  <div class="mx-auto max-w-7xl px-4 pt-10 pb-16 min-h-[82vh]">
+    <h1 class="text-5xl capitalize mb-8 bg-gradient-to-br from-[var(--color-brand-cyan)] to-[var(--color-brand-blue)] bg-clip-text text-transparent">
+      {name}
+    </h1>
+    <div>
+      {posts.map((post) => (
+        <Card
+          title={post.data.title}
+          slug={post.id.replace(/\.(md|mdx)$/, '')}
+          date={post.data.date}
+          overview={post.data.overview}
+          categories={postCategories(post)}
+        />
+      ))}
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,101 @@
+@import "tailwindcss";
+@import "@fontsource/inter-tight/400.css";
+@import "@fontsource/inter-tight/600.css";
+@import "@fontsource/inter-tight/700.css";
+@import "@fontsource/noto-sans-mono/400.css";
+
+@font-face {
+  font-family: "VT323";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/VT323-Regular.TTF") format("truetype");
+}
+
+@theme {
+  --color-brand-cyan: #4ECDC4;
+  --color-brand-blue: #1CB5E0;
+  --color-brand-teal: #36c1d2;
+  --color-brand-link: #4cccc5;
+  --color-brand-info: #009FFF;
+  --color-brand-warning: #E53E3E;
+
+  --color-bg-light: #edf2f7;
+  --color-bg-dark: #1a202c;
+  --color-bg-deep: #1b202c;
+  --color-fg-light: #2d3748;
+  --color-fg-dark: #f7fafc;
+
+  --font-display: "VT323", ui-monospace, monospace;
+  --font-body: "Inter Tight", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Noto Sans Mono", ui-monospace, monospace;
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+html {
+  background: var(--color-bg-light);
+  color: var(--color-fg-light);
+  scroll-behavior: smooth;
+}
+
+html.dark {
+  background: var(--color-bg-dark);
+  color: var(--color-fg-dark);
+}
+
+body {
+  font-family: var(--font-body);
+  margin: 0;
+  min-height: 100vh;
+}
+
+::selection {
+  background: #1db6df;
+  color: #fff;
+}
+
+/* dark scrollbar parity with previous site */
+html.dark ::-webkit-scrollbar {
+  width: 10px;
+}
+html.dark ::-webkit-scrollbar-track {
+  background: #1a202c;
+}
+html.dark ::-webkit-scrollbar-thumb {
+  background: #404040;
+  border-radius: 6px;
+}
+
+/* heading anchor link styling — matches old `_hover { _before: "#" }` behavior */
+.heading-anchor {
+  color: var(--color-brand-link);
+  text-decoration: none;
+}
+.heading-anchor:hover::before {
+  content: "#";
+  position: relative;
+  margin-left: -1.2ch;
+  padding-right: 0.2ch;
+  opacity: 0.6;
+}
+
+/* Shiki code blocks — base look */
+pre.astro-code {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+/* inline code "subtle blue badge" parity */
+:not(pre) > code {
+  background: rgb(59 130 246 / 0.18);
+  color: #93c5fd;
+  padding: 0 0.35em;
+  border-radius: 0.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.95em;
+}
