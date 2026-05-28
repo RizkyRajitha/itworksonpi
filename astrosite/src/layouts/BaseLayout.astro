@@ -12,6 +12,7 @@ interface Props {
   type?: 'website' | 'article';
   publishedTime?: string;
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  keywords?: string;
   showFooter?: boolean;
 }
 
@@ -23,6 +24,7 @@ const {
   type = 'website',
   publishedTime,
   jsonLd,
+  keywords,
   showFooter = true,
 } = Astro.props;
 ---
@@ -38,6 +40,7 @@ const {
       type={type}
       publishedTime={publishedTime}
       jsonLd={jsonLd}
+      keywords={keywords}
     />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />

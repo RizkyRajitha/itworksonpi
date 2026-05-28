@@ -40,7 +40,7 @@ const jsonLd = {
   datePublished: post.data.date.toISOString(),
   dateModified: post.data.date.toISOString(),
   keywords: cats.join(", "),
-  author: { "@type": "Person", name: "CodeHiRise" },
+  author: { "@type": "Person", name: "CodeHiRise", url: siteUrl },
   publisher: {
     "@type": "Organization",
     name: "CodeHiRise",
@@ -61,6 +61,7 @@ const jsonLd = {
   type="article"
   publishedTime={post.data.date.toISOString()}
   jsonLd={jsonLd}
+  keywords={cats.join(", ")}
 >
   <ScrollProgress />
 

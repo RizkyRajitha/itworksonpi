@@ -7,6 +7,7 @@ interface Props {
   type?: 'website' | 'article';
   publishedTime?: string;
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  keywords?: string;
 }
 
 const {
@@ -17,10 +18,11 @@ const {
   type = 'website',
   publishedTime,
   jsonLd,
+  keywords,
 } = Astro.props;
 
-const KEYWORDS =
-  'arduino, rasberrypi, nodemcu, software, programming, coding, development, engineering, web';
+const DEFAULT_KEYWORDS =
+  'cloud, devops, aws, kubernetes, linux, networking, programming, engineering, tutorials';
 ---
 
 <title>{title}</title>
@@ -47,7 +49,7 @@ const KEYWORDS =
 <meta property="twitter:description" content={description} />
 <meta property="twitter:image" content={image} />
 
-<meta name="keywords" content={KEYWORDS} />
+<meta name="keywords" content={keywords ?? DEFAULT_KEYWORDS} />
 
 <link rel="alternate" type="application/rss+xml" title="CodeHiRise RSS" href="/rss.xml" />
 <link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />

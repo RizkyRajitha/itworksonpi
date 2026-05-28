@@ -18,13 +18,17 @@ const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? '';
 const url = `${siteUrl}/`;
 const image = `${siteUrl}/images/ogmetabanner.png`;
 
-const jsonLd = {
+const siteTitle =
+  'CodeHiRise - Cloud, DevOps & Linux Tutorials for Engineers';
+const siteDescription =
+  'Practical guides on AWS, Kubernetes, Linux, networking and DevOps - written for engineers shipping real production systems.';
+
+const blogJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Blog',
   name: 'CodeHiRise',
   url,
-  description:
-    'Wander in the wonderful world of electronics, programming, web dev and in between',
+  description: siteDescription,
   blogPost: allPosts.slice(0, 10).map((p) => ({
     '@type': 'Article',
     headline: p.data.title,
@@ -32,11 +36,29 @@ const jsonLd = {
     url: `${siteUrl}/post/${p.id.replace(/\.(md|mdx)$/, '')}`,
   })),
 };
+
+const websiteJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'CodeHiRise',
+  url,
+  description: siteDescription,
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: `${siteUrl}/explore?text={search_term_string}`,
+    },
+    'query-input': 'required name=search_term_string',
+  },
+};
+
+const jsonLd = [blogJsonLd, websiteJsonLd];
 ---
 
 <BaseLayout
-  title="CodeHiRise"
-  description="Wander in the wonderful world of electronics, programming, web dev and in between"
+  title={siteTitle}
+  description={siteDescription}
   image={image}
   url={url}
   jsonLd={jsonLd}
@@ -44,23 +66,31 @@ const jsonLd = {
   <section class="relative h-[28vh] flex items-center justify-center overflow-hidden">
     <img
       src="/images/landingbanner.jpg"
-      alt="banner"
+      alt="CodeHiRise - engineering blog covering cloud, DevOps and Linux"
       class="absolute inset-0 w-full h-full object-cover"
       loading="eager"
       fetchpriority="high"
     />
     <h1
-      class="relative text-6xl md:text-9xl text-center text-white"
+      class="relative text-4xl md:text-7xl text-center text-white px-4"
       style="font-family: var(--font-display)"
       data-umami-event="Logo"
     >
-      CodeHiRise
+      Production-grade tutorials on Cloud, DevOps & Linux
     </h1>
   </section>
 
   <div class="mx-auto max-w-7xl px-4 mt-5 min-h-[82vh]">
-    <p class="text-center text-2xl py-10" style="font-family: var(--font-mono)">
-      Wander in the wonderful world of electronics, web dev and in between
+    <p
+      class="text-center text-xl md:text-2xl py-10 max-w-4xl mx-auto leading-relaxed"
+      style="font-family: var(--font-mono)"
+    >
+      CodeHiRise is a hands-on engineering blog covering AWS, Kubernetes,
+      Linux administration, networking and the operational habits that keep
+      production systems healthy. Every guide is written from real production
+      experience no fluff, no AI filler, just the patterns and gotchas
+      you'll actually hit when you ship. Browse by topic below or jump
+      straight to the latest post.
     </p>
 
     <div class="flex flex-col lg:flex-row justify-between gap-8">

@@ -1,0 +1,65 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { sortPostsByDateDesc } from '../lib/categories';
+
+const posts = sortPostsByDateDesc(await getCollection('blog')).map((p) => ({
+  title: p.data.title,
+  slug: p.id.replace(/\.(md|mdx)$/, ''),
+  overview: p.data.overview,
+}));
+
+const initial = Astro.url.searchParams.get('text') ?? '';
+
+const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? '';
+const url = `${siteUrl}/explore`;
+const image = `${siteUrl}/og/index.png`;
+---
+
+<BaseLayout
+  title="Explore CodeHiRise - Browse Cloud, DevOps & Linux Posts"
+  description="Search CodeHiRise tutorials on AWS, Kubernetes, Linux, networking and DevOps by title."
+  image={image}
+  url={url}
+>
+  <div class="mx-auto max-w-3xl px-4 pt-10 pb-16 min-h-[82vh]">
+    <h1 class="text-5xl mb-6">Explore</h1>
+    <input
+      id="explore-input"
+      type="text"
+      value={initial}
+      placeholder="Search post titles..."
+      class="w-full px-4 py-3 rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-lg"
+      autofocus
+    />
+    <ul id="explore-results" class="mt-6 flex flex-col gap-3">
+      {posts.map((p) => (
+        <li data-title={p.title.toLowerCase()}>
+          <a href={`/post/${p.slug}`} class="block p-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-800">
+            <span class="text-xl capitalize">{p.title}</span>
+            <p class="opacity-80 text-sm line-clamp-2 mt-1">{p.overview}</p>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</BaseLayout>
+
+<script is:inline>
+  (() => {
+    const input = document.getElementById('explore-input');
+    const list = document.getElementById('explore-results');
+    if (!input || !list) return;
+
+    const filter = (q) => {
+      const term = q.trim().toLowerCase();
+      for (const li of list.children) {
+        const title = li.getAttribute('data-title') || '';
+        li.style.display = !term || title.includes(term) ? '' : 'none';
+      }
+    };
+
+    input.addEventListener('input', (e) => filter(e.target.value));
+    if (input.value) filter(input.value);
+  })();
+</script>
