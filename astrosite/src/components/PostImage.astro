@@ -1,9 +1,16 @@
 ---
+import { getLocalImagePlaceholder } from "../lib/placeholder";
+
 interface Props {
   src: string;
   alt?: string;
 }
 const { src, alt = "" } = Astro.props;
+
+const ph = await getLocalImagePlaceholder(src);
+const blurStyle = ph
+  ? `background-image:url('${ph.base64}');background-size:cover;background-position:center;background-repeat:no-repeat`
+  : undefined;
 ---
 
 <button
@@ -18,8 +25,11 @@ const { src, alt = "" } = Astro.props;
     <img
       src={src}
       alt={alt}
+      width={ph?.width}
+      height={ph?.height}
       loading="lazy"
       decoding="async"
+      style={blurStyle}
       class="w-full h-auto block"
     />
   </span>

@@ -123,12 +123,16 @@ export async function renderOgSvg(rawTitle: string): Promise<string> {
   });
 }
 
+const pngCache = new Map<string, Uint8Array>();
 export async function renderOgPng(title: string): Promise<Uint8Array> {
+  const cached = pngCache.get(title);
+  if (cached) return cached;
   const svg = await renderOgSvg(title);
   try {
     const resvg = new Resvg(svg, { fitTo: { mode: 'width', value: 1200 } });
-    const png = resvg.render().asPng();
-    return new Uint8Array(png);
+    const png = new Uint8Array(resvg.render().asPng());
+    pngCache.set(title, png);
+    return png;
   } catch (err) {
     return new TextEncoder().encode(svg);
   }

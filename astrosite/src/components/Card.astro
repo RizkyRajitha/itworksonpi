@@ -1,6 +1,7 @@
 ---
 import { DateTime } from 'luxon';
 import { categorySlug } from '../lib/categories';
+import { getOgPlaceholder } from '../lib/placeholder';
 
 interface Props {
   title: string;
@@ -14,6 +15,11 @@ const { title, slug, date, overview, categories } = Astro.props;
 const ogUrl = `/og/post/${slug}.png`;
 const formattedDate = DateTime.fromJSDate(date).toFormat('MM/dd/yyyy');
 const relative = DateTime.fromJSDate(date).toRelative();
+
+const blur = await getOgPlaceholder(title);
+const blurStyle = blur
+  ? `background-image:url('${blur}');background-size:cover;background-position:center;background-repeat:no-repeat`
+  : undefined;
 ---
 
 <article class="mb-5 p-4 rounded-lg border border-gray-300 dark:border-gray-700 overflow-hidden flex flex-col-reverse md:flex-row gap-4">
@@ -49,7 +55,8 @@ const relative = DateTime.fromJSDate(date).toRelative();
       height="630"
       loading="lazy"
       decoding="async"
-      class="w-full h-auto"
+      style={blurStyle}
+      class="w-full h-auto border-1 rounded-lg"
     />
   </div>
 </article>

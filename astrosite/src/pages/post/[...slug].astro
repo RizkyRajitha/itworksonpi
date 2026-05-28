@@ -7,6 +7,7 @@ import ScrollProgress from "../../components/ScrollProgress.astro";
 import PostImageDialog from "../../components/PostImageDialog.astro";
 import { mdxComponents } from "../../components/mdx-components";
 import { postCategories, readTime, categorySlug } from "../../lib/categories";
+import { getOgPlaceholder } from "../../lib/placeholder";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog");
@@ -29,6 +30,11 @@ const relative = DateTime.fromJSDate(post.data.date).toRelative();
 const siteUrl = Astro.site?.toString().replace(/\/$/, "") ?? "";
 const url = `${siteUrl}/post/${slug}`;
 const ogImage = `${siteUrl}/og/post/${slug}.png`;
+
+const coverBlur = await getOgPlaceholder(post.data.title);
+const coverBlurStyle = coverBlur
+  ? `background-image:url('${coverBlur}');background-size:cover;background-position:center;background-repeat:no-repeat`
+  : undefined;
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -116,10 +122,11 @@ const jsonLd = {
             src={`/og/post/${slug}.png`}
             alt={`${post.data.title} cover`}
             width="1200"
-            height="630"
+            height="260"
             loading="eager"
             fetchpriority="high"
-            class="rounded-lg w-full h-auto transition-transform duration-300 ease-out group-hover:scale-x-105 group-hover:scale-y-110"
+            style={coverBlurStyle}
+            class="rounded-lg transition-transform duration-300 ease-out group-hover:scale-x-105 group-hover:scale-y-110 w-300 h-65"
           />
         </div>
       </div>

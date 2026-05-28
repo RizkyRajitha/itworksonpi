@@ -12,7 +12,17 @@ export default defineConfig({
   build: {
     format: 'directory',
   },
-  integrations: [mdx(), sitemap()],
+  integrations: [
+    mdx(),
+    sitemap({
+      "i18n": {
+        defaultLocale: "en",
+        locales: {
+          en: 'en-US'
+        }
+      }
+    }),
+  ],
   markdown: {
     shikiConfig: {
       theme: 'github-dark-dimmed',
@@ -21,5 +31,11 @@ export default defineConfig({
   },
   vite: {
     plugins: [tailwindcss()],
+    optimizeDeps: {
+      exclude: ['@resvg/resvg-js'],
+    },
+    ssr: {
+      external: ['@resvg/resvg-js'],
+    },
   },
 });

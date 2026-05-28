@@ -9,6 +9,13 @@ import {
   sortPostsByDateDesc,
   categorySlug,
 } from '../lib/categories';
+import { getLocalImagePlaceholder } from '../lib/placeholder';
+
+const bannerSrc = '/images/landingbanner.jpg';
+const bannerPh = await getLocalImagePlaceholder(bannerSrc);
+const bannerBlurStyle = bannerPh
+  ? `background-image:url('${bannerPh.base64}');background-size:cover;background-position:center;background-repeat:no-repeat`
+  : undefined;
 
 const allPosts = sortPostsByDateDesc(await getCollection('blog'));
 const categories = uniqueCategories(allPosts);
@@ -65,11 +72,12 @@ const jsonLd = [blogJsonLd, websiteJsonLd];
 >
   <section class="relative h-[28vh] flex items-center justify-center overflow-hidden">
     <img
-      src="/images/landingbanner.jpg"
+      src={bannerSrc}
       alt="CodeHiRise - engineering blog covering cloud, DevOps and Linux"
       class="absolute inset-0 w-full h-full object-cover"
       loading="eager"
       fetchpriority="high"
+      style={bannerBlurStyle}
     />
     <h1
       class="relative text-4xl md:text-7xl text-center text-white px-4"
