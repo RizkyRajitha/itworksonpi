@@ -1,0 +1,9 @@
+// wrangler.jsonc  (repo root)
+{
+    "$schema": "node_modules/wrangler/config-schema.json",
+    "name": "astrosite",
+    "compatibility_date": "2026-05-29",
+    "assets": {
+        "directory": "./dist"
+    }
+}
