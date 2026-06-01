@@ -4,66 +4,58 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-- `npm run dev` — start the Next.js dev server on http://localhost:3000
-- `npm run build` — production build (statically generates every post/category page)
-- `npm run start` — serve the production build
-- `npm run lint` — runs `next lint` (ESLint with `next/core-web-vitals`)
+Package manager is **pnpm** (`pnpm-lock.yaml`); Node `>=22.12`.
 
-There is no test suite.
+- `pnpm dev` — dev server on http://localhost:4321
+- `pnpm build` — static build to `dist/`
+- `pnpm preview` — serve the built `dist/`
 
-## Stack overview
+There is no test suite and no separate lint script. The `README.md` is the unmodified Astro starter template — ignore it.
 
-CodeHiRise is a statically-generated blog built on **Next.js 12 (pages router, no `app/`)**, **React 18**, **Chakra UI + Emotion**, and **MDX** for post content. Posts are local markdown files, not fetched from a CMS.
+## Stack
 
-## Content pipeline (`_posts/` → rendered pages)
+CodeHiRise (deployed at codehirise.com) is a statically-generated blog on **Astro 6**, **MDX**, and **Tailwind CSS v4** (wired through `@tailwindcss/vite`, not a config file — design tokens live in the `@theme` block of `src/styles/global.css`). Posts are local MDX files. Output is fully static and served from `dist/` by Cloudflare (`wrangler.jsonc` — static assets only, no Worker). The `SITE_URL` env var overrides the `site` origin in `astro.config.mjs`; everything builds absolute URLs from `Astro.site`.
 
-Posts live as `.md` files in `_posts/` and are read at build time by `lib/getPosts.js`:
+There is **no client framework** — interactivity (image lightbox, explore search, scroll progress) is plain inline `<script is:inline>`. Dark mode is forced: an inline script in `BaseLayout.astro` always adds `.dark` to `<html>` (there is no toggle).
 
-- `getAllPosts()` — reads every `.md`, parses frontmatter via `gray-matter`, sorts by `date` desc.
-- `getPostBySlug(slug)` — single post lookup (slug is the filename without `.md`).
-- `getAllCategories()` / `getPostByCategories(cat)` — categories are derived from a **comma-separated** `categories` string in frontmatter (e.g. `categories: "Linux,Networking"`). Filtering lowercases both sides.
+## Content pipeline
 
-Required frontmatter keys: `title`, `date` (ISO), `categories` (comma-separated string), `featured` (string `"true"`/`"false"`), `overview`.
+Posts are a `glob`-loaded content collection (`src/content.config.ts`) reading `src/content/blog/**/*.{md,mdx}`. The post **slug is the file path minus extension** (`post.id.replace(/\.(md|mdx)$/, '')`) — this exact replace recurs across every route and is the canonical slug.
 
-Page wiring:
+Required frontmatter (Zod schema in `content.config.ts`): `title`, `date` (coerced to Date), `categories` (a **comma-separated string**, e.g. `"Linux,Networking"`), `featured` (string `"true"`/`"false"` preprocessed to boolean), `overview`.
 
-- `pages/index.js` — list of all posts, topic tags, featured sidebar.
-- `pages/category/[slug].js` — `getStaticPaths` enumerates every category from posts; one page per category.
-- `pages/post/[slug].js` — `getStaticPaths` enumerates every post; renders MDX via `next-mdx-remote`.
-- `pages/sitemap.xml.js` — server-rendered XML sitemap built from `getAllPosts()`.
+`src/lib/categories.ts` owns all category/slug logic — categories are derived by splitting the `categories` string on commas. Use `categorySlug()` (lowercase, spaces→`-`) anywhere you build a category URL, and the `postCategories`/`uniqueCategories`/`postsByCategory` helpers rather than reparsing. `readTime()` and `sortPostsByDateDesc()` also live here.
 
-Because everything is `getStaticProps` / `getStaticPaths` with `fallback: false`, **adding or editing a post requires a rebuild** to appear.
+Because every route is `getStaticPaths` static generation, **adding or editing a post requires a rebuild** to appear.
+
+### Routes (`src/pages/`)
+
+- `index.astro` — home: post list, topic tags, featured cards.
+- `explore.astro` — all posts; client-side title filter via inline script (reads `?text=` for the JSON-LD SearchAction).
+- `category/[slug].astro` — one page per `uniqueCategories` entry.
+- `post/[...slug].astro` — renders MDX via `render()` + `<Content components={mdxComponents} />`.
+- `og/[...slug].png.ts` — OG images as static files (see below).
+- `robots.txt.ts` — disallows `/og/`, points to `/sitemap-index.xml` (sitemap from `@astrojs/sitemap`).
 
 ## MDX rendering and custom components
 
-`pages/post/[slug].js` defines a `components` map passed to `<MDXRemote>` that overrides standard markdown elements with Chakra components. Two non-standard conventions to be aware of:
+`src/components/mdx-components.ts` maps MDX elements:
 
-- **Callout via `h6`**: a markdown `###### ~warning~ Some text` or `###### ~info~ Some text` line is parsed by splitting on `~` and rendered as a colored alert box (red for `warning`, blue otherwise). Don't "fix" this to look like a normal h6 — it's load-bearing.
-- **Inline `<Alert type="..." />`** is also accepted in MDX and maps to a Chakra `Alert`.
+- **`img` → `PostImage.astro`**: every markdown image becomes a button that opens the shared `PostImageDialog.astro` lightbox (one `<dialog>` per post page, driven by a delegated click listener). Don't render bare `<img>` for post content.
+- **`<Alert type="info|warning|success|error|note">`** is used directly inside MDX for callout boxes (`note` aliases to `info`).
 
-Code highlighting uses `remark-prism` (configured in `serialize`). Heading anchors use `rehype-slug`. The Prism CSS is inlined as a `Global` style block in `pages/_app.js` — there is a large commented-out earlier copy above it; ignore the commented version.
+Code highlighting is **Shiki** (`github-dark-dimmed`, `wrap: true`), configured in `astro.config.mjs` markdown options. Heading anchors come from `rehype-slug` + `rehype-autolink-headings`.
 
-Image handling in posts:
+## OG images and blur placeholders (build-time, Node-only)
 
-1. Markdown `![alt](url)` is captured by regex in `getStaticProps`.
-2. `plaiceholder` generates a base64 blur placeholder for each image and the OG cover at build time. This requires the dev/build process to be able to fetch the OG image URL — see "Environment variables".
-3. The rendered `<img>` is wrapped in a Chakra modal that opens a full-size view on click.
+Both run in Node during `astro build`, so they may use `node:fs` — but they must not be moved to any edge/Worker runtime.
 
-## OG image generation
+- `src/lib/og.tsx` — `renderOgPng(title)` builds a 1200×630 card with **satori** (SVG, using `public/VT323-Regular.TTF` and the embedded logo) then rasterizes via **`@resvg/resvg-js`**. `@resvg/resvg-js` is a native module — it's listed in `vite.optimizeDeps.exclude` and `vite.ssr.external` in `astro.config.mjs`; keep it there. Results are cached per title in-process.
+- `og/[...slug].png.ts` pre-renders one PNG per post, per category, and an `index` card, served immutable.
+- `src/lib/placeholder.ts` — `getLocalImagePlaceholder()` makes base64 blur data for **local** public images (remote URLs return `null` → plain `<img>`); `getOgPlaceholder()` blurs the generated OG cover. Both cache in-process. Placeholders are applied as inline `background-image` styles behind the `<img>`.
 
-`pages/api/og.js` is an **edge runtime** route (`runtime: "experimental-edge"`) that returns a 1200×630 PNG via `@vercel/og`, using the `VT323-Regular.TTF` font shipped in `public/`. Cards, post pages, and metatags all reference `/api/og?title=<post title>` for cover art. The `id=${VERCEL_GIT_COMMIT_SHA}` query param is a cache-buster keyed to the deploy.
+## Conventions
 
-When changing the OG layout, remember it must render on the edge runtime (no Node-only APIs).
-
-## Environment variables
-
-- `NEXT_PUBLIC_SITE_URL` — site origin (e.g. `https://codehirise.com`). Used for absolute URLs in metatags, sitemap, share links, and **as the base for `getPlaiceholder` to fetch `/api/og` at build time**. If unset locally, plaiceholder calls in `pages/post/[slug].js` will hit `https://codehirise.com` — set it to your dev URL when iterating on OG layout.
-- `VERCEL_GIT_COMMIT_SHA` — auto-set by Vercel; used as cache-buster for OG image URLs.
-- `VERCEL_ENV` — read in `pages/index.js` (currently informational only).
-
-## Other notes
-
-- `prom.yml` at the repo root is sample config referenced from one of the blog posts ("Setup Prometheus and Grafana on Orange Pi"), **not** runtime config for this app.
-- `next.config.js` sets `images.remotePatterns` to allow any host — `next/future/image` is used throughout.
-- Default color mode is dark (`initialColorMode: "dark"` in `_app.js`). The site theme uses VT323 / Inter Tight / Noto Sans Mono via `@fontsource/*`.
-- Analytics: `data-umami-event` attributes on links/tags drive Umami events; the Umami script itself is not in this repo (presumably injected by the host).
+- Use `Astro.site` (with trailing slash stripped) to build absolute URLs; pages assemble their own canonical `url`, `image` (`/og/...png`), and JSON-LD, then pass them to `BaseLayout` → `MetaTags.astro`.
+- Brand colors and fonts are Tailwind theme tokens: reference them as `var(--color-brand-*)` / utility classes, not hard-coded hex.
+- Analytics: `data-umami-event` attributes on links/tags drive Umami events; the Umami script is injected in `BaseLayout.astro`.
