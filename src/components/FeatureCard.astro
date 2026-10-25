@@ -1,30 +1,58 @@
 ---
-import { DateTime } from 'luxon';
+import { DateTime } from "luxon";
+import { categorySlug } from "../lib/categories";
+import PostCover from "./PostCover.astro";
 
 interface Props {
   title: string;
   slug: string;
   date: Date;
+  overview: string;
+  categories: string[];
+  readMinutes?: number;
 }
 
-const { title, slug, date } = Astro.props;
-const formattedDate = DateTime.fromJSDate(date).toFormat('yyyy-MM-dd');
+const { title, slug, date, overview, categories, readMinutes } = Astro.props;
+
 const relative = DateTime.fromJSDate(date).toRelative();
+const dataCats = categories.map(categorySlug).join(" ");
 ---
 
 <a
+  class="feature"
   href={`/post/${slug}`}
   data-umami-event="FeatureCard"
-  class="block mb-4 p-[2px] rounded-lg bg-gradient-to-l from-[#7928CA] to-[#FF0080] transition-transform hover:scale-[1.03] lg:hover:scale-[1.1]"
+  data-cats={dataCats}
 >
-  <div class="rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-100 p-3">
-    <h3
-      class="text-base xl:text-base md:text-xl font-semibold capitalize line-clamp-2 bg-gradient-to-br from-[var(--color-brand-cyan)] to-[var(--color-brand-blue)] bg-clip-text text-transparent"
-    >
-      {title}
-    </h3>
-    <time datetime={date.toISOString()} title={formattedDate} class="block py-2 text-xs opacity-80 w-fit">
-      {relative}
-    </time>
+  <div class="feature-text">
+    <span class="kicker">Latest article</span>
+    <h2 class="feature-title">{title}</h2>
+    <p class="feature-excerpt">{overview}</p>
+    <div class="card-meta">
+      <span>{relative}</span>
+      {
+        readMinutes && (
+          <>
+            <span class="dot" />
+            <span>{readMinutes} min read</span>
+          </>
+        )
+      }
+    </div>
+    <div class="tags">
+      {categories.map((c) => <span class="tag">{c}</span>)}
+    </div>
+    <span class="link-arrow" style="margin-top:6px;">
+      Read the guide
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 12h14M13 6l6 6-6 6"></path>
+      </svg>
+    </span>
   </div>
+  <PostCover
+    title={title}
+    slug={slug}
+    categories={categories}
+    size="clamp(17px,2vw,26px)"
+  />
 </a>

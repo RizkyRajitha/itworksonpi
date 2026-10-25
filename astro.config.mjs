@@ -3,6 +3,8 @@ import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
+import rehypeSlug from 'rehype-slug';
+import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 
 const SITE_URL = process.env.SITE_URL || 'https://codehirise.com';
 
@@ -28,6 +30,13 @@ export default defineConfig({
       theme: 'github-dark-dimmed',
       wrap: true,
     },
+    rehypePlugins: [
+      rehypeSlug,
+      [
+        rehypeAutolinkHeadings,
+        { behavior: 'wrap', properties: { className: ['heading-anchor'] } },
+      ],
+    ],
   },
   vite: {
     plugins: [tailwindcss()],

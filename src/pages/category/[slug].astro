@@ -1,17 +1,20 @@
 ---
-import { getCollection } from 'astro:content';
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import Card from '../../components/Card.astro';
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Card from "../../components/Card.astro";
 import {
   postCategories,
   postsByCategory,
   uniqueCategories,
   sortPostsByDateDesc,
   categorySlug,
-} from '../../lib/categories';
+  readTime,
+} from "../../lib/categories";
+
+const slugOf = (id: string) => id.replace(/\.(md|mdx)$/, "");
 
 export async function getStaticPaths() {
-  const all = await getCollection('blog');
+  const all = await getCollection("blog");
   const cats = uniqueCategories(all);
   return cats.map((name) => ({
     params: { slug: categorySlug(name) },
@@ -22,30 +25,55 @@ export async function getStaticPaths() {
 const { slug } = Astro.params;
 const { name } = Astro.props as { name: string };
 
-const all = sortPostsByDateDesc(await getCollection('blog'));
+const all = sortPostsByDateDesc(await getCollection("blog"));
+const topics = uniqueCategories(all);
 const posts = postsByCategory(all, slug!);
 
-const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? '';
+const siteUrl = Astro.site?.toString().replace(/\/$/, "") ?? "";
 const url = `${siteUrl}/category/${slug}`;
 const image = `${siteUrl}/og/category/${slug}.png`;
 
-const postWord = posts.length === 1 ? 'post' : 'posts';
+const postWord = posts.length === 1 ? "post" : "posts";
 const title = `${name} Tutorials & Guides · CodeHiRise`;
 const description = `Guides and tutorials on ${name} - ${posts.length} ${postWord} on CodeHiRise covering practical, production-focused engineering topics.`;
 
+const DESCS: Record<string, string> = {
+  cloud:
+    "Cloud architecture, provisioning and the habits that keep workloads reliable and affordable.",
+  aws: "Hands-on AWS EC2, IAM, Systems Manager and the services you actually reach for in production.",
+  devops:
+    "CI/CD, automation, runners and the operational practices that ship software safely.",
+  kubernetes:
+    "Cluster access, RBAC, workloads and day-two operations for Kubernetes.",
+  linux:
+    "System administration, networking tools and command-line craft for engineers.",
+  networking:
+    "DNS, connections, troubleshooting and the network fundamentals every engineer needs.",
+  security:
+    "Least-privilege access, hardening and keeping production systems safe.",
+  webdev: "Real-time apps, streaming and modern web engineering patterns.",
+  react: "Front-end patterns and building responsive, real-time interfaces.",
+  "home-automation":
+    "Smart-home integrations, dashboards and self-hosted monitoring.",
+  iot: "Sensors, data pipelines and connecting the physical world to your stack.",
+};
+const blurb =
+  DESCS[slug!] ??
+  "Every CodeHiRise guide filed under this topic newest first.";
+
 const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'CollectionPage',
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
   name: `${name} Tutorials & Guides`,
   description,
   url,
   mainEntity: {
-    '@type': 'ItemList',
+    "@type": "ItemList",
     numberOfItems: posts.length,
     itemListElement: posts.map((post, i) => ({
-      '@type': 'ListItem',
+      "@type": "ListItem",
       position: i + 1,
-      url: `${siteUrl}/post/${post.id.replace(/\.(md|mdx)$/, '')}`,
+      url: `${siteUrl}/post/${slugOf(post.id)}`,
       name: post.data.title,
     })),
   },
@@ -59,23 +87,57 @@ const jsonLd = {
   url={url}
   jsonLd={jsonLd}
 >
-  <div class="mx-auto max-w-7xl px-4 pt-10 pb-16 min-h-[82vh]">
-    <h1 class="text-5xl capitalize mb-4 bg-gradient-to-br from-[var(--color-brand-cyan)] to-[var(--color-brand-blue)] bg-clip-text text-transparent">
-      {name}
-    </h1>
-    <p class="text-lg opacity-80 mb-8 max-w-3xl leading-relaxed">
-      {description}
-    </p>
-    <div>
-      {posts.map((post) => (
-        <Card
-          title={post.data.title}
-          slug={post.id.replace(/\.(md|mdx)$/, '')}
-          date={post.data.date}
-          overview={post.data.overview}
-          categories={postCategories(post)}
-        />
-      ))}
+  <section class="page-head">
+    <div class="hero-grid"></div>
+    <div class="wrap" style="position:relative;">
+      <div class="breadcrumb">
+        <a href="/">~</a><span class="sep">/</span>
+        <span class="faint">topics</span><span class="sep">/</span>
+        <span class="faint">{slug}</span>
+      </div>
+      <span class="kicker">Topic</span>
+      <h1 style="margin-top:14px;"><span class="accent">{name}</span></h1>
+      <p>{blurb}</p>
+      <div class="hero-stats"><span><b>{posts.length}</b> articles</span></div>
     </div>
-  </div>
+  </section>
+
+  <section class="wrap" style="padding-top:8px;">
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:18px 0;border-top:1px solid var(--border-soft);border-bottom:1px solid var(--border-soft);">
+      <span class="kicker" style="white-space:nowrap;">All topics</span>
+      <div class="chip-row">
+        {
+          topics.map((t) => (
+            <a
+              class:list={["tag", { "is-active": categorySlug(t) === slug }]}
+              href={`/category/${categorySlug(t)}`}
+              data-umami-event="Categories"
+            >
+              {t}
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap section">
+    <div class="grid grid-3">
+      {
+        posts.map((post) => (
+          <Card
+            title={post.data.title}
+            slug={slugOf(post.id)}
+            date={post.data.date}
+            overview={post.data.overview}
+            categories={postCategories(post)}
+            readMinutes={readTime(post.body ?? "")}
+          />
+        ))
+      }
+    </div>
+    {posts.length === 0 && (
+      <p class="no-results">No articles in this topic yet.</p>
+    )}
+  </section>
 </BaseLayout>

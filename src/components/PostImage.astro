@@ -1,36 +1,28 @@
 ---
-import { getLocalImagePlaceholder } from "../lib/placeholder";
-
 interface Props {
   src: string;
   alt?: string;
 }
-const { src, alt = "" } = Astro.props;
 
-const ph = await getLocalImagePlaceholder(src);
-const blurStyle = ph
-  ? `background-image:url('${ph.base64}');background-size:cover;background-position:center;background-repeat:no-repeat`
-  : undefined;
+const { src, alt = "" } = Astro.props;
 ---
 
-<button
-  type="button"
-  class="post-image-trigger group block w-full p-2 md:p-6 cursor-zoom-in"
-  data-src={src}
-  data-alt={alt}
->
-  <span
-    class="block rounded-lg border border-gray-300 dark:border-gray-700 overflow-hidden transition-transform duration-300 ease-out group-hover:scale-105"
+<figure class="figure-img">
+  <button
+    type="button"
+    class="zoomable post-image-trigger"
+    data-src={src}
+    data-alt={alt}
+    aria-label="Enlarge image"
   >
-    <img
-      src={src}
-      alt={alt}
-      width={ph?.width}
-      height={ph?.height}
-      loading="lazy"
-      decoding="async"
-      style={blurStyle}
-      class="w-full h-auto block"
-    />
-  </span>
-</button>
+    <img src={src} alt={alt} loading="lazy" decoding="async" />
+    <span class="zoom-hint">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="7"></circle>
+        <path d="m21 21-4.3-4.3M11 8v6M8 11h6"></path>
+      </svg>
+      click to enlarge
+    </span>
+  </button>
+  {alt && <figcaption>{alt}</figcaption>}
+</figure>

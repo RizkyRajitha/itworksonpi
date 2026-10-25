@@ -1,7 +1,7 @@
 import type { APIRoute, GetStaticPaths } from 'astro';
 import { getCollection } from 'astro:content';
-import { uniqueCategories, categorySlug } from '../../lib/categories';
-import { renderOgPng } from '../../lib/og';
+import { uniqueCategories, categorySlug, postCategories } from '../../lib/categories';
+import { renderOgPng, type OgOptions } from '../../lib/og';
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const posts = await getCollection('blog');
@@ -10,15 +10,41 @@ export const getStaticPaths: GetStaticPaths = async () => {
   const paths = [
     {
       params: { slug: 'index' },
-      props: { title: 'CodeHiRise' },
+      props: {
+        title: 'CodeHiRise',
+        pathLabel: '~/codehirise',
+        variant: 'index',
+      } satisfies OgOptions,
     },
-    ...posts.map((p) => ({
-      params: { slug: `post/${p.id.replace(/\.(md|mdx)$/, '')}` },
-      props: { title: p.data.title },
-    })),
+    {
+      params: { slug: 'explore' },
+      props: {
+        title: 'Explore the archive',
+        pathLabel: '~/codehirise/explore',
+        categories: categories.slice(0, 4),
+        variant: 'explore',
+      } satisfies OgOptions,
+    },
+    ...posts.map((p) => {
+      const slug = p.id.replace(/\.(md|mdx)$/, '');
+      return {
+        params: { slug: `post/${slug}` },
+        props: {
+          title: p.data.title,
+          pathLabel: `~/codehirise/posts/${slug}.md`,
+          categories: postCategories(p),
+          variant: 'post',
+        } satisfies OgOptions,
+      };
+    }),
     ...categories.map((name) => ({
       params: { slug: `category/${categorySlug(name)}` },
-      props: { title: name },
+      props: {
+        title: name,
+        pathLabel: `~/codehirise/topics/${categorySlug(name)}`,
+        categories: [name],
+        variant: 'category',
+      } satisfies OgOptions,
     })),
   ];
 
@@ -26,8 +52,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 export const GET: APIRoute = async ({ props }) => {
-  const { title } = props as { title: string };
-  const png = await renderOgPng(title);
+  const png = await renderOgPng(props as OgOptions);
   return new Response(png, {
     headers: {
       'Content-Type': 'image/png',

@@ -1,47 +1,43 @@
 ---
-// Full-screen lightbox dialog opened by PostImage triggers on the page.
-// Uses native <dialog> + a tiny inline script so no client framework is required.
 ---
 
-<dialog
-  id="post-image-dialog"
-  class="bg-black/90 backdrop:bg-black/80 m-0 p-0 max-w-full max-h-full w-full h-full open:flex hidden flex-col items-center justify-center"
->
-  <form method="dialog" class="absolute top-4 right-4 z-10">
-    <button
-      type="submit"
-      aria-label="Close"
-      class="text-white hover:text-gray-300 inline-flex items-center justify-center w-10 h-10 rounded-md bg-black/50"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+<dialog id="post-image-dialog" class="lightbox" aria-label="Enlarged image">
+  <form method="dialog">
+    <button type="submit" class="lightbox-close" aria-label="Close (Esc)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M18 6 6 18M6 6l12 12"></path>
+      </svg>
     </button>
   </form>
-  <div class="flex flex-col items-center justify-center w-full h-full p-4 overflow-auto">
-    <img id="post-image-dialog-img" src="" alt="" class="max-w-full max-h-[85vh] object-contain rounded" />
-    <p id="post-image-dialog-caption" class="text-white text-center mt-4"></p>
-  </div>
+  <figure class="lightbox-figure">
+    <img id="post-image-dialog-img" alt="" />
+    <figcaption id="post-image-dialog-caption"></figcaption>
+  </figure>
 </dialog>
 
 <script is:inline>
   (() => {
-    const dialog = document.getElementById('post-image-dialog');
-    const img = document.getElementById('post-image-dialog-img');
-    const caption = document.getElementById('post-image-dialog-caption');
-    if (!dialog || !img || !caption) return;
+    const dialog = document.getElementById("post-image-dialog");
+    if (!dialog) return;
+    const imgEl = document.getElementById("post-image-dialog-img");
+    const capEl = document.getElementById("post-image-dialog-caption");
 
-    document.addEventListener('click', (e) => {
-      const trigger = e.target instanceof Element ? e.target.closest('.post-image-trigger') : null;
-      if (!trigger || !(trigger instanceof HTMLElement)) return;
-      e.preventDefault();
-      img.src = trigger.dataset.src || '';
-      img.alt = trigger.dataset.alt || '';
-      caption.textContent = trigger.dataset.alt || '';
-      if (typeof dialog.showModal === 'function') {
+    document.addEventListener("click", (e) => {
+      const trigger = e.target.closest(".post-image-trigger");
+      if (trigger) {
+        const src = trigger.getAttribute("data-src");
+        const alt = trigger.getAttribute("data-alt") || "";
+        if (imgEl) {
+          imgEl.src = src;
+          imgEl.alt = alt;
+        }
+        if (capEl) {
+          capEl.textContent = alt;
+          capEl.style.display = alt ? "" : "none";
+        }
         dialog.showModal();
+        return;
       }
-    });
-
-    dialog.addEventListener('click', (e) => {
       if (e.target === dialog) dialog.close();
     });
   })();

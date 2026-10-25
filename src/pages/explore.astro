@@ -1,65 +1,166 @@
 ---
-import { getCollection } from 'astro:content';
-import BaseLayout from '../layouts/BaseLayout.astro';
-import { sortPostsByDateDesc } from '../lib/categories';
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Card from "../components/Card.astro";
+import {
+  postCategories,
+  uniqueCategories,
+  sortPostsByDateDesc,
+  categorySlug,
+  readTime,
+} from "../lib/categories";
 
-const posts = sortPostsByDateDesc(await getCollection('blog')).map((p) => ({
+const slugOf = (id: string) => id.replace(/\.(md|mdx)$/, "");
+
+const all = sortPostsByDateDesc(await getCollection("blog"));
+const topics = uniqueCategories(all);
+
+const posts = all.map((p) => ({
   title: p.data.title,
-  slug: p.id.replace(/\.(md|mdx)$/, ''),
+  slug: slugOf(p.id),
+  date: p.data.date,
   overview: p.data.overview,
+  categories: postCategories(p),
+  minutes: readTime(p.body ?? ""),
 }));
 
-const initial = Astro.url.searchParams.get('text') ?? '';
+const initial = Astro.url.searchParams.get("text") ?? "";
 
-const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? '';
+const siteUrl = Astro.site?.toString().replace(/\/$/, "") ?? "";
 const url = `${siteUrl}/explore`;
-const image = `${siteUrl}/og/index.png`;
+const image = `${siteUrl}/og/explore.png`;
+
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "CodeHiRise",
+  url: siteUrl,
+  potentialAction: {
+    "@type": "SearchAction",
+    target: {
+      "@type": "EntryPoint",
+      urlTemplate: `${siteUrl}/explore?text={search_term_string}`,
+    },
+    "query-input": "required name=search_term_string",
+  },
+};
 ---
 
 <BaseLayout
-  title="Explore CodeHiRise - Browse Cloud, DevOps & Linux Posts"
-  description="Search CodeHiRise tutorials on AWS, Kubernetes, Linux, networking and DevOps by title."
+  title="Explore - CodeHiRise"
+  description="Search and explore all CodeHiRise articles on Cloud, DevOps, Linux, Kubernetes and networking."
   image={image}
   url={url}
+  jsonLd={websiteJsonLd}
 >
-  <div class="mx-auto max-w-3xl px-4 pt-10 pb-16 min-h-[82vh]">
-    <h1 class="text-5xl mb-6">Explore</h1>
-    <input
-      id="explore-input"
-      type="text"
-      value={initial}
-      placeholder="Search post titles..."
-      class="w-full px-4 py-3 rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-lg"
-      autofocus
-    />
-    <ul id="explore-results" class="mt-6 flex flex-col gap-3">
-      {posts.map((p) => (
-        <li data-title={p.title.toLowerCase()}>
-          <a href={`/post/${p.slug}`} class="block p-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-800">
-            <span class="text-xl capitalize">{p.title}</span>
-            <p class="opacity-80 text-sm line-clamp-2 mt-1">{p.overview}</p>
-          </a>
-        </li>
-      ))}
-    </ul>
-  </div>
-</BaseLayout>
+  <section class="page-head">
+    <div class="hero-grid"></div>
+    <div class="wrap" style="position:relative;">
+      <span class="kicker">Search</span>
+      <h1 style="margin-top:14px;">Explore the <span class="accent">archive</span></h1>
+      <p>
+        Search across every guide, or filter by topic.
+        <span class="mono faint">Press / anywhere to focus.</span>
+      </p>
+      <label class="search-big">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="m21 21-4.3-4.3"></path>
+        </svg>
+        <input
+          type="text"
+          id="q"
+          value={initial}
+          placeholder="Try “kubernetes”, “nginx”, “SSE”…"
+          autocomplete="off"
+        />
+      </label>
+    </div>
+  </section>
 
-<script is:inline>
-  (() => {
-    const input = document.getElementById('explore-input');
-    const list = document.getElementById('explore-results');
-    if (!input || !list) return;
+  <section class="wrap" style="padding-top:8px;">
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:18px 0;border-top:1px solid var(--border-soft);border-bottom:1px solid var(--border-soft);">
+      <span class="kicker" style="white-space:nowrap;">Filter</span>
+      <div class="chip-row" id="topicsBar">
+        <button class="tag is-active" data-filter="all">all</button>
+        {
+          topics.map((t) => (
+            <button class="tag" data-filter={categorySlug(t)}>
+              {t}
+            </button>
+          ))
+        }
+      </div>
+    </div>
+  </section>
 
-    const filter = (q) => {
-      const term = q.trim().toLowerCase();
-      for (const li of list.children) {
-        const title = li.getAttribute('data-title') || '';
-        li.style.display = !term || title.includes(term) ? '' : 'none';
+  <section class="wrap section" style="padding-top:30px;">
+    <div class="section-head" style="margin-bottom:8px;">
+      <h2 style="font-size:clamp(18px,2vw,22px)">Results</h2>
+      <span class="idx">// <span id="resCount">0</span> matches</span>
+    </div>
+    <div class="grid grid-3" id="resultsMount">
+      {
+        posts.map((p) => (
+          <Card
+            title={p.title}
+            slug={p.slug}
+            date={p.date}
+            overview={p.overview}
+            categories={p.categories}
+            readMinutes={p.minutes}
+          />
+        ))
       }
-    };
+    </div>
+    <p class="no-results empty-hidden" id="noResults">
+      No articles match your search.
+    </p>
+  </section>
 
-    input.addEventListener('input', (e) => filter(e.target.value));
-    if (input.value) filter(input.value);
-  })();
-</script>
+  <script is:inline>
+    (function explore() {
+      let activeTopic = "all";
+      const qInput = document.getElementById("q");
+      const topicsBar = document.getElementById("topicsBar");
+      const mount = document.getElementById("resultsMount");
+      const resCount = document.getElementById("resCount");
+      const noResults = document.getElementById("noResults");
+      if (!qInput || !mount) return;
+      const rows = [...mount.querySelectorAll(".card")];
+
+      function run() {
+        const q = qInput.value.trim().toLowerCase();
+        let n = 0;
+        rows.forEach((row) => {
+          const inTopic =
+            activeTopic === "all" ||
+            (row.dataset.cats || "").split(" ").includes(activeTopic);
+          const inText = !q || (row.dataset.search || "").includes(q);
+          const match = inTopic && inText;
+          row.classList.toggle("empty-hidden", !match);
+          if (match) n++;
+        });
+        if (resCount) resCount.textContent = n;
+        if (noResults) noResults.classList.toggle("empty-hidden", n > 0);
+      }
+
+      qInput.addEventListener("input", run);
+      if (topicsBar) {
+        topicsBar.addEventListener("click", (e) => {
+          const b = e.target.closest("[data-filter]");
+          if (!b) return;
+          topicsBar
+            .querySelectorAll(".tag")
+            .forEach((t) => t.classList.remove("is-active"));
+          b.classList.add("is-active");
+          activeTopic = b.dataset.filter;
+          run();
+        });
+      }
+
+      run();
+      qInput.focus();
+    })();
+  </script>
+</BaseLayout>
