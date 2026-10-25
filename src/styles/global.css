@@ -393,6 +393,32 @@ a.tag:hover::before, button.tag:hover::before, .tag.is-active::before { color: v
 }
 .card-foot { margin-top: auto; padding-top: 4px; }
 
+/* Featured cards (home page): a light slowly travels around a faint accent
+   border, with a soft outer glow. The border is a conic gradient painted under
+   a surface-coloured padding box; animating its start angle moves the light.
+   Reduced motion: the global rule below stops it, leaving a static glow. */
+@property --glow-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+.card.card-featured {
+  border-color: transparent;
+  background:
+    linear-gradient(var(--surface), var(--surface)) padding-box,
+    conic-gradient(
+      from var(--glow-angle, 0deg),
+      var(--accent-line) 0deg,
+      var(--accent) 45deg,
+      var(--accent-line) 90deg,
+      var(--accent-line) 360deg
+    ) border-box;
+  box-shadow: 0 0 24px -12px var(--accent);
+  animation: glow-spin 8s linear infinite;
+}
+.card.card-featured:hover { box-shadow: var(--shadow), 0 0 40px -10px var(--accent); }
+@keyframes glow-spin { to { --glow-angle: 360deg; } }
+
 /* featured (full width) card */
 .feature {
   display: grid;

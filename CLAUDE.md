@@ -31,7 +31,7 @@ Posts are a `glob`-loaded content collection (`src/content.config.ts`) reading `
 
 Frontmatter (Zod schema in `content.config.ts`):
 
-- required: `title`, `date` (coerced to Date), `categories` (a **comma-separated string**, e.g. `"Linux,Networking"`), `featured` (string `"true"`/`"false"` preprocessed to boolean), `overview` (shown on cards/RSS)
+- required: `title`, `date` (coerced to Date), `categories` (a **comma-separated string**, e.g. `"Linux,Networking"`), `featured` (string `"true"`/`"false"` preprocessed to boolean; `"true"` lists the post in the home page's Featured section), `overview` (shown on cards/RSS)
 - optional: `description` (≤160 chars, used for meta/OG descriptions; falls back to `overview` trimmed to ~160 chars), `updated` (date; drives `dateModified` / `article:modified_time`)
 
 Post conventions: don't start a post with an `# h1` (the post cover renders the title as the h1) or write greetings / sign-offs as headings (they end up in the table of contents) — use plain paragraphs. Link to other posts with relative `/post/<slug>` URLs. Images go in `public/assets/<post>/` with descriptive alt text (alt doubles as the visible caption).
@@ -47,7 +47,7 @@ Because every route is `getStaticPaths` static generation, **adding or editing a
 
 ### Routes (`src/pages/`)
 
-- `index.astro` — home: hero canvas, topic filter chips, featured card (newest `featured` post), post grid.
+- `index.astro` — home: hero canvas, topic filter chips, Latest (the newest post, as a `FeatureCard`), Featured (every other `featured` post, as `<Card featured>` with a glowing border), All articles (every post except Latest; the topic chips filter only this grid). Featured posts appear in both Featured and All articles on purpose, so a topic filter never hides them.
 - `explore.astro` — all posts; client-side text + topic filter. Reads `?text=` in the browser (navbar search and the home page's JSON-LD SearchAction target it).
 - `topics/index.astro` — index of all topics with counts; `topics/[slug].astro` — one page per `uniqueCategories` entry. The old `/category/*` URLs (also used by the Next.js site) 301 to `/topics/*` via `public/_redirects`.
 - `post/[...slug].astro` — renders MDX via `render()` + `<Content components={mdxComponents} />`; TOC, related posts, BlogPosting JSON-LD (CodeHiRise as Organization author/publisher).
