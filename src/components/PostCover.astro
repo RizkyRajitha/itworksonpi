@@ -1,0 +1,56 @@
+---
+interface Props {
+  title: string;
+  slug: string;
+  categories: string[];
+  size?: string;
+  cursor?: boolean;
+  chrome?: boolean;
+  heading?: boolean;
+}
+
+const {
+  title,
+  slug,
+  categories,
+  size = "clamp(15px, 1.5vw, 20px)",
+  cursor = true,
+  chrome = true,
+  heading = false,
+} = Astro.props;
+
+const Tag = heading ? "h1" : "div";
+const catsLabel = categories
+  .map((c) => "#" + c.toLowerCase().replace(/\s+/g, ""))
+  .join(" ");
+---
+
+<div class:list={["cover", { "no-chrome": !chrome }]}>
+  {
+    chrome && (
+      <div class="cover-bar">
+        <span class="cover-dot" />
+        <span class="cover-dot" />
+        <span class="cover-dot" />
+        <span class="cover-path">~/codehirise/posts/{slug}.md</span>
+      </div>
+    )
+  }
+  <div class="cover-body">
+    <Tag class="cover-title" style={`font-size:${size}`}>
+      <span class="prompt">$</span>{title}{cursor && <span class="cover-cursor" />}
+    </Tag>
+  </div>
+  <div class="cover-foot">
+    <span>{catsLabel}</span>
+    <span style="display:inline-flex;align-items:center;gap:6px;">
+      <span class="mark" style="display:inline-flex">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M2 4.5 L9.5 12 L2 19.5 Z"></path>
+          <rect x="10.7" y="4" width="2.6" height="16" rx="1"></rect>
+          <path d="M22 4.5 L14.5 12 L22 19.5 Z"></path>
+        </svg>
+      </span>CodeHiRise
+    </span>
+  </div>
+</div>

@@ -1,0 +1,83 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import {
+  categoryBlurb,
+  categorySlug,
+  postsByCategory,
+  uniqueCategories,
+} from "../lib/categories";
+import { SITE_NAME, siteOrigin } from "../lib/site";
+
+const all = await getCollection("blog");
+const topics = uniqueCategories(all)
+  .map((name) => {
+    const slug = categorySlug(name);
+    return { name, slug, count: postsByCategory(all, slug).length, blurb: categoryBlurb(slug) };
+  })
+  .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+
+const siteUrl = siteOrigin(Astro.site);
+const url = `${siteUrl}/topics`;
+const description = `Browse ${SITE_NAME} guides by topic: ${topics.map((t) => t.name).join(", ")}.`;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  name: `Topics · ${SITE_NAME}`,
+  description,
+  url,
+  mainEntity: {
+    "@type": "ItemList",
+    numberOfItems: topics.length,
+    itemListElement: topics.map((t, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      url: `${siteUrl}/category/${t.slug}`,
+      name: t.name,
+    })),
+  },
+};
+---
+
+<BaseLayout
+  title={`Topics · ${SITE_NAME}`}
+  description={description}
+  image={`${siteUrl}/og/explore.png`}
+  url={url}
+  jsonLd={jsonLd}
+>
+  <section class="page-head">
+    <div class="hero-grid"></div>
+    <div class="wrap" style="position:relative;">
+      <div class="breadcrumb">
+        <a href="/">~</a><span class="sep">/</span>
+        <span class="faint">topics</span>
+      </div>
+      <span class="kicker">Topics</span>
+      <h1 style="margin-top:14px;">Browse by <span class="accent">topic</span></h1>
+      <p>Every guide is filed under one or more topics. Pick one to see everything in it, newest first.</p>
+      <div class="hero-stats"><span><b>{topics.length}</b> topics</span></div>
+    </div>
+  </section>
+
+  <section class="wrap section" style="padding-top:20px;">
+    <ul class="topic-grid">
+      {
+        topics.map((t) => (
+          <li>
+            <a class="topic-card" href={`/category/${t.slug}`} data-umami-event="Categories">
+              <span class="topic-name">
+                <span class="tag-hash">#</span>{t.name}
+              </span>
+              <span class="topic-blurb">{t.blurb}</span>
+              <span class="topic-count">
+                {t.count} {t.count === 1 ? "article" : "articles"}
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</BaseLayout>

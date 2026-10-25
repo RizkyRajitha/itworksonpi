@@ -1,0 +1,20 @@
+# Cloudflare static-asset headers. Static Astro endpoints can't set response
+# headers (they're dropped at build), so caching lives here.
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+# Content-hashed bundles (CSS, fonts) never change.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# OG cards are regenerated each build but keep their URL; cache for a day.
+/og/*
+  Cache-Control: public, max-age=86400
+
+# Post images and screenshots.
+/assets/*
+  Cache-Control: public, max-age=604800

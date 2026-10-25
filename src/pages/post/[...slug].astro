@@ -1,0 +1,240 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ShareButtons from "../../components/ShareButtons.astro";
+import ScrollProgress from "../../components/ScrollProgress.astro";
+import PostImageDialog from "../../components/PostImageDialog.astro";
+import PostCover from "../../components/PostCover.astro";
+import Card from "../../components/Card.astro";
+import { mdxComponents } from "../../components/mdx-components";
+import {
+  postCategories,
+  readTime,
+  categorySlug,
+  relatedPosts,
+  formatDate,
+  isoDate,
+} from "../../lib/categories";
+import { SITE_NAME, postDescription, postSlug, siteOrigin } from "../../lib/site";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+  return posts.map((post) => ({
+    params: { slug: postSlug(post) },
+    props: { post, posts },
+  }));
+}
+
+const { post, posts } = Astro.props;
+const { Content, headings } = await render(post);
+const slug = postSlug(post);
+const cats = postCategories(post);
+const minutes = readTime(post.body ?? "");
+const published = post.data.date.toISOString();
+const modified = (post.data.updated ?? post.data.date).toISOString();
+const description = postDescription(post);
+
+const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
+const pool = relatedPosts(post, posts);
+
+const origin = siteOrigin(Astro.site);
+const url = `${origin}/post/${slug}`;
+const ogImage = `${origin}/og/post/${slug}.png`;
+
+const brand = {
+  "@type": "Organization",
+  name: SITE_NAME,
+  url: origin,
+  logo: { "@type": "ImageObject", url: `${origin}/images/codehiriselogo.png` },
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: post.data.title,
+  description,
+  image: ogImage,
+  url,
+  datePublished: published,
+  dateModified: modified,
+  keywords: cats.join(", "),
+  articleSection: cats[0],
+  author: brand,
+  publisher: brand,
+  mainEntityOfPage: { "@type": "WebPage", "@id": url },
+};
+---
+
+<BaseLayout
+  title={post.data.title}
+  description={description}
+  image={ogImage}
+  url={url}
+  type="article"
+  publishedTime={published}
+  modifiedTime={modified}
+  tags={cats}
+  jsonLd={jsonLd}
+>
+  <ScrollProgress />
+
+  <article class="wrap">
+    <header class="article-head">
+      <div class="breadcrumb">
+        <a href="/">~</a><span class="sep">/</span>
+        {
+          cats[0] && (
+            <>
+              <a href={`/category/${categorySlug(cats[0])}`}>
+                {categorySlug(cats[0])}
+              </a>
+              <span class="sep">/</span>
+            </>
+          )
+        }
+        <span class="faint">{slug}</span>
+      </div>
+
+      <span class="kicker">{cats.join(" · ")}</span>
+
+      <div class="article-cover" style="margin-top:18px;">
+        <PostCover
+          title={post.data.title}
+          slug={slug}
+          categories={cats}
+          size="clamp(22px,3vw,38px)"
+          heading={true}
+        />
+      </div>
+
+      <div class="article-meta">
+        <span class="avatar">C</span>
+        <span>CodeHiRise</span>
+        <span class="dot"></span>
+        <time datetime={isoDate(post.data.date)}>{formatDate(post.data.date)}</time>
+        <span class="dot"></span>
+        <span>{minutes} min read</span>
+        <span class="dot"></span>
+        <ShareButtons
+          title={post.data.title}
+          url={url}
+          hashtags={cats.join(",")}
+        />
+      </div>
+    </header>
+
+    {
+      toc.length > 0 ? (
+        <div class="post-layout">
+          <div class="prose" id="prose">
+            <Content components={mdxComponents} />
+          </div>
+          <aside>
+            <nav class="toc" id="toc">
+              <h4>On this page</h4>
+              <ul>
+                {toc.map((h) => (
+                  <li>
+                    <a
+                      href={`#${h.slug}`}
+                      class:list={[{ "toc-sub": h.depth === 3 }]}
+                    >
+                      {h.text}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </aside>
+        </div>
+      ) : (
+        <div class="prose" id="prose">
+          <Content components={mdxComponents} />
+        </div>
+      )
+    }
+  </article>
+
+  <section class="wrap section">
+    <div class="section-head">
+      <h2>Keep reading</h2>
+      <span class="idx">// related guides</span>
+    </div>
+    <div class="grid grid-3">
+      {
+        pool.map((p) => (
+          <Card
+            title={p.data.title}
+            slug={postSlug(p)}
+            date={p.data.date}
+            overview={p.data.overview}
+            categories={postCategories(p)}
+            readMinutes={readTime(p.body ?? "")}
+          />
+        ))
+      }
+    </div>
+  </section>
+
+  <PostImageDialog />
+
+  <script is:inline>
+    // ---- enhance Shiki code blocks: terminal bar + copy ----
+    (function enhanceCode() {
+      document.querySelectorAll("#prose pre.astro-code").forEach((pre) => {
+        if (pre.closest(".codeblock")) return;
+        const lang = pre.getAttribute("data-language") || "code";
+        const wrap = document.createElement("div");
+        wrap.className = "codeblock";
+        const bar = document.createElement("div");
+        bar.className = "codeblock-bar";
+        bar.innerHTML =
+          '<span class="cover-dot"></span><span class="cover-dot"></span><span class="cover-dot"></span><span class="lang"></span><button class="copy" type="button">copy</button>';
+        bar.querySelector(".lang").textContent = lang;
+        pre.parentNode.insertBefore(wrap, pre);
+        wrap.appendChild(bar);
+        wrap.appendChild(pre);
+        const btn = bar.querySelector(".copy");
+        btn.addEventListener("click", () => {
+          const code = (pre.querySelector("code") || pre).innerText || "";
+          navigator.clipboard && navigator.clipboard.writeText(code);
+          const t = btn.textContent;
+          btn.textContent = "copied";
+          setTimeout(() => (btn.textContent = t), 1100);
+        });
+      });
+    })();
+
+    // ---- TOC active highlight ----
+    (function tocHighlight() {
+      const links = [...document.querySelectorAll(".toc a")];
+      if (!links.length) return;
+      // getElementById, not querySelector: ids like "1-use-keyless-auth" are
+      // invalid CSS selectors and would throw.
+      const sections = links
+        .map((l) =>
+          document.getElementById(
+            decodeURIComponent(l.getAttribute("href").slice(1)),
+          ),
+        )
+        .filter(Boolean);
+      const obs = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((en) => {
+            if (en.isIntersecting) {
+              const id = "#" + en.target.id;
+              links.forEach((l) =>
+                l.classList.toggle(
+                  "is-active",
+                  l.getAttribute("href") === id,
+                ),
+              );
+            }
+          });
+        },
+        { rootMargin: "-20% 0px -70% 0px" },
+      );
+      sections.forEach((s) => obs.observe(s));
+    })();
+  </script>
+</BaseLayout>

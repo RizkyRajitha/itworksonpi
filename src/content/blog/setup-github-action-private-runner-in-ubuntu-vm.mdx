@@ -1,0 +1,223 @@
+---
+title: "Setup a GitHub Self-Hosted Runner on an Ubuntu VM: A DevOps Guide"
+date: "2025-02-16"
+categories: "Linux,Cloud,DevOps"
+featured: "false"
+overview: "Step-by-step guide to creating a GitHub self-hosted runner on an Ubuntu virtual machine. Optimize CI/CD pipelines for security, cost, and performance. Perfect for DevOps teams!"
+description: "Set up a GitHub Actions self-hosted runner on an Ubuntu VM as a locked-down systemd service with a dedicated system user, then use it in a workflow."
+---
+
+Hi everyone,
+
+In this article, we will walk you through the steps for setting up GitHub self-hosted runners on an Ubuntu virtual machine as a service, for a persistent runner installation.
+
+The primary reason organizations adopt GitHub self-hosted runners is to securely access internal, private networks such as databases, services, or virtual machines without exposing them to the public internet. By keeping workflows within their controlled infrastructure, they eliminate risks like accidental data leaks or compliance violations.
+
+Additionally, self-hosted runners safeguard sensitive code, credentials, or artifacts, since the runners are hosted on the organization's network.
+
+## Prerequisites
+
+1. A GitHub account.
+2. An Ubuntu virtual machine with root access and internet connectivity.
+3. Basic familiarity with Linux commands and GitHub Actions.
+
+Let's get started.
+
+First, go to your desired GitHub repository and go to Settings > Actions > Runners > New self-hosted runner.
+
+![create new runner GitHub UI](/assets/github-private-runner/create-new-runner-gh-ui.png)
+
+When you click the New self-hosted runner button, you will get the page below with all the required steps.
+
+![GitHub UI runner setup instructions](/assets/github-private-runner/gh-ui-runner-setup-instructions.png)
+
+  
+It outlines downloading and setting up the action runner, but in our case we will take some extra steps to make our setup more secure and to configure the runner as a systemd service.
+
+## Step 1: Create a Dedicated System User for the GitHub Action Runner
+
+We will create a new system user in our Ubuntu VM.
+
+Run the command below.
+
+```bash
+sudo useradd --system --shell /usr/sbin/nologin gh-action-runner-user
+```
+
+ - `--system`: Creates a non-interactive service account.
+ - `--shell /usr/sbin/nologin`: Blocks SSH/login access.
+
+![creating the gh-action-runner-user system user](/assets/github-private-runner/image_1.png)
+
+## Step 2: Download the GitHub Runner
+
+Run the commands below to create the runner's installation directory in /opt.
+
+```bash
+sudo mkdir /opt/gh-runner
+cd /opt
+```
+
+<Alert type="info">
+ Use the /opt directory for add-on application software packages and avoid using a user's home directory.
+</Alert>
+
+Run the commands below to change ownership of the directory to our current user for downloading and extracting files.
+
+```bash
+sudo chown codehirise:codehirise gh-runner/
+cd gh-runner
+``` 
+
+Then run the command below to download the action runner.
+
+```bash
+curl -o actions-runner-linux-x64-2.322.0.tar.gz -L https://github.com/actions/runner/releases/download/v2.322.0/actions-runner-linux-x64-2.322.0.tar.gz
+``` 
+
+Optionally, run the command below to verify the downloaded tar file.
+
+```bash
+echo "b13b784808359f31bc79b08a191f5f83757852957dd8fe3dbfcc38202ccf5768  actions-runner-linux-x64-2.322.0.tar.gz" | shasum -a 256 -c
+``` 
+
+![verifying the runner archive checksum](/assets/github-private-runner/image.png)
+
+Next, run the command below to extract the actions runner tar.gz file.
+
+```bash
+tar xzf ./actions-runner-linux-x64-2.322.0.tar.gz
+```
+
+![extracting the actions runner archive](/assets/github-private-runner/image_2.png)
+  
+
+## Step 3: Configure the Runner
+
+After extracting, run the command below to configure the GitHub action runner.
+
+```bash
+./config.sh --url https://github.com/codehirise/github-actions-private-runner-demo --token YOUR_TOKEN
+```
+ 
+<Alert type="info">
+Replace YOUR_TOKEN with the token displayed on GitHub's new self-hosted runner page.
+</Alert>  
+
+Here you will be prompted for some input like the runner name and labels. You can enter them as you see fit.
+
+![config.sh prompts for runner name and labels](/assets/github-private-runner/image_3.png)
+  
+It will create some additional files like `svc.sh` which we will use to configure the action runner as a systemd service.
+
+![files created by config.sh, including svc.sh](/assets/github-private-runner/image_4.png)
+
+Before that, make sure to change the ownership of the directory to our Linux service user, `gh-action-runner-user`.
+Run the command below:
+
+```bash
+sudo chown gh-action-runner-user:gh-action-runner-user /opt/gh-runner/ -R
+```
+
+![changing ownership of /opt/gh-runner](/assets/github-private-runner/image_5.png)
+  
+
+## Step 4: Configure the Runner Systemd Service
+
+Next, run the command below to install the systemd service for the GitHub action runner. This installs the action runner as a systemd service running as `gh-action-runner-user`.
+
+```bash
+sudo ./svc.sh install gh-action-runner-user
+```
+
+Next, you can run the status command to check its status:
+
+```bash
+sudo ./svc.sh status
+```
+
+And run the start command to start the GitHub action runner:
+
+```bash
+sudo ./svc.sh start
+```
+
+![svc.sh install, status and start output](/assets/github-private-runner/image_6.png)
+
+To check the GitHub action runner logs, simply run:
+
+```bash
+journalctl -f -u actions.runner.codehirise-github-actions-private-runner-demo.gh-private-runner-demo.service
+```
+
+<Alert type="info">
+ Note that actions.runner.codehirise-github-actions-private-runner-demo.gh-private-runner-demo.service is the service name displayed when running the `sudo ./svc.sh status` command.
+</Alert>
+
+![journalctl logs showing the runner connected to GitHub](/assets/github-private-runner/image_7.png)
+
+It will show "Connected to GitHub", which indicates that we have successfully set up our GitHub action runner as a service.
+If you now visit the runners page, you can see our brand new self-hosted runner is ready and waiting to pick up jobs.
+
+![runner listed as idle on the GitHub runners page](/assets/github-private-runner/image_8.png)
+
+The action runner systemd service is enabled by default, so it will automatically start after a system reboot.
+
+![runner service enabled at boot](/assets/github-private-runner/image_9.png)
+
+## Step 5: Using the Self-Hosted Runner in a GitHub Actions Workflow
+
+To use this runner in a workflow, set `runs-on` in your GitHub Actions workflow file to `self-hosted`.
+
+Example workflow file below.
+
+```yaml
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: self-hosted
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4
+
+      # Runs a single command using the runners shell
+      - name: Run a one-line script
+        run: echo Hello, world!
+
+      # Runs a set of commands using the runners shell
+      - name: Run a multi-line script
+        run: |
+          echo Add other actions to build,
+          echo test, and deploy your project.
+```
+
+In the workflow run we can see the job ran on the runner we set up.
+
+![workflow job running on the self-hosted runner](/assets/github-private-runner/image_11.png)
+
+In our runner logs we can see the job completed successfully.
+
+![runner logs showing the job completed](/assets/github-private-runner/image_10.png)
+
+Self-hosted GitHub runners on Ubuntu VMs put you in control—locking down sensitive workflows and integrating seamlessly with private infrastructure. With this setup, your pipelines stay fast, secure, and entirely within your environment. Will this be your team’s next step in its DevOps adventure? 🚀
+
+**Thank you for reading.**

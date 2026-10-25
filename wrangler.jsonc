@@ -1,0 +1,14 @@
+// wrangler.jsonc  (repo root)
+{
+    "$schema": "node_modules/wrangler/config-schema.json",
+    "name": "astrosite",
+    "compatibility_date": "2026-05-29",
+    "assets": {
+        "directory": "./dist",
+        // Astro builds /x/index.html but canonical URLs have no trailing slash
+        // (trailingSlash: 'never'). Serve /x directly instead of redirecting to /x/.
+        "html_handling": "drop-trailing-slash",
+        // Serve dist/404.html with a 404 status for unknown paths.
+        "not_found_handling": "404-page"
+    }
+}

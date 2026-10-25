@@ -1,0 +1,44 @@
+---
+---
+
+<dialog id="post-image-dialog" class="lightbox" aria-label="Enlarged image">
+  <form method="dialog">
+    <button type="submit" class="lightbox-close" aria-label="Close (Esc)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M18 6 6 18M6 6l12 12"></path>
+      </svg>
+    </button>
+  </form>
+  <figure class="lightbox-figure">
+    <img id="post-image-dialog-img" alt="" />
+    <figcaption id="post-image-dialog-caption"></figcaption>
+  </figure>
+</dialog>
+
+<script is:inline>
+  (() => {
+    const dialog = document.getElementById("post-image-dialog");
+    if (!dialog) return;
+    const imgEl = document.getElementById("post-image-dialog-img");
+    const capEl = document.getElementById("post-image-dialog-caption");
+
+    document.addEventListener("click", (e) => {
+      const trigger = e.target.closest(".post-image-trigger");
+      if (trigger) {
+        const src = trigger.getAttribute("data-src");
+        const alt = trigger.getAttribute("data-alt") || "";
+        if (imgEl) {
+          imgEl.src = src;
+          imgEl.alt = alt;
+        }
+        if (capEl) {
+          capEl.textContent = alt;
+          capEl.style.display = alt ? "" : "none";
+        }
+        dialog.showModal();
+        return;
+      }
+      if (e.target === dialog) dialog.close();
+    });
+  })();
+</script>

@@ -1,0 +1,58 @@
+---
+import { categorySlug, formatDate, isoDate } from "../lib/categories";
+import PostCover from "./PostCover.astro";
+
+interface Props {
+  title: string;
+  slug: string;
+  date: Date;
+  overview: string;
+  categories: string[];
+  readMinutes?: number;
+}
+
+const { title, slug, date, overview, categories, readMinutes } = Astro.props;
+
+const dataCats = categories.map(categorySlug).join(" ");
+---
+
+<a
+  class="feature"
+  href={`/post/${slug}`}
+  data-umami-event="FeatureCard"
+  data-cats={dataCats}
+>
+  <div class="feature-text">
+    <span class="kicker">Latest article</span>
+    <h2 class="feature-title">{title}</h2>
+    <p class="feature-excerpt">{overview}</p>
+    <div class="card-meta">
+      <time datetime={isoDate(date)}>{formatDate(date)}</time>
+      {
+        readMinutes && (
+          <>
+            <span class="dot" />
+            <span>{readMinutes} min read</span>
+          </>
+        )
+      }
+    </div>
+    <div class="tags">
+      {categories.map((c) => <span class="tag">{c}</span>)}
+    </div>
+    <span class="link-arrow" style="margin-top:6px;">
+      Read the guide
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 12h14M13 6l6 6-6 6"></path>
+      </svg>
+    </span>
+  </div>
+  <div class="feature-cover" aria-hidden="true">
+    <PostCover
+      title={title}
+      slug={slug}
+      categories={categories}
+      size="clamp(17px,2vw,26px)"
+    />
+  </div>
+</a>

@@ -1,0 +1,277 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Card from "../components/Card.astro";
+import FeatureCard from "../components/FeatureCard.astro";
+import {
+  postCategories,
+  uniqueCategories,
+  sortPostsByDateDesc,
+  categorySlug,
+  readTime,
+} from "../lib/categories";
+import {
+  DESCRIPTION,
+  SITE_NAME,
+  SITE_TITLE,
+  TAGLINE,
+  postSlug,
+  siteOrigin,
+} from "../lib/site";
+
+const allPosts = sortPostsByDateDesc(await getCollection("blog"));
+const categories = uniqueCategories(allPosts);
+
+const featuredPost = allPosts.find((p) => p.data.featured) ?? allPosts[0];
+const featuredSlug = postSlug(featuredPost);
+const gridPosts = allPosts.filter((p) => p.id !== featuredPost.id);
+
+const siteUrl = siteOrigin(Astro.site);
+const url = `${siteUrl}/`;
+const image = `${siteUrl}/og/index.png`;
+
+const blogJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Blog",
+  name: SITE_NAME,
+  url,
+  description: DESCRIPTION,
+  blogPost: allPosts.slice(0, 10).map((p) => ({
+    "@type": "BlogPosting",
+    headline: p.data.title,
+    datePublished: p.data.date.toISOString(),
+    url: `${siteUrl}/post/${postSlug(p)}`,
+  })),
+};
+
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: SITE_NAME,
+  url,
+  description: DESCRIPTION,
+  potentialAction: {
+    "@type": "SearchAction",
+    target: {
+      "@type": "EntryPoint",
+      urlTemplate: `${siteUrl}/explore?text={search_term_string}`,
+    },
+    "query-input": "required name=search_term_string",
+  },
+};
+
+const jsonLd = [blogJsonLd, websiteJsonLd];
+---
+
+<BaseLayout
+  title={SITE_TITLE}
+  description={DESCRIPTION}
+  image={image}
+  url={url}
+  jsonLd={jsonLd}
+>
+  <section class="hero">
+    <canvas class="hero-canvas" id="heroCanvas"></canvas>
+    <div class="hero-fade"></div>
+    <div class="hero-inner">
+      <span class="hero-mark">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M2 4.5 L9.5 12 L2 19.5 Z"></path>
+          <rect x="10.7" y="4" width="2.6" height="16" rx="1"></rect>
+          <path d="M22 4.5 L14.5 12 L22 19.5 Z"></path>
+        </svg>
+      </span>
+      <h1 class="hero-word">Code<b>Hi</b>Rise</h1>
+      <p class="hero-tag">{TAGLINE}</p>
+    </div>
+    <a class="hero-cue" href="#latest" aria-label="Jump to latest">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 5v14M5 12l7 7 7-7"></path>
+      </svg>
+    </a>
+  </section>
+
+  <section class="wrap" style="padding-top:8px;">
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:18px 0;">
+      <span class="kicker" style="white-space:nowrap;">Browse topics</span>
+      <div class="chip-row" id="topicsBar">
+        <button type="button" class="tag is-active" data-filter="all" aria-pressed="true">all</button>
+        {
+          categories.map((c) => (
+            <button type="button" class="tag" data-filter={categorySlug(c)} aria-pressed="false" data-umami-event="Categories">
+              {c}
+            </button>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap section" id="latest" style="padding-bottom:0;">
+    <div class="section-head">
+      <h2>Latest</h2>
+      <span class="idx">// freshly published</span>
+    </div>
+    <FeatureCard
+      title={featuredPost.data.title}
+      slug={featuredSlug}
+      date={featuredPost.data.date}
+      overview={featuredPost.data.overview}
+      categories={postCategories(featuredPost)}
+      readMinutes={readTime(featuredPost.body ?? "")}
+    />
+  </section>
+
+  <section class="wrap section">
+    <div class="section-head">
+      <h2>All articles</h2>
+      <span class="idx">// <span id="visibleCount">0</span> posts</span>
+    </div>
+    <div class="grid grid-3" id="gridMount">
+      {
+        gridPosts.map((p) => (
+          <Card
+            title={p.data.title}
+            slug={postSlug(p)}
+            date={p.data.date}
+            overview={p.data.overview}
+            categories={postCategories(p)}
+            readMinutes={readTime(p.body ?? "")}
+          />
+        ))
+      }
+    </div>
+    <p class="no-results empty-hidden" id="noResults">No articles match that filter.</p>
+  </section>
+
+  <script is:inline>
+    // ---- abstract hero: ascending light streams ----
+    (function heroAnim() {
+      const cv = document.getElementById("heroCanvas");
+      if (!cv) return;
+      const ctx = cv.getContext("2d");
+      let W = 0,
+        H = 0,
+        dpr = 1;
+      function resize() {
+        dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const r = cv.getBoundingClientRect();
+        W = cv.width = Math.max(1, r.width * dpr);
+        H = cv.height = Math.max(1, r.height * dpr);
+      }
+      resize();
+      let resizeTimer;
+      window.addEventListener("resize", () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(resize, 150);
+      });
+
+      const N = 54;
+      const rnd = (a, b) => a + Math.random() * (b - a);
+      function spawn(atBottom) {
+        return {
+          x: Math.random(),
+          y: atBottom ? rnd(1.02, 1.4) : Math.random() * 1.3,
+          len: rnd(50, 230),
+          speed: rnd(0.1, 0.42),
+          w: Math.random() < 0.6 ? 1 : 1.6,
+          a: rnd(0.05, 0.26),
+          accent: Math.random() < 0.24,
+          sway: rnd(0.0006, 0.0022),
+          phase: Math.random() * Math.PI * 2,
+        };
+      }
+      const beams = Array.from({ length: N }, () => spawn(false));
+      let t = 0;
+      let raf = 0;
+      function tick() {
+        t += 1;
+        ctx.clearRect(0, 0, W, H);
+        for (const b of beams) {
+          b.y -= b.speed * 0.0017;
+          const lenPx = b.len * dpr;
+          if (b.y * H < -lenPx) Object.assign(b, spawn(true));
+          const x = (b.x + Math.sin(t * b.sway + b.phase) * 0.012) * W;
+          const y = b.y * H;
+          const g = ctx.createLinearGradient(x, y, x, y - lenPx);
+          const col = b.accent ? "78,205,196" : "126,142,160";
+          g.addColorStop(0, `rgba(${col},0)`);
+          g.addColorStop(0.5, `rgba(${col},${b.a})`);
+          g.addColorStop(1, `rgba(${col},0)`);
+          ctx.strokeStyle = g;
+          ctx.lineWidth = b.w * dpr;
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+          ctx.lineTo(x, y - lenPx);
+          ctx.stroke();
+          if (b.accent) {
+            ctx.fillStyle = `rgba(78,205,196,${b.a + 0.15})`;
+            ctx.beginPath();
+            ctx.arc(x, y - lenPx, b.w * dpr * 1.3, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+        raf = requestAnimationFrame(tick);
+      }
+      const start = () => { if (!raf) raf = requestAnimationFrame(tick); };
+      const stop = () => { cancelAnimationFrame(raf); raf = 0; };
+
+      const reduce =
+        window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduce) {
+        tick(); // draw one static frame
+        stop();
+        return;
+      }
+
+      // Only animate while the hero is on screen and the tab is visible.
+      let onScreen = true;
+      const sync = () => (onScreen && !document.hidden ? start() : stop());
+      if ("IntersectionObserver" in window) {
+        new IntersectionObserver(([e]) => {
+          onScreen = e.isIntersecting;
+          sync();
+        }).observe(cv);
+      }
+      document.addEventListener("visibilitychange", sync);
+      sync();
+    })();
+
+    // ---- topic filter ----
+    (function topicFilter() {
+      const topicsBar = document.getElementById("topicsBar");
+      const gridMount = document.getElementById("gridMount");
+      const visibleCount = document.getElementById("visibleCount");
+      const noResults = document.getElementById("noResults");
+      if (!topicsBar || !gridMount) return;
+
+      function applyFilter(f) {
+        let n = 0;
+        gridMount.querySelectorAll(".card").forEach((el) => {
+          const match =
+            f === "all" || (el.dataset.cats || "").split(" ").includes(f);
+          el.classList.toggle("empty-hidden", !match);
+          if (match) n++;
+        });
+        if (visibleCount) visibleCount.textContent = n;
+        if (noResults) noResults.classList.toggle("empty-hidden", n > 0);
+      }
+      applyFilter("all");
+
+      topicsBar.addEventListener("click", (e) => {
+        const b = e.target.closest("[data-filter]");
+        if (!b) return;
+        topicsBar
+          .querySelectorAll(".tag")
+          .forEach((t) => {
+            t.classList.remove("is-active");
+            t.setAttribute("aria-pressed", "false");
+          });
+        b.classList.add("is-active");
+        b.setAttribute("aria-pressed", "true");
+        applyFilter(b.dataset.filter);
+      });
+    })();
+  </script>
+</BaseLayout>

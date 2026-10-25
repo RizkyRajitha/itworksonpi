@@ -1,0 +1,27 @@
+---
+import { SITE_NAME, TAGLINE } from "../lib/site";
+
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <a class="brand" href="/">
+      <span class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M2 4.5 L9.5 12 L2 19.5 Z"></path>
+          <rect x="10.7" y="4" width="2.6" height="16" rx="1"></rect>
+          <path d="M22 4.5 L14.5 12 L22 19.5 Z"></path>
+        </svg>
+      </span>
+      <span class="brand-name">Code<b>Hi</b>Rise</span>
+    </a>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="/">Latest</a>
+      <a href="/explore">Explore</a>
+      <a href="/topics">Topics</a>
+      <a href="/rss.xml" data-umami-event="RSS">RSS</a>
+    </nav>
+    <span class="footer-copy">© {year} {SITE_NAME} · {TAGLINE}</span>
+  </div>
+</footer>

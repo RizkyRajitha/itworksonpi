@@ -1,0 +1,5 @@
+# Cloudflare static-asset redirects: <from> <to> <status>
+# The old Next.js site served its sitemap at /sitemap.xml (may still be registered in Search Console).
+/sitemap.xml /sitemap-index.xml 301
+# Wrong Part 1 URL that was published in Part 2.
+/post/going-to-production-on-cloud-infrastructure-best-practices-part-1 /post/going-production-on-cloud-part-1 301

@@ -1,0 +1,20 @@
+---
+---
+
+<div class="progress" id="scroll-progress"></div>
+
+<script is:inline>
+  (() => {
+    const bar = document.getElementById("scroll-progress");
+    if (!bar) return;
+    const update = () => {
+      const h = document.documentElement;
+      const max = h.scrollHeight - h.clientHeight;
+      const p = max > 0 ? h.scrollTop / max : 0;
+      bar.style.transform = `scaleX(${p})`;
+    };
+    update();
+    document.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update, { passive: true });
+  })();
+</script>

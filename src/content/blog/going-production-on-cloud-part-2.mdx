@@ -1,0 +1,182 @@
+---
+title: "Going to Production on the Cloud: Security, Monitoring & Operations Essentials (Part 2)"
+date: "2026-05-08"
+categories: "Cloud,DevOps,Security"
+featured: "true"
+overview: "The infrastructure is up. Now what? This second part of our production readiness series covers the operational essentials: keyless authentication, secrets management, dependency pinning, monitoring, log retention, WAF rollout strategy, backups, and cost alerting. Everything you need to keep a production cloud workload secure, observable, and recoverable."
+description: "Part 2 of a production-readiness checklist for the cloud: keyless auth, secrets, pinned dependencies, monitoring, logs, WAF rollout, backups and cost alerts."
+---
+
+Hi everyone,
+
+Welcome back. In [Part 1](/post/going-production-on-cloud-part-1) we walked through the infrastructure foundations: environments, networking, compute, configuration, infrastructure as code, tagging, and deployment strategies. If you have not read that one yet, I recommend starting there.
+
+With the foundations in place, the next set of practices is what keeps the system running well after launch. In this part we cover security, observability, logging, and operational resilience.
+
+Let's continue.
+
+## 1. Use Keyless Authentication Wherever Possible
+
+The best secret is the one you never had. Long-lived access keys are one of the most common sources of cloud security incidents because they get committed to repositories, end up in CI logs, or live forever in environment files long after employees move on.
+
+Modern clouds offer keyless alternatives that you should default to:
+
+1. **AWS IAM Roles** for EC2, Lambda, ECS, and EKS workloads. The runtime fetches short-lived credentials automatically.
+2. **GCP Workload Identity Federation** for GKE workloads and external systems.
+3. **Azure Managed Identities** for VMs and App Services.
+4. **OIDC federation** for cross-system authentication. GitHub Actions, GitLab CI, Terraform Cloud, and most major platforms support this. Your CI workflow assumes a role in your cloud account using a short-lived token issued by the CI provider, with no static keys involved.
+
+The migration is well worth the effort. You eliminate an entire class of incidents and remove the operational burden of rotating keys.
+
+<Alert type="info">
+ If you must use a long-lived key for a legacy integration, scope it as tightly as possible, store it in a secrets manager, and put a rotation reminder on the calendar.
+</Alert>
+
+## 2. Manage Secrets Properly
+
+Even with keyless auth, you will still have some secrets: third-party API keys, database passwords for legacy systems, encryption keys, OAuth client secrets, and so on.
+
+Do not put these in:
+
+1. Git repositories (even private ones).
+2. Container images.
+3. Environment variable files committed to source control.
+4. Plain configuration files on shared drives.
+
+Use a dedicated secrets manager: AWS Secrets Manager, GCP Secret Manager, Azure Key Vault, or HashiCorp Vault. Your application reads the secret at runtime, ideally with automatic rotation enabled where supported (RDS credentials are a great example).
+
+A few habits that pay off in the long run:
+
+1. Grant access via the same IAM roles you use for keyless auth, never via a master key.
+2. Audit access logs on the secrets manager itself.
+3. When a secret leaks, rotate immediately. Do not wait for the post-mortem.
+
+## 3. Pin Your Package Versions
+
+Supply-chain attacks are no longer a theoretical concern; they are a regular occurrence. Pinning package versions is one of the simplest defences.
+
+The principle is straightforward: lock the exact versions of every dependency, including transitive ones. Use lockfiles (`package-lock.json`, `yarn.lock`, `poetry.lock`, `Pipfile.lock`, `go.sum`, `Cargo.lock`) and commit them to your repository.
+
+Beyond pinning, scan dependencies regularly with tools like Dependabot, Snyk, or Trivy. Set up automated alerts for known vulnerabilities, but **review** updates before merging instead of auto-merging anything. A quietly malicious patch release can slip past version constraints if nobody looks at the diff.
+
+For container images, do the same. Pin to a specific digest rather than a floating tag like `latest` or even `1.2`.
+
+```dockerfile
+# bad - tag can be re-pushed
+FROM node:20
+
+# better - minor and patch are fixed
+FROM node:20.12.2
+
+# best - digest is immutable
+FROM node:20.12.2-alpine@sha256:...
+```
+
+## 4. Set Up Monitoring Before You Need It
+
+The point of monitoring is to find out about a problem before your customers tell you about it. A reasonable starter set for any production workload covers three layers.
+
+At the **compute and host level** you want CPU utilization, memory usage, disk space (especially for databases), and network throughput.
+
+At the **application level** track error rate (5xx responses, exceptions per minute), latency at p50/p95/p99, request throughput, and uptime via synthetic checks from outside your network.
+
+**Architecture-specific** signals depend on your stack but typically include queue length and message age (if you use queues), database connection pool utilization, replication lag (if you have read replicas), and cache hit rate.
+
+Set alerts on these with sensible thresholds. The two failure modes are alerting on too little (you find out about the outage from Twitter) and alerting on too much (the team mutes the channel and misses the real fire). Iterate on thresholds based on real incident data.
+
+## 5. Centralize and Retain Logs
+
+Logs are how you reconstruct what happened when something goes wrong. Make sure you collect logs from every critical component:
+
+1. Load balancer access logs.
+2. Application logs.
+3. Database slow query logs.
+4. IAM and audit logs (CloudTrail in AWS, Cloud Audit Logs in GCP).
+5. WAF logs (more on that below).
+6. VPC flow logs.
+
+Centralize them somewhere you can search across services. CloudWatch Logs, an ELK stack, Datadog, Grafana Loki, and similar platforms all work. The choice matters less than having one searchable place.
+
+For retention, two to four weeks is a reasonable default for most operational logs, but compliance requirements (PCI-DSS, HIPAA, SOC 2) often dictate much longer retention for audit and security logs. Check the regulations that apply to your industry and set retention accordingly. Cold storage (S3 Glacier, GCS Archive) is much cheaper than hot retention if you only need the data for compliance.
+
+## 6. Log Before You Block: A Safer WAF Rollout
+
+A web application firewall (WAF) is a great defensive layer, but turning one on aggressively in front of production traffic is a fast way to break legitimate users. Default rule sets can flag things like long form submissions, unusual but valid query patterns, or specific user-agent strings.
+
+The safer rollout pattern looks like this:
+
+1. **Enable the WAF in count or log-only mode** for a couple of weeks.
+2. **Analyze the logs**: which rules fired, on which endpoints, against which traffic? Is that traffic actually malicious, or is it your mobile app, your own monitoring probes, or a regional user with an unusual locale setting?
+3. **Tune the rules**: disable or scope down anything that is producing false positives. Add custom rules for patterns specific to your application.
+4. **Switch to blocking mode** once you are confident the rules are accurate.
+
+Skipping this analysis phase is how teams accidentally block their own checkout flow on launch day.
+
+<Alert type="warning">
+Always keep WAF logs enabled even after switching to blocking mode. They are essential for investigating incidents and tuning rules over time.
+</Alert>
+
+## 7. Plan for Backups and Disaster Recovery
+
+Backups exist for the day something goes catastrophically wrong: a botched migration, a compromised account, an accidental `DELETE FROM users`. Three things matter.
+
+**Automated backups** of every stateful component, including databases, object storage, and configuration. Most managed databases offer point-in-time recovery; turn it on.
+
+**Off-account or off-region copies** for the things that matter most. A backup in the same account as your production workload offers limited protection against an account compromise.
+
+**Restore drills.** An untested backup is a hopeful guess. Periodically restore to a temporary environment and confirm the data is usable.
+
+Define your **Recovery Time Objective** (how long can we be down?) and **Recovery Point Objective** (how much data can we afford to lose?) explicitly, and choose backup mechanisms that meet them.
+
+**RTO** is the maximum acceptable length of time your system can be offline after a failure. **RPO** is the maximum acceptable amount of data loss, measured in time. These aren't abstract goals; they're engineering constraints that directly dictate your backup frequency, replication strategy, and failover architecture.
+
+```
+                          INCIDENT
+                             |
+                             ▼
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Timeline ───────────────────────────────────────────────────▶
+
+   [Last Backup]          [Failure]              [Full Recovery]
+        │                     │                        │
+        ◀━━━━━━━━━━━━━━━━━━━━▶◀━━━━━━━━━━━━━━━━━━━━━━━▶
+                RPO                      RTO
+         (data loss window)         (downtime window)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+For example:
+
+- **RPO = 1 hour**: backups must run at least every hour.
+- **RTO = 4 hours**: your restore process must complete within 4 hours.
+
+A tight RPO (e.g. 5 minutes) demands continuous replication or WAL shipping; a nightly snapshot won't cut it. A tight RTO (e.g. 30 minutes) demands warm standbys, pre-provisioned failover environments or a multi-site configuration; you can't afford to spend that window waiting for a cold restore to finish.
+
+The key tradeoff: shorter RPO/RTO = higher cost. A financial transaction system might justify near-zero RPO with synchronous multi-region replication. An internal analytics dashboard might tolerate 24-hour RPO and 8-hour RTO just fine. Define these numbers before choosing your tooling, not after. They should live in your runbook.
+
+## 8. Set Up Cost Alerts Early
+
+Cloud bills can spike for many innocent reasons: a runaway test, a misconfigured auto-scaler, a noisy neighbor in your shared cluster, a forgotten resource left running over a weekend. They can also spike for less innocent reasons, like a leaked key being used to spin up crypto miners.
+
+A simple budget alert can save thousands. Most clouds support this natively (AWS Budgets, GCP Budgets and Alerts, Azure Cost Management). Set:
+
+1. A monthly budget threshold with alerts at, say, 50%, 80%, and 100%.
+2. An anomaly detection alert for sudden cost jumps.
+3. Per-service budgets for the most expensive components if you can.
+
+If you implemented the tagging strategy from Part 1, you can also slice costs by environment, team, or service to spot which area is spiking.
+
+## Wrapping Up
+
+Going to production is a milestone, not an endpoint. The practices in this series are not glamorous, but they are what separates a launch that goes smoothly from one that becomes a war story.
+
+To summarize the full two-part checklist:
+
+**From Part 1 (infrastructure):** a non-production mirror, segregated networks, controlled ingress and egress IPs, the right compute for each workload, externalized configuration, infrastructure as code, consistent tagging, and safer deployment strategies.
+
+**From Part 2 (operations):** keyless authentication, proper secrets management, pinned dependencies, comprehensive monitoring, centralized logs, careful WAF rollout, tested backups, and cost alerts.
+
+You will not implement everything on day one, and that is okay. Pick the ones that match your current biggest risks and work through the rest as you grow. Your future self, and your on-call rotation, will thank you.
+
+**Thank you for reading. Share if it helped your team!**

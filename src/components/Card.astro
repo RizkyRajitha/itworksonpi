@@ -1,0 +1,57 @@
+---
+import { categorySlug, formatDate, isoDate } from "../lib/categories";
+import PostCover from "./PostCover.astro";
+
+interface Props {
+  title: string;
+  slug: string;
+  date: Date;
+  overview: string;
+  categories: string[];
+  readMinutes?: number;
+}
+
+const { title, slug, date, overview, categories, readMinutes } = Astro.props;
+
+const dataCats = categories.map(categorySlug).join(" ");
+const dataSearch = `${title} ${overview} ${categories.join(" ")}`.toLowerCase();
+---
+
+<a
+  class="card"
+  href={`/post/${slug}`}
+  data-umami-event="Posts"
+  data-cats={dataCats}
+  data-search={dataSearch}
+>
+  <div class="card-cover" aria-hidden="true">
+    <PostCover
+      title={title}
+      slug={slug}
+      categories={categories}
+      size="clamp(14px,1.3vw,17px)"
+      cursor={false}
+      chrome={false}
+    />
+  </div>
+  <div class="card-body">
+    <div class="card-meta">
+      <time datetime={isoDate(date)}>{formatDate(date)}</time>
+      {
+        readMinutes && (
+          <>
+            <span class="dot" />
+            <span>{readMinutes} min read</span>
+          </>
+        )
+      }
+    </div>
+    <h3 class="card-title">{title}</h3>
+    <p class="card-excerpt">{overview}</p>
+    <div class="card-foot">
+      <div class="tags">
+        {categories.map((c) => <span class="tag">{c}</span>)}
+      </div>
+    </div>
+  </div>
+</a>

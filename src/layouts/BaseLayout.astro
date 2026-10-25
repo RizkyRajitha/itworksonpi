@@ -1,0 +1,77 @@
+---
+import '../styles/global.css';
+import MetaTags from '../components/MetaTags.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+// Same hashed files the CSS @font-face points to; preloading avoids a late font swap.
+import sansLatin from '@fontsource-variable/inter-tight/files/inter-tight-latin-wght-normal.woff2?url';
+import monoLatin from '@fontsource-variable/noto-sans-mono/files/noto-sans-mono-latin-wght-normal.woff2?url';
+
+interface Props {
+  title: string;
+  description: string;
+  image: string;
+  url: string;
+  type?: 'website' | 'article';
+  publishedTime?: string;
+  modifiedTime?: string;
+  tags?: string[];
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  showFooter?: boolean;
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description,
+  image,
+  url,
+  type = 'website',
+  publishedTime,
+  modifiedTime,
+  tags,
+  jsonLd,
+  showFooter = true,
+  noindex = false,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <MetaTags
+      title={title}
+      description={description}
+      image={image}
+      url={url}
+      type={type}
+      publishedTime={publishedTime}
+      modifiedTime={modifiedTime}
+      tags={tags}
+      jsonLd={jsonLd}
+    />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="preload" href={sansLatin} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={monoLatin} as="font" type="font/woff2" crossorigin />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Umami analytics. data-domains keeps dev/preview visits out of the stats. -->
+    <script
+      is:inline
+      defer
+      data-website-id="b2850162-f0af-418e-b21a-caa5f9952c5d"
+      data-domains="codehirise.com"
+      src="https://umami-five.vercel.app/script.js"
+    ></script>
+  </head>
+  <body class="min-h-screen flex flex-col">
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Navbar />
+    <main id="main" class="flex-1" tabindex="-1">
+      <slot />
+    </main>
+    {showFooter && <Footer />}
+  </body>
+</html>

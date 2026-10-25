@@ -1,0 +1,120 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Card from "../../components/Card.astro";
+import {
+  postCategories,
+  postsByCategory,
+  uniqueCategories,
+  sortPostsByDateDesc,
+  categorySlug,
+  categoryBlurb,
+  readTime,
+} from "../../lib/categories";
+import { SITE_NAME, postSlug, siteOrigin } from "../../lib/site";
+
+export async function getStaticPaths() {
+  const all = await getCollection("blog");
+  const cats = uniqueCategories(all);
+  return cats.map((name) => ({
+    params: { slug: categorySlug(name) },
+    props: { name },
+  }));
+}
+
+const { slug } = Astro.params;
+const { name } = Astro.props as { name: string };
+
+const all = sortPostsByDateDesc(await getCollection("blog"));
+const topics = uniqueCategories(all);
+const posts = postsByCategory(all, slug!);
+
+const siteUrl = siteOrigin(Astro.site);
+const url = `${siteUrl}/category/${slug}`;
+const image = `${siteUrl}/og/category/${slug}.png`;
+
+const postWord = posts.length === 1 ? "post" : "posts";
+const title = `${name} Tutorials & Guides · ${SITE_NAME}`;
+const description = `Guides and tutorials on ${name}: ${posts.length} ${postWord} on ${SITE_NAME} covering practical, production-focused engineering topics.`;
+const blurb = categoryBlurb(slug!);
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  name: `${name} Tutorials & Guides`,
+  description,
+  url,
+  mainEntity: {
+    "@type": "ItemList",
+    numberOfItems: posts.length,
+    itemListElement: posts.map((post, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      url: `${siteUrl}/post/${postSlug(post)}`,
+      name: post.data.title,
+    })),
+  },
+};
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  image={image}
+  url={url}
+  jsonLd={jsonLd}
+>
+  <section class="page-head">
+    <div class="hero-grid"></div>
+    <div class="wrap" style="position:relative;">
+      <div class="breadcrumb">
+        <a href="/">~</a><span class="sep">/</span>
+        <a href="/topics">topics</a><span class="sep">/</span>
+        <span class="faint">{slug}</span>
+      </div>
+      <span class="kicker">Topic</span>
+      <h1 style="margin-top:14px;"><span class="accent">{name}</span></h1>
+      <p>{blurb}</p>
+      <div class="hero-stats"><span><b>{posts.length}</b> articles</span></div>
+    </div>
+  </section>
+
+  <section class="wrap" style="padding-top:8px;">
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:18px 0;border-top:1px solid var(--border-soft);border-bottom:1px solid var(--border-soft);">
+      <span class="kicker" style="white-space:nowrap;">All topics</span>
+      <div class="chip-row">
+        {
+          topics.map((t) => (
+            <a
+              class:list={["tag", { "is-active": categorySlug(t) === slug }]}
+              href={`/category/${categorySlug(t)}`}
+              data-umami-event="Categories"
+            >
+              {t}
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap section">
+    <div class="grid grid-3">
+      {
+        posts.map((post) => (
+          <Card
+            title={post.data.title}
+            slug={postSlug(post)}
+            date={post.data.date}
+            overview={post.data.overview}
+            categories={postCategories(post)}
+            readMinutes={readTime(post.body ?? "")}
+          />
+        ))
+      }
+    </div>
+    {posts.length === 0 && (
+      <p class="no-results">No articles in this topic yet.</p>
+    )}
+  </section>
+</BaseLayout>
