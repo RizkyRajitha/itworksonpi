@@ -15,12 +15,3 @@ export function siteOrigin(site: URL | undefined): string {
 export function postSlug(post: CollectionEntry<'blog'>): string {
   return post.id.replace(/\.(md|mdx)$/, '');
 }
-
-/** Meta description for a post: explicit `description`, else the overview trimmed to ~160 chars. */
-export function postDescription(post: CollectionEntry<'blog'>): string {
-  if (post.data.description) return post.data.description;
-  const text = post.data.overview.trim();
-  if (text.length <= 160) return text;
-  const cut = text.slice(0, 157);
-  return cut.slice(0, cut.lastIndexOf(' ')).replace(/[,.;:]$/, '') + '…';
-}

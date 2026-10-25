@@ -31,14 +31,14 @@ Posts are a `glob`-loaded content collection (`src/content.config.ts`) reading `
 
 Frontmatter (Zod schema in `content.config.ts`):
 
-- required: `title`, `date` (coerced to Date), `categories` (a **comma-separated string**, e.g. `"Linux,Networking"`), `featured` (string `"true"`/`"false"` preprocessed to boolean; `"true"` lists the post in the home page's Featured section), `overview` (shown on cards/RSS)
-- optional: `description` (≤160 chars, used for meta/OG descriptions; falls back to `overview` trimmed to ~160 chars), `updated` (date; drives `dateModified` / `article:modified_time`)
+- required: `title`, `date` (coerced to Date), `categories` (a **comma-separated string**, e.g. `"Linux,Networking"`), `featured` (string `"true"`/`"false"` preprocessed to boolean; `"true"` lists the post in the home page's Featured section), `description` (≤160 chars; the one post summary, used on cards, RSS, Explore search and meta/OG descriptions)
+- optional: `updated` (date; drives `dateModified` / `article:modified_time`)
 
 Post conventions: don't start a post with an `# h1` (the post cover renders the title as the h1) or write greetings / sign-offs as headings (they end up in the table of contents) — use plain paragraphs. Link to other posts with relative `/post/<slug>` URLs. Images go in `public/assets/<post>/` with descriptive alt text (alt doubles as the visible caption).
 
 Shared helpers — use these instead of re-implementing:
 
-- `src/lib/site.ts` — `SITE_NAME`, `TAGLINE`, `SITE_TITLE`, `DESCRIPTION`, `siteOrigin(Astro.site)` (origin without trailing slash), `postSlug(post)` (the canonical slug: file path minus extension), `postDescription(post)`.
+- `src/lib/site.ts` — `SITE_NAME`, `TAGLINE`, `SITE_TITLE`, `DESCRIPTION`, `siteOrigin(Astro.site)` (origin without trailing slash), `postSlug(post)` (the canonical slug: file path minus extension).
 - `src/lib/categories.ts` — all category logic: `postCategories`, `uniqueCategories`, `postsByCategory`, `categorySlug()` (lowercase, spaces→`-`; use it for every topic URL), `categoryBlurb()`, `relatedPosts()` (ranked by shared categories), plus `readTime()` and `sortPostsByDateDesc()`. Frontmatter categories are shown to readers as **topics**, at `/topics/<slug>`.
 - `src/lib/dates.ts` — `formatDate()` / `isoDate()` (build time: absolute date and `<time datetime>` value) and `relativeTime()` / `fullDate()` (browser: "5 months ago" and the hover text). Never call `relativeTime()` at build time; the text would go stale in a static build.
 - Post dates: render them with `PostDate.astro`, never a bare `<time>`. It ships the absolute date as the no-JS fallback; its `<post-date>` custom element then rewrites itself with `relativeTime()` and puts `fullDate()` in the hover `title`. `global.css` hides it (`post-date:not(:defined)`, JS-enabled browsers only) until that happens, so the absolute date never flashes. Date-only frontmatter shows a date on hover; give `date` a time (`"2026-05-08T09:30:00+05:30"`) to also show the time.

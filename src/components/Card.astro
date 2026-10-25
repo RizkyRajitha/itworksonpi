@@ -7,17 +7,17 @@ interface Props {
   title: string;
   slug: string;
   date: Date;
-  overview: string;
+  description: string;
   categories: string[];
   readMinutes?: number;
   /** Home page Featured section: glowing border, and its own Umami event. */
   featured?: boolean;
 }
 
-const { title, slug, date, overview, categories, readMinutes, featured = false } = Astro.props;
+const { title, slug, date, description, categories, readMinutes, featured = false } = Astro.props;
 
 const dataCats = categories.map(categorySlug).join(" ");
-const dataSearch = `${title} ${overview} ${categories.join(" ")}`.toLowerCase();
+const dataSearch = `${title} ${description} ${categories.join(" ")}`.toLowerCase();
 ---
 
 <a
@@ -50,7 +50,7 @@ const dataSearch = `${title} ${overview} ${categories.join(" ")}`.toLowerCase();
       }
     </div>
     <h3 class="card-title">{title}</h3>
-    <p class="card-excerpt">{overview}</p>
+    <p class="card-excerpt">{description}</p>
     <div class="card-foot">
       <div class="tags">
         {categories.map((c) => <span class="tag">{c}</span>)}

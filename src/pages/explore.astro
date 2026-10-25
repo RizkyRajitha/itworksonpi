@@ -18,7 +18,7 @@ const posts = all.map((p) => ({
   title: p.data.title,
   slug: postSlug(p),
   date: p.data.date,
-  overview: p.data.overview,
+  description: p.data.description,
   categories: postCategories(p),
   minutes: readTime(p.body ?? ""),
 }));
@@ -96,7 +96,7 @@ const jsonLd = {
             title={p.title}
             slug={p.slug}
             date={p.date}
-            overview={p.overview}
+            description={p.description}
             categories={p.categories}
             readMinutes={p.minutes}
           />

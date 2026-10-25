@@ -14,7 +14,7 @@ import {
   categorySlug,
   relatedPosts,
 } from "../../lib/categories";
-import { SITE_NAME, postDescription, postSlug, siteOrigin } from "../../lib/site";
+import { SITE_NAME, postSlug, siteOrigin } from "../../lib/site";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog");
@@ -31,7 +31,7 @@ const cats = postCategories(post);
 const minutes = readTime(post.body ?? "");
 const published = post.data.date.toISOString();
 const modified = (post.data.updated ?? post.data.date).toISOString();
-const description = postDescription(post);
+const description = post.data.description;
 
 const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
 const pool = relatedPosts(post, posts);
@@ -166,7 +166,7 @@ const jsonLd = {
             title={p.data.title}
             slug={postSlug(p)}
             date={p.data.date}
-            overview={p.data.overview}
+            description={p.data.description}
             categories={postCategories(p)}
             readMinutes={readTime(p.body ?? "")}
           />

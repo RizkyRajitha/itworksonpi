@@ -118,7 +118,7 @@ const jsonLd = [blogJsonLd, websiteJsonLd];
       title={latestPost.data.title}
       slug={postSlug(latestPost)}
       date={latestPost.data.date}
-      overview={latestPost.data.overview}
+      description={latestPost.data.description}
       categories={postCategories(latestPost)}
       readMinutes={readTime(latestPost.body ?? "")}
     />
@@ -137,7 +137,7 @@ const jsonLd = [blogJsonLd, websiteJsonLd];
               title={p.data.title}
               slug={postSlug(p)}
               date={p.data.date}
-              overview={p.data.overview}
+              description={p.data.description}
               categories={postCategories(p)}
               readMinutes={readTime(p.body ?? "")}
               featured
@@ -160,7 +160,7 @@ const jsonLd = [blogJsonLd, websiteJsonLd];
             title={p.data.title}
             slug={postSlug(p)}
             date={p.data.date}
-            overview={p.data.overview}
+            description={p.data.description}
             categories={postCategories(p)}
             readMinutes={readTime(p.body ?? "")}
           />
