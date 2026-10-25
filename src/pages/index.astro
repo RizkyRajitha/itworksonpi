@@ -95,10 +95,10 @@ const jsonLd = [blogJsonLd, websiteJsonLd];
     <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:18px 0;">
       <span class="kicker" style="white-space:nowrap;">Browse topics</span>
       <div class="chip-row" id="topicsBar">
-        <button class="tag is-active" data-filter="all">all</button>
+        <button type="button" class="tag is-active" data-filter="all" aria-pressed="true">all</button>
         {
           categories.map((c) => (
-            <button class="tag" data-filter={categorySlug(c)} data-umami-event="Categories">
+            <button type="button" class="tag" data-filter={categorySlug(c)} aria-pressed="false" data-umami-event="Categories">
               {c}
             </button>
           ))
@@ -264,8 +264,12 @@ const jsonLd = [blogJsonLd, websiteJsonLd];
         if (!b) return;
         topicsBar
           .querySelectorAll(".tag")
-          .forEach((t) => t.classList.remove("is-active"));
+          .forEach((t) => {
+            t.classList.remove("is-active");
+            t.setAttribute("aria-pressed", "false");
+          });
         b.classList.add("is-active");
+        b.setAttribute("aria-pressed", "true");
         applyFilter(b.dataset.filter);
       });
     })();

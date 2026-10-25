@@ -24,7 +24,7 @@ const dataSearch = `${title} ${overview} ${categories.join(" ")}`.toLowerCase();
   data-cats={dataCats}
   data-search={dataSearch}
 >
-  <div class="card-cover">
+  <div class="card-cover" aria-hidden="true">
     <PostCover
       title={title}
       slug={slug}

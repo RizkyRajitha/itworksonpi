@@ -28,7 +28,7 @@
 
   --text: #e8ebf1;
   --text-muted: #98a2b3;
-  --text-faint: #69727f;
+  --text-faint: #7d8694; /* ≥4.5:1 on --bg and --surface for small meta text */
 
   /* accent — cyan, evolved */
   --accent: #4ecdc4;
@@ -415,7 +415,8 @@ a.tag:hover::before, button.tag:hover::before, .tag.is-active::before { color: v
 }
 .feature:hover .feature-title { color: var(--accent-text); }
 .feature-excerpt { color: var(--text-muted); font-size: 16px; line-height: 1.6; max-width: 52ch; }
-.feature .cover { border: none; border-left: 1px solid var(--border); border-radius: 0; }
+.feature-cover { display: flex; min-width: 0; }
+.feature-cover > .cover { flex: 1; border: none; border-left: 1px solid var(--border); border-radius: 0; }
 
 /* ---------- section heads ---------- */
 .section { padding-block: clamp(40px, 6vw, 72px); }
@@ -975,7 +976,8 @@ pre.astro-code {
 /* ---------- responsive ---------- */
 @media (max-width: 920px) {
   .feature { grid-template-columns: 1fr; }
-  .feature .cover { border-left: none; border-top: 1px solid var(--border); order: -1; min-height: 180px; }
+  .feature-cover { order: -1; }
+  .feature-cover > .cover { border-left: none; border-top: 1px solid var(--border); min-height: 180px; }
   .grid-3 { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 760px) {
@@ -1002,3 +1004,26 @@ pre.astro-code {
   .card:hover, .topic-card:hover, .share a:hover,
   .figure-img .zoomable:hover img, .lightbox-close:hover { transform: none; }
 }
+
+/* ---------- focus + skip link ---------- */
+:where(a, button, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+.card:focus-visible, .feature:focus-visible, .topic-card:focus-visible { outline-offset: 4px; border-radius: var(--radius); }
+.skip-link {
+  position: absolute;
+  left: 12px;
+  top: -60px;
+  z-index: 300;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: var(--accent);
+  color: #04121a;
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  font-weight: 600;
+}
+.skip-link:focus { top: 12px; }
+main:focus { outline: none; }

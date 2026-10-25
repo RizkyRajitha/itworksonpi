@@ -73,10 +73,10 @@ const jsonLd = {
     <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:18px 0;border-top:1px solid var(--border-soft);border-bottom:1px solid var(--border-soft);">
       <span class="kicker" style="white-space:nowrap;">Filter</span>
       <div class="chip-row" id="topicsBar">
-        <button class="tag is-active" data-filter="all">all</button>
+        <button type="button" class="tag is-active" data-filter="all" aria-pressed="true">all</button>
         {
           topics.map((t) => (
-            <button class="tag" data-filter={categorySlug(t)}>
+            <button type="button" class="tag" data-filter={categorySlug(t)} aria-pressed="false">
               {t}
             </button>
           ))
@@ -156,8 +156,12 @@ const jsonLd = {
           if (!b) return;
           topicsBar
             .querySelectorAll(".tag")
-            .forEach((t) => t.classList.remove("is-active"));
+            .forEach((t) => {
+              t.classList.remove("is-active");
+              t.setAttribute("aria-pressed", "false");
+            });
           b.classList.add("is-active");
+          b.setAttribute("aria-pressed", "true");
           activeTopic = b.dataset.filter;
           run();
         });
