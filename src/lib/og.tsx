@@ -11,7 +11,8 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import satori from 'satori';
-import { Resvg } from "@resvg/resvg-js";
+import { Resvg } from '@resvg/resvg-js';
+import { TAGLINE } from './site';
 
 const PUBLIC_DIR = path.resolve(process.cwd(), 'public');
 
@@ -261,7 +262,7 @@ function indexBody() {
               letterSpacing: '0.01em',
               textAlign: 'center',
             },
-            children: 'Cloud · DevOps · Linux · Kubernetes — guides for engineers',
+            children: TAGLINE,
           },
         },
       ],

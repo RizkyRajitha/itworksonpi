@@ -10,44 +10,46 @@ import {
   categorySlug,
   readTime,
 } from "../lib/categories";
-
-const slugOf = (id: string) => id.replace(/\.(md|mdx)$/, "");
+import {
+  DESCRIPTION,
+  SITE_NAME,
+  SITE_TITLE,
+  TAGLINE,
+  postSlug,
+  siteOrigin,
+} from "../lib/site";
 
 const allPosts = sortPostsByDateDesc(await getCollection("blog"));
 const categories = uniqueCategories(allPosts);
 
 const featuredPost = allPosts.find((p) => p.data.featured) ?? allPosts[0];
-const featuredSlug = slugOf(featuredPost.id);
-const gridPosts = allPosts.filter((p) => slugOf(p.id) !== featuredSlug);
+const featuredSlug = postSlug(featuredPost);
+const gridPosts = allPosts.filter((p) => p.id !== featuredPost.id);
 
-const siteUrl = Astro.site?.toString().replace(/\/$/, "") ?? "";
+const siteUrl = siteOrigin(Astro.site);
 const url = `${siteUrl}/`;
 const image = `${siteUrl}/og/index.png`;
-
-const siteTitle = "CodeHiRise - Cloud, DevOps & Linux Tutorials for Engineers";
-const siteDescription =
-  "Practical guides on AWS, Kubernetes, Linux, networking and DevOps - written for engineers shipping real production systems.";
 
 const blogJsonLd = {
   "@context": "https://schema.org",
   "@type": "Blog",
-  name: "CodeHiRise",
+  name: SITE_NAME,
   url,
-  description: siteDescription,
+  description: DESCRIPTION,
   blogPost: allPosts.slice(0, 10).map((p) => ({
-    "@type": "Article",
+    "@type": "BlogPosting",
     headline: p.data.title,
     datePublished: p.data.date.toISOString(),
-    url: `${siteUrl}/post/${slugOf(p.id)}`,
+    url: `${siteUrl}/post/${postSlug(p)}`,
   })),
 };
 
 const websiteJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  name: "CodeHiRise",
+  name: SITE_NAME,
   url,
-  description: siteDescription,
+  description: DESCRIPTION,
   potentialAction: {
     "@type": "SearchAction",
     target: {
@@ -62,8 +64,8 @@ const jsonLd = [blogJsonLd, websiteJsonLd];
 ---
 
 <BaseLayout
-  title={siteTitle}
-  description={siteDescription}
+  title={SITE_TITLE}
+  description={DESCRIPTION}
   image={image}
   url={url}
   jsonLd={jsonLd}
@@ -79,8 +81,8 @@ const jsonLd = [blogJsonLd, websiteJsonLd];
           <path d="M22 4.5 L14.5 12 L22 19.5 Z"></path>
         </svg>
       </span>
-      <h1 class="hero-word" data-umami-event="Logo">Code<b>Hi</b>Rise</h1>
-      <span class="hero-tag">electronics · web dev · and in between</span>
+      <h1 class="hero-word">Code<b>Hi</b>Rise</h1>
+      <p class="hero-tag">{TAGLINE}</p>
     </div>
     <a class="hero-cue" href="#latest" aria-label="Jump to latest">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -130,7 +132,7 @@ const jsonLd = [blogJsonLd, websiteJsonLd];
         gridPosts.map((p) => (
           <Card
             title={p.data.title}
-            slug={slugOf(p.id)}
+            slug={postSlug(p)}
             date={p.data.date}
             overview={p.data.overview}
             categories={postCategories(p)}

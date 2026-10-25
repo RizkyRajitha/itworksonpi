@@ -2,6 +2,7 @@ import type { APIRoute, GetStaticPaths } from 'astro';
 import { getCollection } from 'astro:content';
 import { uniqueCategories, categorySlug, postCategories } from '../../lib/categories';
 import { renderOgPng, type OgOptions } from '../../lib/og';
+import { postSlug } from '../../lib/site';
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const posts = await getCollection('blog');
@@ -26,7 +27,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
       } satisfies OgOptions,
     },
     ...posts.map((p) => {
-      const slug = p.id.replace(/\.(md|mdx)$/, '');
+      const slug = postSlug(p);
       return {
         params: { slug: `post/${slug}` },
         props: {

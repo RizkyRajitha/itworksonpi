@@ -9,47 +9,39 @@ import {
   categorySlug,
   readTime,
 } from "../lib/categories";
-
-const slugOf = (id: string) => id.replace(/\.(md|mdx)$/, "");
+import { SITE_NAME, postSlug, siteOrigin } from "../lib/site";
 
 const all = sortPostsByDateDesc(await getCollection("blog"));
 const topics = uniqueCategories(all);
 
 const posts = all.map((p) => ({
   title: p.data.title,
-  slug: slugOf(p.id),
+  slug: postSlug(p),
   date: p.data.date,
   overview: p.data.overview,
   categories: postCategories(p),
   minutes: readTime(p.body ?? ""),
 }));
 
-const siteUrl = Astro.site?.toString().replace(/\/$/, "") ?? "";
+const siteUrl = siteOrigin(Astro.site);
 const url = `${siteUrl}/explore`;
 const image = `${siteUrl}/og/explore.png`;
 
-const websiteJsonLd = {
+const jsonLd = {
   "@context": "https://schema.org",
-  "@type": "WebSite",
-  name: "CodeHiRise",
-  url: siteUrl,
-  potentialAction: {
-    "@type": "SearchAction",
-    target: {
-      "@type": "EntryPoint",
-      urlTemplate: `${siteUrl}/explore?text={search_term_string}`,
-    },
-    "query-input": "required name=search_term_string",
-  },
+  "@type": "CollectionPage",
+  name: `Explore · ${SITE_NAME}`,
+  url,
+  isPartOf: { "@type": "WebSite", name: SITE_NAME, url: `${siteUrl}/` },
 };
 ---
 
 <BaseLayout
-  title="Explore - CodeHiRise"
-  description="Search and explore all CodeHiRise articles on Cloud, DevOps, Linux, Kubernetes and networking."
+  title={`Explore · ${SITE_NAME}`}
+  description={`Search every ${SITE_NAME} guide on cloud, DevOps, Linux, Kubernetes, networking and electronics.`}
   image={image}
   url={url}
-  jsonLd={websiteJsonLd}
+  jsonLd={jsonLd}
 >
   <section class="page-head">
     <div class="hero-grid"></div>

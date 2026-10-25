@@ -5,7 +5,7 @@ const active =
     ? "home"
     : path.startsWith("/explore")
       ? "explore"
-      : path.startsWith("/category")
+      : path.startsWith("/category") || path.startsWith("/topics")
         ? "topics"
         : "";
 ---
@@ -26,7 +26,7 @@ const active =
     <nav class="nav-links">
       <a class:list={["nav-link", { "is-active": active === "home" }]} href="/">/ latest</a>
       <a class:list={["nav-link", { "is-active": active === "explore" }]} href="/explore">/ explore</a>
-      <a class:list={["nav-link", { "is-active": active === "topics" }]} href="/category/devops">/ topics</a>
+      <a class:list={["nav-link", { "is-active": active === "topics" }]} href="/topics">/ topics</a>
     </nav>
 
     <div class="nav-right">
@@ -57,7 +57,7 @@ const active =
     <div class="mobile-links">
       <a class="nav-link" href="/">/ latest</a>
       <a class="nav-link" href="/explore">/ explore</a>
-      <a class="nav-link" href="/category/devops">/ topics</a>
+      <a class="nav-link" href="/topics">/ topics</a>
     </div>
   </div>
 </header>

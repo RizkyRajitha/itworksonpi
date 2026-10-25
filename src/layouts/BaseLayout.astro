@@ -11,8 +11,9 @@ interface Props {
   url: string;
   type?: 'website' | 'article';
   publishedTime?: string;
+  modifiedTime?: string;
+  tags?: string[];
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
-  keywords?: string;
   showFooter?: boolean;
   noindex?: boolean;
 }
@@ -24,15 +25,16 @@ const {
   url,
   type = 'website',
   publishedTime,
+  modifiedTime,
+  tags,
   jsonLd,
-  keywords,
   showFooter = true,
   noindex = false,
 } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <MetaTags
       title={title}
@@ -41,24 +43,21 @@ const {
       url={url}
       type={type}
       publishedTime={publishedTime}
+      modifiedTime={modifiedTime}
+      tags={tags}
       jsonLd={jsonLd}
-      keywords={keywords}
     />
     {noindex && <meta name="robots" content="noindex" />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <meta name="generator" content={Astro.generator} />
 
-    <script is:inline>
-      document.documentElement.classList.add('dark');
-    </script>
-
-    <!-- Umami analytics — same site as previous deployment -->
+    <!-- Umami analytics. data-domains keeps dev/preview visits out of the stats. -->
     <script
       is:inline
-      async
       defer
       data-website-id="b2850162-f0af-418e-b21a-caa5f9952c5d"
+      data-domains="codehirise.com"
       src="https://umami-five.vercel.app/script.js"
     ></script>
   </head>
