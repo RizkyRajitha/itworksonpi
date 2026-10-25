@@ -4,11 +4,12 @@ date: "2026-05-08"
 categories: "Cloud,DevOps,Security"
 featured: "true"
 overview: "The infrastructure is up. Now what? This second part of our production readiness series covers the operational essentials: keyless authentication, secrets management, dependency pinning, monitoring, log retention, WAF rollout strategy, backups, and cost alerting. Everything you need to keep a production cloud workload secure, observable, and recoverable."
+description: "Part 2 of a production-readiness checklist for the cloud: keyless auth, secrets, pinned dependencies, monitoring, logs, WAF rollout, backups and cost alerts."
 ---
 
-## **Hi everyone,**
+Hi everyone,
 
-Welcome back. In [Part 1](/post/going-production-on-cloud-part-1) we walked through the infrastructure foundations: environments, networking, compute, configuration, availability, and deployment strategies. If you have not read that one yet, I recommend starting there.
+Welcome back. In [Part 1](/post/going-production-on-cloud-part-1) we walked through the infrastructure foundations: environments, networking, compute, configuration, infrastructure as code, tagging, and deployment strategies. If you have not read that one yet, I recommend starting there.
 
 With the foundations in place, the next set of practices is what keeps the system running well after launch. In this part we cover security, observability, logging, and operational resilience.
 
@@ -52,7 +53,7 @@ A few habits that pay off in the long run:
 
 ## 3. Pin Your Package Versions
 
-Supply-chain attacks are no longer a theoretical concern, they are a regular occurrence. Pinning package versions is one of the simplest defences.
+Supply-chain attacks are no longer a theoretical concern; they are a regular occurrence. Pinning package versions is one of the simplest defences.
 
 The principle is straightforward: lock the exact versions of every dependency, including transitive ones. Use lockfiles (`package-lock.json`, `yarn.lock`, `poetry.lock`, `Pipfile.lock`, `go.sum`, `Cargo.lock`) and commit them to your repository.
 
@@ -127,7 +128,7 @@ Backups exist for the day something goes catastrophically wrong: a botched migra
 
 Define your **Recovery Time Objective** (how long can we be down?) and **Recovery Point Objective** (how much data can we afford to lose?) explicitly, and choose backup mechanisms that meet them.
 
-**RTO** is the maximum acceptable length of time your system can be offline after a failure. **RPO** is the maximum acceptable amount of data loss, measured in time. These aren't abstract goals  they're engineering constraints that directly dictate your backup frequency, replication strategy, and failover architecture.
+**RTO** is the maximum acceptable length of time your system can be offline after a failure. **RPO** is the maximum acceptable amount of data loss, measured in time. These aren't abstract goals; they're engineering constraints that directly dictate your backup frequency, replication strategy, and failover architecture.
 
 ```
                           INCIDENT
@@ -145,12 +146,14 @@ Define your **Recovery Time Objective** (how long can we be down?) and **Recover
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
-RPO = 1 hour  ->  backups must run at least every hour
-RTO = 4 hours ->  your restore process must complete within 4 hours
+For example:
 
-A tight RPO (e.g. 5 minutes) demands continuous replication or WAL shipping a nightly snapshot won't cut it. A tight RTO (e.g. 30 minutes) demands warm standbys or pre-provisioned failover environments or multi site configuration, you can't afford to spend that window waiting for a cold restore to finish.
+- **RPO = 1 hour**: backups must run at least every hour.
+- **RTO = 4 hours**: your restore process must complete within 4 hours.
 
-The key tradeoff: shorter RPO/RTO = higher cost. A financial transaction system might justify near-zero RPO with synchronous multi-region replication. An internal analytics dashboard might tolerate 24-hour RPO and 8-hour RTO just fine. Define these numbers before choosing your tooling, not after they should live in your runbook.
+A tight RPO (e.g. 5 minutes) demands continuous replication or WAL shipping; a nightly snapshot won't cut it. A tight RTO (e.g. 30 minutes) demands warm standbys, pre-provisioned failover environments or a multi-site configuration; you can't afford to spend that window waiting for a cold restore to finish.
+
+The key tradeoff: shorter RPO/RTO = higher cost. A financial transaction system might justify near-zero RPO with synchronous multi-region replication. An internal analytics dashboard might tolerate 24-hour RPO and 8-hour RTO just fine. Define these numbers before choosing your tooling, not after. They should live in your runbook.
 
 ## 8. Set Up Cost Alerts Early
 
@@ -170,10 +173,10 @@ Going to production is a milestone, not an endpoint. The practices in this serie
 
 To summarize the full two-part checklist:
 
-**From Part 1 (infrastructure):** a non-production mirror, segregated networks, controlled ingress and egress IPs, the right compute for each workload, externalized configuration, multi-AZ availability, consistent tagging, and safer deployment strategies.
+**From Part 1 (infrastructure):** a non-production mirror, segregated networks, controlled ingress and egress IPs, the right compute for each workload, externalized configuration, infrastructure as code, consistent tagging, and safer deployment strategies.
 
 **From Part 2 (operations):** keyless authentication, proper secrets management, pinned dependencies, comprehensive monitoring, centralized logs, careful WAF rollout, tested backups, and cost alerts.
 
 You will not implement everything on day one, and that is okay. Pick the ones that match your current biggest risks and work through the rest as you grow. Your future self, and your on-call rotation, will thank you.
 
-### Thank you for reading. Share if it helped your team!
+**Thank you for reading. Share if it helped your team!**

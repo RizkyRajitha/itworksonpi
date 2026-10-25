@@ -4,13 +4,12 @@ date: "2026-04-14"
 categories: "Kubernetes,DevOps,Security"
 featured: "true"
 overview: "Learn how to safely give temporary read-only access to Kubernetes pods, deployments, and pod logs using RBAC, ServiceAccounts, and a custom kubeconfig file. This beginner-friendly guide follows the principle of least privilege and includes step-by-step commands, YAML examples, and cleanup instructions."
+description: "Give developers temporary read-only access to Kubernetes pods, deployments and logs with RBAC, a ServiceAccount, a short-lived token and a custom kubeconfig."
 ---
 
-# Hi Everyone,
+Hi everyone,
 
-In production Kubernetes environments, giving full cluster admin access to all actor is a major security risk. Instead, you should follow the **principle of least privilege** and provide only the exact permissions they need.
-
-<br/>
+In production Kubernetes environments, giving full cluster admin access to every user is a major security risk. Instead, you should follow the **principle of least privilege** and provide only the exact permissions they need.
 
 This tutorial shows you exactly how an admin can create a limited-access ServiceAccount, attach a Role with the required permissions, generate a short-lived token, and hand over a ready-to-use `kubeconfig` file to developers, who would not need full admin access to the cluster but only limited access. In this tutorial we will demonstrate temporary **read-only** access to pods, deployments, and pod logs.
 
@@ -25,16 +24,16 @@ while being unable to delete resources, create new ones, or access other namespa
 
 > Why this approach? ServiceAccounts + short-lived tokens are the recommended way in modern Kubernetes for temporary access. They are easy to revoke, don’t require managing client certificates, and expire automatically.
 
-Let’s get started
+Let’s get started.
 
 ## Prerequisites
 Before you begin, make sure you have:
 1. Admin access to your Kubernetes cluster (kubeconfig with cluster-admin rights).
 2. kubectl installed and configured.
-3. A target **namespace** where developers will work (we’ll use dev-team in this example  change it to your actual namespace).
+3. A target **namespace** where developers will work (we’ll use dev-team in this example; change it to your actual namespace).
 4. Basic familiarity with Kubernetes objects (Pods, Deployments, YAML).
 
-If you are new to Kubernetes RBAC, don’t worry  we’ll explain every step.
+If you are new to Kubernetes RBAC, don’t worry, we’ll explain every step.
 
 ## Step 1: Create a Dedicated Namespace (Optional but Recommended)
 It’s best practice to isolate developer access to a specific namespace.
@@ -123,7 +122,6 @@ Kubernetes now supports short-lived tokens out of the box.
 kubectl create token dev-reader --namespace dev-team --duration=24h > dev-reader.token
 ```
 
-
 *  `--duration=24h` makes the token automatically expire after 24 hours (you can use 1h, 12h, 7d, etc.).
 
 *   This is much safer than long-lived tokens or certificates.
@@ -138,7 +136,7 @@ cat dev-reader.token
 
 ### How to get the CA and API server URL
 
-Run these commands on your admin machine to get required values for kube config.
+Run these commands on your admin machine to get the required values for the kubeconfig.
 
 ```bash
 # Get API server URL
@@ -149,7 +147,7 @@ kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}'
 # Get CA certificate (base64)
 kubectl config view --minify --raw -o jsonpath='{.clusters[0].cluster.certificate-authority-data}'
 ```
-Create a file named dev-reader.kubeconfig with the following content and replace the placeholders with correct values from above commands
+Create a file named dev-reader.kubeconfig with the following content and replace the placeholders with the values from the commands above:
 
 ```yaml
 apiVersion: v1
@@ -175,7 +173,6 @@ users:
 ## Step 7: Hand Over the kubeconfig to the Developer
 Send the dev-reader.kubeconfig file to the developer securely. The developer can now use it with any kubectl command:
 
-
 ```bash
 # Test access
 kubectl --kubeconfig=dev-reader.kubeconfig get pods
@@ -197,8 +194,11 @@ They will **not** be able to run kubectl delete, kubectl apply, or access other 
 
 ## Cleanup 
 
+When the access period ends (or earlier, if needed), remove everything you created. Deleting the ServiceAccount also invalidates any tokens issued for it.
+
 ```bash
 kubectl delete rolebinding dev-reader-rolebinding -n dev-team
+kubectl delete role dev-reader-role -n dev-team
 kubectl delete serviceaccount dev-reader -n dev-team
 ```
 
@@ -209,7 +209,8 @@ kubectl delete serviceaccount dev-reader -n dev-team
 *   Rotate or delete ServiceAccounts regularly.
 
 ## Conclusion
-You have now successfully given a developer **temporary, read-only access** to pods, deployments, and logs in your Kubernetes cluster  with zero risk of destructive actions.
-This pattern scales well, you can create different ServiceAccounts for different teams, different namespaces, or even different permission levels (e.g., one for “view only”, another for “view + logs”).
+You have now successfully given a developer **temporary, read-only access** to pods, deployments, and logs in your Kubernetes cluster, with zero risk of destructive actions.
 
-### Thank you for reading. Share if it helped your team!
+This pattern scales well: you can create different ServiceAccounts for different teams, different namespaces, or even different permission levels (e.g., one for “view only”, another for “view + logs”).
+
+**Thank you for reading. Share if it helped your team!**

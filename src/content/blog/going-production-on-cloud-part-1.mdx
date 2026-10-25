@@ -1,20 +1,20 @@
 ---
-title: "Going Production on Cloud: Infrastructure Best Practices Every Engineer Should Know (Part 1)"
+title: "Going to Production on the Cloud: Infrastructure Best Practices Every Engineer Should Know (Part 1)"
 date: "2026-05-07"
 categories: "Cloud,DevOps,AWS"
 featured: "true"
 overview: "Shipping your first cloud workload to production? This first part of a two-part series walks through the infrastructure foundations every developer and DevOps engineer should establish before going live: environment parity, network segregation and more."
+description: "Part 1 of a production-readiness checklist for the cloud: staging parity, private subnets, static IPs, spot vs on-demand, IaC, tagging and safer deploys."
 ---
  
-## **Hi everyone,**
+Hi everyone,
  
 So you have been tinkering on a new project for a while, the demos look great, and now it is time to ship to real customers. It is an exciting moment, but also one where small oversights can turn into expensive incidents at 2 AM.
  
 This two-part series covers the practical checklist I wish every team went through before flipping the switch to production. Most recommendations are cloud-agnostic, although a few are AWS-specific. The underlying principles apply equally to GCP, Azure, or any other cloud provider.
  
-In this first part we focus on the **infrastructure foundations**: environments, networking, compute, configuration, and deployment strategy. The second part will cover security, monitoring, logging, and operational work.
+In this first part we focus on the **infrastructure foundations**: environments, networking, compute, configuration, and deployment strategy. [The second part](/post/going-production-on-cloud-part-2) covers security, monitoring, logging, and operational work.
  
-<br></br>
 
 Let's get started.
  
@@ -43,7 +43,7 @@ The standard pattern is straightforward.
  
 A **public subnet** holds resources that must be reachable from the internet, such as load balancers, NAT gateways, and bastion hosts. A **private subnet** holds everything else: application servers, databases, internal services.
  
-Resources in the private subnet have no direct route from the internet, which dramatically reduces the attack surface. If an attacker cannot reach your database, it gets much harder them to exploit it.
+Resources in the private subnet have no direct route from the internet, which dramatically reduces the attack surface. If an attacker cannot reach your database, it gets much harder for them to exploit it.
 
 You might argue that exposing a database publicly is still safe when access is tightly controlled through security groups. While that is technically true, security often fails at the edges of human error. A single misconfigured security group rule can unintentionally expose the database to the internet.
 
@@ -92,6 +92,7 @@ A simple rule of thumb:
 1. **Stateful workloads** (databases, primary application servers holding session state, anything you cannot kill mid-task) should never run on spot.
 2. **Stateless but critical workloads** such as your main API serving customer traffic should stick to on-demand or reserved instances.
 3. **Batch jobs, build runners, ML training, queue workers, and ephemeral dev environments** are excellent candidates for spot, because the workload can be interrupted and resumed safely.
+
 I have personally seen a team get burned by this. They moved their main production fleet to spot to save money, hit a regional capacity shortage, and lost a chunk of their fleet within minutes. The cost savings did not come close to covering the downtime.
  
 <Alert type="warning">
@@ -108,6 +109,7 @@ The better pattern:
  
 1. Store only the **object key (path)** in the database.
 2. Store the **bucket name** as an environment variable read by the application.
+
 When you migrate, you change one environment variable and redeploy. The database stays untouched.
  
 ```javascript
@@ -124,13 +126,13 @@ The same principle applies to API endpoints, region names, queue URLs, and any o
  
 ## 6. Manage Infrastructure as Code
  
-Clicking through a cloud console to provision resources is fine for experimenting. It is not fine for production. Every manual change is a snowflake a configuration that exists only in that environment, undocumented, unrepeatable, and invisible until it causes a problem.
+Clicking through a cloud console to provision resources is fine for experimenting. It is not fine for production. Every manual change is a snowflake: a configuration that exists only in that environment, undocumented, unrepeatable, and invisible until it causes a problem.
 
 Use an IaC tool like [Terraform](https://developer.hashicorp.com/terraform) to define every resource declaratively, and a configuration management tool like Ansible for anything that runs on the instance itself.
 
-In practice, this means your all your cloud resources are checked into version control alongside your application code. Every change goes through a pull request, gets reviewed, and is applied via a pipeline not by someone running commands in a terminal. Your staging environment is defined by the same Terraform modules as production, with different variable values.
+In practice, this means all your cloud resources are checked into version control alongside your application code. Every change goes through a pull request, gets reviewed, and is applied via a pipeline, not by someone running commands in a terminal. Your staging environment is defined by the same Terraform modules as production, with different variable values.
 
-The payoff is consistency and confidence: a new environment is a terraform apply away, rollbacks are a git revert away, and the answer to "what changed?" is always in the commit history rather than in someone's memory.
+The payoff is consistency and confidence: a new environment is a `terraform apply` away, rollbacks are a `git revert` away, and the answer to "what changed?" is always in the commit history rather than in someone's memory.
  
 ## 7. Tag Every Resource From Day One
  
@@ -159,8 +161,8 @@ Both strategies dramatically reduce blast radius. Pick whichever fits your tooli
  
 ## Wrapping up Part 1
  
-We have covered the infrastructure groundwork: environments that match, networks that protect you, predictable IPs, the right compute for each workload, externalized configuration, consistent tagging, and safer deployments.
+We have covered the infrastructure groundwork: environments that match, networks that protect you, predictable IPs, the right compute for each workload, externalized configuration, infrastructure as code, consistent tagging, and safer deployments.
  
-In Part 2 we move into the operational layer: keyless authentication, secrets management and  monitoring. These are the practices that keep you sleeping through the night once you are live on production.
+In [Part 2](/post/going-production-on-cloud-part-2) we move into the operational layer: keyless authentication, secrets management, and monitoring. These are the practices that keep you sleeping through the night once you are live on production.
 
-### Thank you for reading. Share if it helped you, and stay tuned for Part 2.
+**Thank you for reading. Share if it helped you, and continue with [Part 2](/post/going-production-on-cloud-part-2).**
