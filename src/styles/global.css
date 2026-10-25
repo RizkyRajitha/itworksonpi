@@ -191,14 +191,6 @@ h1, h2, h3, h4 { margin: 0; line-height: 1.1; letter-spacing: -0.02em; font-weig
   width: 100%;
 }
 .search input::placeholder { color: var(--text-faint); }
-.search kbd {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--text-faint);
-  border: 1px solid var(--border);
-  border-radius: 5px;
-  padding: 1px 5px;
-}
 
 .nav-toggle {
   display: none;

@@ -18,7 +18,7 @@ const posts = all.map((p) => ({
   title: p.data.title,
   slug: postSlug(p),
   date: p.data.date,
-  overview: p.data.overview,
+  description: p.data.description,
   categories: postCategories(p),
   minutes: readTime(p.body ?? ""),
 }));
@@ -50,7 +50,6 @@ const jsonLd = {
       <h1 style="margin-top:14px;">Explore the <span class="accent">archive</span></h1>
       <p>
         Search across every guide, or filter by topic.
-        <span class="mono faint">Press / anywhere to focus.</span>
       </p>
       <label class="search-big">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -97,7 +96,7 @@ const jsonLd = {
             title={p.title}
             slug={p.slug}
             date={p.date}
-            overview={p.overview}
+            description={p.description}
             categories={p.categories}
             readMinutes={p.minutes}
           />

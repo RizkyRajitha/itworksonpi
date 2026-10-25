@@ -13,10 +13,9 @@ const blog = defineCollection({
       (v) => v === 'true' || v === true,
       z.boolean()
     ),
-    overview: z.string(),
-    // optional: short meta description (search snippets cut off around 160 chars).
-    // Falls back to a trimmed `overview`.
-    description: z.string().max(160).optional(),
+    // The post summary everywhere: cards, RSS, meta/OG description. Capped at
+    // 160 chars because search snippets cut off around there.
+    description: z.string().max(160),
   }),
 });
 

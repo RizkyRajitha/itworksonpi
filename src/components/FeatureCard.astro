@@ -7,12 +7,12 @@ interface Props {
   title: string;
   slug: string;
   date: Date;
-  overview: string;
+  description: string;
   categories: string[];
   readMinutes?: number;
 }
 
-const { title, slug, date, overview, categories, readMinutes } = Astro.props;
+const { title, slug, date, description, categories, readMinutes } = Astro.props;
 
 const dataCats = categories.map(categorySlug).join(" ");
 ---
@@ -26,7 +26,7 @@ const dataCats = categories.map(categorySlug).join(" ");
   <div class="feature-text">
     <span class="kicker">Latest article</span>
     <h2 class="feature-title">{title}</h2>
-    <p class="feature-excerpt">{overview}</p>
+    <p class="feature-excerpt">{description}</p>
     <div class="card-meta">
       <PostDate date={date} />
       {
