@@ -1,5 +1,5 @@
 {
-  "name": "astrosite",
+  "name": "itworksonpi",
   "type": "module",
   "version": "0.0.1",
   "engines": {
@@ -10,7 +10,6 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "check:links": "node scripts/check-links.mjs dist",
     "images": "node scripts/optimize-images.mjs --lossy"
   },
   "dependencies": {
