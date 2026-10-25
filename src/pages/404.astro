@@ -1,0 +1,33 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { siteOrigin } from "../lib/site";
+
+const origin = siteOrigin(Astro.site);
+---
+
+<BaseLayout
+  title="Page not found · CodeHiRise"
+  description="This page doesn't exist. Head back to the latest CodeHiRise guides or search the archive."
+  image={`${origin}/og/index.png`}
+  url={`${origin}/404`}
+  noindex
+>
+  <section class="page-head">
+    <div class="hero-grid"></div>
+    <div class="wrap" style="position:relative;">
+      <span class="kicker">Error 404</span>
+      <h1 style="margin-top:14px;">
+        <span class="accent">$</span> cd: no such page
+      </h1>
+      <p>
+        The page you're looking for moved or never existed. Try the latest
+        posts, or search the archive.
+      </p>
+      <div class="chip-row" style="margin-top:26px;">
+        <a class="tag" href="/">latest</a>
+        <a class="tag" href="/explore">explore</a>
+        <a class="tag" href="/topics">topics</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -8,10 +8,10 @@ import {
   uniqueCategories,
   sortPostsByDateDesc,
   categorySlug,
+  categoryBlurb,
   readTime,
 } from "../../lib/categories";
-
-const slugOf = (id: string) => id.replace(/\.(md|mdx)$/, "");
+import { SITE_NAME, postSlug, siteOrigin } from "../../lib/site";
 
 export async function getStaticPaths() {
   const all = await getCollection("blog");
@@ -29,37 +29,14 @@ const all = sortPostsByDateDesc(await getCollection("blog"));
 const topics = uniqueCategories(all);
 const posts = postsByCategory(all, slug!);
 
-const siteUrl = Astro.site?.toString().replace(/\/$/, "") ?? "";
+const siteUrl = siteOrigin(Astro.site);
 const url = `${siteUrl}/category/${slug}`;
 const image = `${siteUrl}/og/category/${slug}.png`;
 
 const postWord = posts.length === 1 ? "post" : "posts";
-const title = `${name} Tutorials & Guides · CodeHiRise`;
-const description = `Guides and tutorials on ${name} - ${posts.length} ${postWord} on CodeHiRise covering practical, production-focused engineering topics.`;
-
-const DESCS: Record<string, string> = {
-  cloud:
-    "Cloud architecture, provisioning and the habits that keep workloads reliable and affordable.",
-  aws: "Hands-on AWS EC2, IAM, Systems Manager and the services you actually reach for in production.",
-  devops:
-    "CI/CD, automation, runners and the operational practices that ship software safely.",
-  kubernetes:
-    "Cluster access, RBAC, workloads and day-two operations for Kubernetes.",
-  linux:
-    "System administration, networking tools and command-line craft for engineers.",
-  networking:
-    "DNS, connections, troubleshooting and the network fundamentals every engineer needs.",
-  security:
-    "Least-privilege access, hardening and keeping production systems safe.",
-  webdev: "Real-time apps, streaming and modern web engineering patterns.",
-  react: "Front-end patterns and building responsive, real-time interfaces.",
-  "home-automation":
-    "Smart-home integrations, dashboards and self-hosted monitoring.",
-  iot: "Sensors, data pipelines and connecting the physical world to your stack.",
-};
-const blurb =
-  DESCS[slug!] ??
-  "Every CodeHiRise guide filed under this topic newest first.";
+const title = `${name} Tutorials & Guides · ${SITE_NAME}`;
+const description = `Guides and tutorials on ${name}: ${posts.length} ${postWord} on ${SITE_NAME} covering practical, production-focused engineering topics.`;
+const blurb = categoryBlurb(slug!);
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -73,7 +50,7 @@ const jsonLd = {
     itemListElement: posts.map((post, i) => ({
       "@type": "ListItem",
       position: i + 1,
-      url: `${siteUrl}/post/${slugOf(post.id)}`,
+      url: `${siteUrl}/post/${postSlug(post)}`,
       name: post.data.title,
     })),
   },
@@ -92,7 +69,7 @@ const jsonLd = {
     <div class="wrap" style="position:relative;">
       <div class="breadcrumb">
         <a href="/">~</a><span class="sep">/</span>
-        <span class="faint">topics</span><span class="sep">/</span>
+        <a href="/topics">topics</a><span class="sep">/</span>
         <span class="faint">{slug}</span>
       </div>
       <span class="kicker">Topic</span>
@@ -127,7 +104,7 @@ const jsonLd = {
         posts.map((post) => (
           <Card
             title={post.data.title}
-            slug={slugOf(post.id)}
+            slug={postSlug(post)}
             date={post.data.date}
             overview={post.data.overview}
             categories={postCategories(post)}

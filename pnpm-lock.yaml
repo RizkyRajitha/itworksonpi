@@ -17,15 +17,12 @@ importers:
       '@astrojs/sitemap':
         specifier: 3.7.2
         version: 3.7.2
-      '@fontsource/dancing-script':
-        specifier: 5.2.8
-        version: 5.2.8
-      '@fontsource/inter-tight':
-        specifier: 5.2.7
-        version: 5.2.7
-      '@fontsource/noto-sans-mono':
-        specifier: 5.2.10
-        version: 5.2.10
+      '@fontsource-variable/inter-tight':
+        specifier: 5.3.0
+        version: 5.3.0
+      '@fontsource-variable/noto-sans-mono':
+        specifier: 5.3.0
+        version: 5.3.0
       '@resvg/resvg-js':
         specifier: 2.6.2
         version: 2.6.2
@@ -35,9 +32,6 @@ importers:
       astro:
         specifier: 6.3.1
         version: 6.3.1(@types/node@24.12.3)(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.60.3)
-      luxon:
-        specifier: 3.7.2
-        version: 3.7.2
       plaiceholder:
         specifier: 3.0.0
         version: 3.0.0(sharp@0.34.5)
@@ -53,6 +47,10 @@ importers:
       tailwindcss:
         specifier: 4.3.0
         version: 4.3.0
+    devDependencies:
+      sharp:
+        specifier: 0.34.5
+        version: 0.34.5
 
 packages:
 
@@ -273,14 +271,11 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@fontsource/dancing-script@5.2.8':
-    resolution: {integrity: sha512-zHVVgIQ5/rAIM0VVp1QMsqvJm9INHO5/C82E9rHT6NlabjaPTFYn8wl9lT4vPWizfB0TublGQM1999kfdA+XFA==}
+  '@fontsource-variable/inter-tight@5.3.0':
+    resolution: {integrity: sha512-ZhZZ29sNZ15P1K+cUt13GeBRYON0akgmNiftshUeDLos7X7zGcRgPzt434879Xhq1QbwlW3M/apBMk7jWabwvA==}
 
-  '@fontsource/inter-tight@5.2.7':
-    resolution: {integrity: sha512-44TmSfHdNQus/3MWOMIonUEnbxwQhiaFo2sfBJEGIE4c7TN+GO6kfLzsTH4Nu52BC9HDZFl9fPQ6Cwzp9vYTtQ==}
-
-  '@fontsource/noto-sans-mono@5.2.10':
-    resolution: {integrity: sha512-YG3ev3Bc24UGd1x0THgtU3LG1j+sKahhDgo0vTpEfB0wkXD1+tGSq1fJD+QqnYLXjPhMRNe0ZKWoUi1MPH7Qdg==}
+  '@fontsource-variable/noto-sans-mono@5.3.0':
+    resolution: {integrity: sha512-EgozyWG4nG2U1OT+zfdyHP1L8O0fUFMUBOilVF9urTshqIdfeGV9/FUQxaNHdPvHtV1cQCs1Ql0W1q93SiPK2w==}
 
   '@img/colour@1.1.0':
     resolution: {integrity: sha512-Td76q7j57o/tLVdgS746cYARfSyxk8iEfRxewL9h4OMzYhbW4TAcppl0mT4eyqXddh6L/jwoM75mo7ixa/pCeQ==}
@@ -1370,10 +1365,6 @@ packages:
     resolution: {integrity: sha512-Gf/KoL3C/MlI7Bt0PGI9I+TeTC/I6r/csU58N4BSNc4lppLBeKsOdFYkK+dX0ABDUMJNfCHTyPpzwwO21Awd3A==}
     engines: {node: 20 || >=22}
 
-  luxon@3.7.2:
-    resolution: {integrity: sha512-vtEhXh/gNjI9Yg1u4jX/0YVPMvxzHuGgCm6tC5kZyb08yjGWGnqAjGJvcXbqQR2P3MyMEFnRbpcdFS6PBcLqew==}
-    engines: {node: '>=12'}
-
   magic-string@0.30.21:
     resolution: {integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==}
 
@@ -2241,11 +2232,9 @@ snapshots:
   '@esbuild/win32-x64@0.27.7':
     optional: true
 
-  '@fontsource/dancing-script@5.2.8': {}
+  '@fontsource-variable/inter-tight@5.3.0': {}
 
-  '@fontsource/inter-tight@5.2.7': {}
-
-  '@fontsource/noto-sans-mono@5.2.10': {}
+  '@fontsource-variable/noto-sans-mono@5.3.0': {}
 
   '@img/colour@1.1.0': {}
 
@@ -3325,8 +3314,6 @@ snapshots:
   longest-streak@3.1.0: {}
 
   lru-cache@11.3.6: {}
-
-  luxon@3.7.2: {}
 
   magic-string@0.30.21:
     dependencies:

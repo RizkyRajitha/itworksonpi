@@ -3,20 +3,21 @@ title: "Execute Terminal Commands and Receive Live Output with React+SSE"
 date: "2023-07-04"
 categories: "WebDev,React"
 featured: "false"
-overview: "Discover how to build React frontend to receive terminal command execution output using SSE and integrate it with SSE API to view realtime command execution output."
+overview: "Discover how to build a React frontend that receives terminal command execution output using SSE, and integrate it with the SSE API to view real-time command execution output."
+description: "Build a React + Vite frontend that runs terminal commands on a Node.js server and shows their live output with EventSource and Server-Sent Events."
 ---
 
-## Hello everyone,
+Hello everyone,
 
-This is the second part of Node.js + SSE if you haven't checked out [part one](https://codehirise.com/post/building-a-real-time-command-execution-app-with-node-js-sse) where we create SSE server I highly recommend you to check it out first.
+This is the second part of the Node.js + SSE series. If you haven't read [part one](/post/building-a-real-time-command-execution-app-with-node-js-sse), where we create the SSE server, I highly recommend checking it out first.
 
-![Final output](/assets/sse2/out_91d7ad19b3.gif)
+![Final output](/assets/sse2/out_91d7ad19b3.webp)
 
 ## Client
 
-Here i will go with react + vite setup with tailwind as UI, but you can use any framework/library you want since these basics will stay the same.
+Here I will go with a React + Vite setup with Tailwind for the UI, but you can use any framework/library you want since these basics will stay the same.
 
-I assume that you have installed [nodejs](https://nodejs.org/en) and have a code editor setup, and you have previously created SSE server running on `localhost:3000`
+I assume that you have installed [Node.js](https://nodejs.org/en), have a code editor set up, and have the SSE server from part one running on `localhost:3000`.
 
 ```bash
 mkdir ssedemoclient
@@ -26,9 +27,7 @@ mkdir ssedemoclient
 yarn create vite
 ```
 
-i will also install tailwind ui setup. check out [tailwind official doc for setting up](https://tailwindcss.com/docs/guides/vite) for setting up with react+vite.
-<br>
-</br>
+I will also set up Tailwind. Check out the [official Tailwind guide](https://tailwindcss.com/docs/guides/vite) for setting it up with React + Vite.
 
 Add the below code snippet to `app.js`.
 
@@ -218,33 +217,24 @@ function App() {
 export default App;
 ```
 
-`EventSource` is where the server SSE integrates with the Client end.
+`EventSource` is where the server's SSE stream integrates with the client end.
 
-`EventSource` is a javascript API that enables the client side to receive SSE from a server over a single, long-lived HTTP connection.
-<br>
-</br>
+`EventSource` is a JavaScript API that enables the client side to receive SSE from a server over a single, long-lived HTTP connection.
 
-Then we need to add event listers to `EventSource`. here we need to listen to the events we send from the server end which are `stdout`,`stderr`, `err`, and `exit` events.
-<br>
-</br>
-We maintain one `useState` for managing command outputs and one for keeping the command execution state since we can execute commands like `tail` to get realtime updates of a file that follow file changes realtime.
-<br>
-</br>
-`exit` EventListener will close the connection from the client end so it is not automatically retried.
+Then we need to add event listeners to `EventSource`. Here we need to listen to the events we send from the server end, which are the `stdout`, `stderr`, `err`, and `exit` events.
 
-after we update the state to `commandOut`, we need to render ui with event type, time, and command output using the array map method.
+We maintain one `useState` for managing command outputs and one for keeping the command execution state, since we can execute commands like `tail` that follow file changes in real time.
 
-<br>
-</br>
-I have added additional functionality cancel where we can close the current connection to stop listening to events. in this case, the client will close the connection and the command executing on the server will also be killed.
+The `exit` event listener will close the connection from the client end so it is not automatically retried.
 
-<br>
-</br>
+After we update the `commandOut` state, we need to render the UI with the event type, time, and command output using the array map method.
 
-If everything goes well, you will get below UI.
+I have also added a cancel button that closes the current connection to stop listening to events. In this case, the client will close the connection and the command executing on the server will also be killed.
+
+If everything goes well, you will get the UI below.
 
 [Git repo](https://github.com/RizkyRajitha/node-react-sse-code-executor/tree/master/client/sse-run-command)
 
 ![final ui](/assets/sse2/appui_c5803993f7.png)
 
-### Thank you for reading. Share if you loved it.
+**Thank you for reading. Share if you loved it.**

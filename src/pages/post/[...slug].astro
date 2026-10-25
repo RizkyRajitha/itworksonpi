@@ -1,6 +1,5 @@
 ---
 import { getCollection, render } from "astro:content";
-import { DateTime } from "luxon";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ShareButtons from "../../components/ShareButtons.astro";
 import ScrollProgress from "../../components/ScrollProgress.astro";
@@ -12,76 +11,70 @@ import {
   postCategories,
   readTime,
   categorySlug,
-  sortPostsByDateDesc,
+  relatedPosts,
+  formatDate,
+  isoDate,
 } from "../../lib/categories";
-
-const slugOf = (id: string) => id.replace(/\.(md|mdx)$/, "");
+import { SITE_NAME, postDescription, postSlug, siteOrigin } from "../../lib/site";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog");
   return posts.map((post) => ({
-    params: { slug: post.id.replace(/\.(md|mdx)$/, "") },
-    props: { post },
+    params: { slug: postSlug(post) },
+    props: { post, posts },
   }));
 }
 
-const { post } = Astro.props;
+const { post, posts } = Astro.props;
 const { Content, headings } = await render(post);
-const slug = slugOf(post.id);
+const slug = postSlug(post);
 const cats = postCategories(post);
 const minutes = readTime(post.body ?? "");
-const formattedDate = DateTime.fromJSDate(post.data.date).toFormat("yyyy-MM-dd");
-const relative = DateTime.fromJSDate(post.data.date).toRelative();
+const published = post.data.date.toISOString();
+const modified = (post.data.updated ?? post.data.date).toISOString();
+const description = postDescription(post);
 
 const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
+const pool = relatedPosts(post, posts);
 
-const allPosts = sortPostsByDateDesc(await getCollection("blog"));
-const related = allPosts
-  .filter(
-    (p) =>
-      slugOf(p.id) !== slug && postCategories(p).some((c) => cats.includes(c)),
-  )
-  .slice(0, 3);
-const pool = related.length
-  ? related
-  : allPosts.filter((p) => slugOf(p.id) !== slug).slice(0, 3);
+const origin = siteOrigin(Astro.site);
+const url = `${origin}/post/${slug}`;
+const ogImage = `${origin}/og/post/${slug}.png`;
 
-const siteUrl = Astro.site?.toString().replace(/\/$/, "") ?? "";
-const url = `${siteUrl}/post/${slug}`;
-const ogImage = `${siteUrl}/og/post/${slug}.png`;
+const brand = {
+  "@type": "Organization",
+  name: SITE_NAME,
+  url: origin,
+  logo: { "@type": "ImageObject", url: `${origin}/images/codehiriselogo.png` },
+};
 
 const jsonLd = {
   "@context": "https://schema.org",
-  "@type": "Article",
+  "@type": "BlogPosting",
   headline: post.data.title,
-  description: post.data.overview,
+  description,
   image: ogImage,
   url,
-  datePublished: post.data.date.toISOString(),
-  dateModified: post.data.date.toISOString(),
+  datePublished: published,
+  dateModified: modified,
   keywords: cats.join(", "),
-  author: { "@type": "Person", name: "CodeHiRise", url: siteUrl },
-  publisher: {
-    "@type": "Organization",
-    name: "CodeHiRise",
-    logo: {
-      "@type": "ImageObject",
-      url: `${siteUrl}/images/codehiriselogo.png`,
-    },
-  },
+  articleSection: cats[0],
+  author: brand,
+  publisher: brand,
   mainEntityOfPage: { "@type": "WebPage", "@id": url },
 };
 ---
 
 <BaseLayout
   title={post.data.title}
-  description={post.data.overview}
+  description={description}
   image={ogImage}
   url={url}
   type="article"
-  publishedTime={post.data.date.toISOString()}
+  publishedTime={published}
+  modifiedTime={modified}
+  tags={cats}
   jsonLd={jsonLd}
-  keywords={cats.join(", ")}
 >
   <ScrollProgress />
 
@@ -118,7 +111,7 @@ const jsonLd = {
         <span class="avatar">C</span>
         <span>CodeHiRise</span>
         <span class="dot"></span>
-        <time datetime={formattedDate} title={formattedDate}>{relative}</time>
+        <time datetime={isoDate(post.data.date)}>{formatDate(post.data.date)}</time>
         <span class="dot"></span>
         <span>{minutes} min read</span>
         <span class="dot"></span>
@@ -172,7 +165,7 @@ const jsonLd = {
         pool.map((p) => (
           <Card
             title={p.data.title}
-            slug={slugOf(p.id)}
+            slug={postSlug(p)}
             date={p.data.date}
             overview={p.data.overview}
             categories={postCategories(p)}
@@ -216,8 +209,14 @@ const jsonLd = {
     (function tocHighlight() {
       const links = [...document.querySelectorAll(".toc a")];
       if (!links.length) return;
+      // getElementById, not querySelector: ids like "1-use-keyless-auth" are
+      // invalid CSS selectors and would throw.
       const sections = links
-        .map((l) => document.querySelector(l.getAttribute("href")))
+        .map((l) =>
+          document.getElementById(
+            decodeURIComponent(l.getAttribute("href").slice(1)),
+          ),
+        )
         .filter(Boolean);
       const obs = new IntersectionObserver(
         (entries) => {

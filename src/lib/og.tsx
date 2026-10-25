@@ -11,7 +11,8 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import satori from 'satori';
-import { Resvg } from "@resvg/resvg-js";
+import { Resvg } from '@resvg/resvg-js';
+import { TAGLINE } from './site';
 
 const PUBLIC_DIR = path.resolve(process.cwd(), 'public');
 
@@ -261,7 +262,7 @@ function indexBody() {
               letterSpacing: '0.01em',
               textAlign: 'center',
             },
-            children: 'Cloud · DevOps · Linux · Kubernetes — guides for engineers',
+            children: TAGLINE,
           },
         },
       ],
@@ -331,12 +332,9 @@ export async function renderOgPng(opts: OgOptions): Promise<Uint8Array> {
   const cached = pngCache.get(key);
   if (cached) return cached;
   const svg = await renderOgSvg(opts);
-  try {
-    const resvg = new Resvg(svg, { fitTo: { mode: 'width', value: 1200 } });
-    const png = new Uint8Array(resvg.render().asPng());
-    pngCache.set(key, png);
-    return png;
-  } catch (err) {
-    return new TextEncoder().encode(svg);
-  }
+  // Let render errors fail the build: a fallback would ship SVG bytes as a .png.
+  const resvg = new Resvg(svg, { fitTo: { mode: 'width', value: 1200 } });
+  const png = new Uint8Array(resvg.render().asPng());
+  pngCache.set(key, png);
+  return png;
 }

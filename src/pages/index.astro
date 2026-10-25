@@ -10,44 +10,46 @@ import {
   categorySlug,
   readTime,
 } from "../lib/categories";
-
-const slugOf = (id: string) => id.replace(/\.(md|mdx)$/, "");
+import {
+  DESCRIPTION,
+  SITE_NAME,
+  SITE_TITLE,
+  TAGLINE,
+  postSlug,
+  siteOrigin,
+} from "../lib/site";
 
 const allPosts = sortPostsByDateDesc(await getCollection("blog"));
 const categories = uniqueCategories(allPosts);
 
 const featuredPost = allPosts.find((p) => p.data.featured) ?? allPosts[0];
-const featuredSlug = slugOf(featuredPost.id);
-const gridPosts = allPosts.filter((p) => slugOf(p.id) !== featuredSlug);
+const featuredSlug = postSlug(featuredPost);
+const gridPosts = allPosts.filter((p) => p.id !== featuredPost.id);
 
-const siteUrl = Astro.site?.toString().replace(/\/$/, "") ?? "";
+const siteUrl = siteOrigin(Astro.site);
 const url = `${siteUrl}/`;
 const image = `${siteUrl}/og/index.png`;
-
-const siteTitle = "CodeHiRise - Cloud, DevOps & Linux Tutorials for Engineers";
-const siteDescription =
-  "Practical guides on AWS, Kubernetes, Linux, networking and DevOps - written for engineers shipping real production systems.";
 
 const blogJsonLd = {
   "@context": "https://schema.org",
   "@type": "Blog",
-  name: "CodeHiRise",
+  name: SITE_NAME,
   url,
-  description: siteDescription,
+  description: DESCRIPTION,
   blogPost: allPosts.slice(0, 10).map((p) => ({
-    "@type": "Article",
+    "@type": "BlogPosting",
     headline: p.data.title,
     datePublished: p.data.date.toISOString(),
-    url: `${siteUrl}/post/${slugOf(p.id)}`,
+    url: `${siteUrl}/post/${postSlug(p)}`,
   })),
 };
 
 const websiteJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  name: "CodeHiRise",
+  name: SITE_NAME,
   url,
-  description: siteDescription,
+  description: DESCRIPTION,
   potentialAction: {
     "@type": "SearchAction",
     target: {
@@ -62,8 +64,8 @@ const jsonLd = [blogJsonLd, websiteJsonLd];
 ---
 
 <BaseLayout
-  title={siteTitle}
-  description={siteDescription}
+  title={SITE_TITLE}
+  description={DESCRIPTION}
   image={image}
   url={url}
   jsonLd={jsonLd}
@@ -79,8 +81,8 @@ const jsonLd = [blogJsonLd, websiteJsonLd];
           <path d="M22 4.5 L14.5 12 L22 19.5 Z"></path>
         </svg>
       </span>
-      <h1 class="hero-word" data-umami-event="Logo">Code<b>Hi</b>Rise</h1>
-      <span class="hero-tag">electronics · web dev · and in between</span>
+      <h1 class="hero-word">Code<b>Hi</b>Rise</h1>
+      <p class="hero-tag">{TAGLINE}</p>
     </div>
     <a class="hero-cue" href="#latest" aria-label="Jump to latest">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -90,13 +92,13 @@ const jsonLd = [blogJsonLd, websiteJsonLd];
   </section>
 
   <section class="wrap" style="padding-top:8px;">
-    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:18px 0; solid var(--border-soft); solid var(--border-soft);">
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:18px 0;">
       <span class="kicker" style="white-space:nowrap;">Browse topics</span>
       <div class="chip-row" id="topicsBar">
-        <button class="tag is-active" data-filter="all">all</button>
+        <button type="button" class="tag is-active" data-filter="all" aria-pressed="true">all</button>
         {
           categories.map((c) => (
-            <button class="tag" data-filter={categorySlug(c)} data-umami-event="Categories">
+            <button type="button" class="tag" data-filter={categorySlug(c)} aria-pressed="false" data-umami-event="Categories">
               {c}
             </button>
           ))
@@ -130,7 +132,7 @@ const jsonLd = [blogJsonLd, websiteJsonLd];
         gridPosts.map((p) => (
           <Card
             title={p.data.title}
-            slug={slugOf(p.id)}
+            slug={postSlug(p)}
             date={p.data.date}
             overview={p.data.overview}
             categories={postCategories(p)}
@@ -158,7 +160,11 @@ const jsonLd = [blogJsonLd, websiteJsonLd];
         H = cv.height = Math.max(1, r.height * dpr);
       }
       resize();
-      window.addEventListener("resize", resize);
+      let resizeTimer;
+      window.addEventListener("resize", () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(resize, 150);
+      });
 
       const N = 54;
       const rnd = (a, b) => a + Math.random() * (b - a);
@@ -177,7 +183,7 @@ const jsonLd = [blogJsonLd, websiteJsonLd];
       }
       const beams = Array.from({ length: N }, () => spawn(false));
       let t = 0;
-      let raf;
+      let raf = 0;
       function tick() {
         t += 1;
         ctx.clearRect(0, 0, W, H);
@@ -207,13 +213,29 @@ const jsonLd = [blogJsonLd, websiteJsonLd];
         }
         raf = requestAnimationFrame(tick);
       }
+      const start = () => { if (!raf) raf = requestAnimationFrame(tick); };
+      const stop = () => { cancelAnimationFrame(raf); raf = 0; };
+
       const reduce =
         window.matchMedia &&
         window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (reduce) {
-        tick();
-        cancelAnimationFrame(raf);
-      } else tick();
+        tick(); // draw one static frame
+        stop();
+        return;
+      }
+
+      // Only animate while the hero is on screen and the tab is visible.
+      let onScreen = true;
+      const sync = () => (onScreen && !document.hidden ? start() : stop());
+      if ("IntersectionObserver" in window) {
+        new IntersectionObserver(([e]) => {
+          onScreen = e.isIntersecting;
+          sync();
+        }).observe(cv);
+      }
+      document.addEventListener("visibilitychange", sync);
+      sync();
     })();
 
     // ---- topic filter ----
@@ -242,8 +264,12 @@ const jsonLd = [blogJsonLd, websiteJsonLd];
         if (!b) return;
         topicsBar
           .querySelectorAll(".tag")
-          .forEach((t) => t.classList.remove("is-active"));
+          .forEach((t) => {
+            t.classList.remove("is-active");
+            t.setAttribute("aria-pressed", "false");
+          });
         b.classList.add("is-active");
+        b.setAttribute("aria-pressed", "true");
         applyFilter(b.dataset.filter);
       });
     })();

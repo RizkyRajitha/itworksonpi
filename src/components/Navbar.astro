@@ -5,7 +5,7 @@ const active =
     ? "home"
     : path.startsWith("/explore")
       ? "explore"
-      : path.startsWith("/category")
+      : path.startsWith("/category") || path.startsWith("/topics")
         ? "topics"
         : "";
 ---
@@ -26,7 +26,7 @@ const active =
     <nav class="nav-links">
       <a class:list={["nav-link", { "is-active": active === "home" }]} href="/">/ latest</a>
       <a class:list={["nav-link", { "is-active": active === "explore" }]} href="/explore">/ explore</a>
-      <a class:list={["nav-link", { "is-active": active === "topics" }]} href="/category/devops">/ topics</a>
+      <a class:list={["nav-link", { "is-active": active === "topics" }]} href="/topics">/ topics</a>
     </nav>
 
     <div class="nav-right">
@@ -38,7 +38,7 @@ const active =
         <input type="text" name="text" placeholder="Search articles" aria-label="Search" />
         <kbd>/</kbd>
       </form>
-      <button class="nav-toggle" id="nav-mobile-toggle" aria-label="Menu" aria-expanded="false">
+      <button class="nav-toggle" id="nav-mobile-toggle" type="button" aria-label="Menu" aria-controls="nav-mobile-panel" aria-expanded="false">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 6h18M3 12h18M3 18h18"></path>
         </svg>
@@ -57,7 +57,7 @@ const active =
     <div class="mobile-links">
       <a class="nav-link" href="/">/ latest</a>
       <a class="nav-link" href="/explore">/ explore</a>
-      <a class="nav-link" href="/category/devops">/ topics</a>
+      <a class="nav-link" href="/topics">/ topics</a>
     </div>
   </div>
 </header>
@@ -75,8 +75,11 @@ const active =
     document.addEventListener("keydown", (e) => {
       const tag = document.activeElement && document.activeElement.tagName;
       if (e.key === "/" && tag !== "INPUT" && tag !== "TEXTAREA") {
-        const inp = document.querySelector(".nav .nav-right .search input");
-        if (inp) {
+        // prefer the page's own search box (explore), else the navbar one
+        const inp =
+          document.getElementById("q") ||
+          document.querySelector(".nav .nav-right .search input");
+        if (inp && inp.offsetParent !== null) {
           e.preventDefault();
           inp.focus();
         }

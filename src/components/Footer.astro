@@ -1,4 +1,6 @@
 ---
+import { SITE_NAME, TAGLINE } from "../lib/site";
+
 const year = new Date().getFullYear();
 ---
 
@@ -14,10 +16,12 @@ const year = new Date().getFullYear();
       </span>
       <span class="brand-name">Code<b>Hi</b>Rise</span>
     </a>
-    <nav class="footer-links">
+    <nav class="footer-links" aria-label="Footer">
       <a href="/">Latest</a>
       <a href="/explore">Explore</a>
+      <a href="/topics">Topics</a>
+      <a href="/rss.xml" data-umami-event="RSS">RSS</a>
     </nav>
-    <span class="footer-copy">CodeHiRise {year} · DevOps and Web Dev Tutorials</span>
+    <span class="footer-copy">© {year} {SITE_NAME} · {TAGLINE}</span>
   </div>
 </footer>
