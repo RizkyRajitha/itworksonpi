@@ -894,10 +894,17 @@ pre.astro-code {
   background: var(--accent-soft);
   margin-block: 1.5em;
 }
-.callout .ic { color: var(--accent); flex: none; margin-top: 2px; }
-.callout .ic svg { width: 18px; height: 18px; }
-.callout-body { font-size: 15px; color: var(--text); }
+/* Icon and text share font-size and line-height, so the icon box is exactly
+   one text line tall and the icon centres on the first line, however many
+   lines follow. (Alerts sit inside .prose, whose 17.5px/1.78 would otherwise
+   leak into the icon box and push the icon off-centre.) */
+.callout .ic, .callout-body { font-size: 15px; line-height: 1.65; }
+.callout .ic { flex: none; display: flex; align-items: center; height: 1.65em; color: var(--accent); }
+.callout .ic svg { display: block; width: 18px; height: 18px; }
+.callout .ic-glyph { fill: none; stroke: var(--bg); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.callout-body { min-width: 0; color: var(--text); }
 .callout-body :where(p) { margin: 0; }
+.callout-body > * + * { margin-top: 0.6em; }
 .callout-body strong { color: var(--accent-text); }
 .callout-warning { border-color: rgba(224, 179, 65, 0.4); background: rgba(224, 179, 65, 0.1); }
 .callout-warning .ic { color: #e0b341; }
