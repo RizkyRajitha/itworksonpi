@@ -117,12 +117,12 @@ h1, h2, h3, h4 { margin: 0; line-height: 1.1; letter-spacing: -0.02em; font-weig
   align-items: center;
   gap: 0.5em;
 }
-.kicker::before {
+/* .kicker::before {
   content: "";
   width: 18px;
   height: 1px;
   background: var(--accent-line);
-}
+} */
 
 .mono { font-family: var(--font-mono); }
 .faint { color: var(--text-faint); }
@@ -360,6 +360,13 @@ a.tag:hover::before, button.tag:hover::before, .tag.is-active::before { color: v
   gap: 8px;
 }
 .card-meta .dot { width: 3px; height: 3px; border-radius: 50%; background: currentColor; opacity: 0.6; }
+/* Hide post dates until <post-date> (PostDate.astro) has swapped in "x ago",
+   so readers never see the absolute date flash first. visibility keeps the
+   space reserved, so nothing shifts. Only when JS is on: without it the
+   element never upgrades and the absolute date must stay visible. */
+@media (scripting: enabled) {
+  post-date:not(:defined) { visibility: hidden; }
+}
 .card-title {
   font-size: 19px;
   font-weight: 700;
@@ -385,6 +392,32 @@ a.tag:hover::before, button.tag:hover::before, .tag.is-active::before { color: v
   overflow: hidden;
 }
 .card-foot { margin-top: auto; padding-top: 4px; }
+
+/* Featured cards (home page): a light slowly travels around a faint accent
+   border, with a soft outer glow. The border is a conic gradient painted under
+   a surface-coloured padding box; animating its start angle moves the light.
+   Reduced motion: the global rule below stops it, leaving a static glow. */
+@property --glow-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+.card.card-featured {
+  border-color: transparent;
+  background:
+    linear-gradient(var(--surface), var(--surface)) padding-box,
+    conic-gradient(
+      from var(--glow-angle, 0deg),
+      var(--accent-line) 0deg,
+      var(--accent) 45deg,
+      var(--accent-line) 90deg,
+      var(--accent-line) 360deg
+    ) border-box;
+  box-shadow: 0 0 24px -12px var(--accent);
+  animation: glow-spin 8s linear infinite;
+}
+.card.card-featured:hover { box-shadow: var(--shadow), 0 0 40px -10px var(--accent); }
+@keyframes glow-spin { to { --glow-angle: 360deg; } }
 
 /* featured (full width) card */
 .feature {
@@ -468,6 +501,8 @@ a.tag:hover::before, button.tag:hover::before, .tag.is-active::before { color: v
   font-family: var(--font-mono);
   font-size: 12.5px;
   color: var(--text-faint);
+  text-align: center;
+  padding-bottom: 30px;
 }
 
 /* page-head decorative grid (category / explore) */

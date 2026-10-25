@@ -1,6 +1,7 @@
 ---
-import { categorySlug, formatDate, isoDate } from "../lib/categories";
+import { categorySlug } from "../lib/categories";
 import PostCover from "./PostCover.astro";
+import PostDate from "./PostDate.astro";
 
 interface Props {
   title: string;
@@ -9,18 +10,20 @@ interface Props {
   overview: string;
   categories: string[];
   readMinutes?: number;
+  /** Home page Featured section: glowing border, and its own Umami event. */
+  featured?: boolean;
 }
 
-const { title, slug, date, overview, categories, readMinutes } = Astro.props;
+const { title, slug, date, overview, categories, readMinutes, featured = false } = Astro.props;
 
 const dataCats = categories.map(categorySlug).join(" ");
 const dataSearch = `${title} ${overview} ${categories.join(" ")}`.toLowerCase();
 ---
 
 <a
-  class="card"
+  class:list={["card", { "card-featured": featured }]}
   href={`/post/${slug}`}
-  data-umami-event="Posts"
+  data-umami-event={featured ? "FeaturedPosts" : "Posts"}
   data-cats={dataCats}
   data-search={dataSearch}
 >
@@ -36,7 +39,7 @@ const dataSearch = `${title} ${overview} ${categories.join(" ")}`.toLowerCase();
   </div>
   <div class="card-body">
     <div class="card-meta">
-      <time datetime={isoDate(date)}>{formatDate(date)}</time>
+      <PostDate date={date} />
       {
         readMinutes && (
           <>

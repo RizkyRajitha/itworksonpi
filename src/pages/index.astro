@@ -22,9 +22,11 @@ import {
 const allPosts = sortPostsByDateDesc(await getCollection("blog"));
 const categories = uniqueCategories(allPosts);
 
-const featuredPost = allPosts.find((p) => p.data.featured) ?? allPosts[0];
-const featuredSlug = postSlug(featuredPost);
-const gridPosts = allPosts.filter((p) => p.id !== featuredPost.id);
+const latestPost = allPosts[0];
+// `featured: "true"` posts get their own section, minus the one already shown as Latest.
+const featuredPosts = allPosts.filter((p) => p.data.featured && p.id !== latestPost.id);
+// The full list (except Latest) stays here so the topic filter covers every post.
+const gridPosts = allPosts.slice(1);
 
 const siteUrl = siteOrigin(Astro.site);
 const url = `${siteUrl}/`;
@@ -113,14 +115,38 @@ const jsonLd = [blogJsonLd, websiteJsonLd];
       <span class="idx">// freshly published</span>
     </div>
     <FeatureCard
-      title={featuredPost.data.title}
-      slug={featuredSlug}
-      date={featuredPost.data.date}
-      overview={featuredPost.data.overview}
-      categories={postCategories(featuredPost)}
-      readMinutes={readTime(featuredPost.body ?? "")}
+      title={latestPost.data.title}
+      slug={postSlug(latestPost)}
+      date={latestPost.data.date}
+      overview={latestPost.data.overview}
+      categories={postCategories(latestPost)}
+      readMinutes={readTime(latestPost.body ?? "")}
     />
   </section>
+
+  {
+    featuredPosts.length > 0 && (
+      <section class="wrap section" id="featured" style="padding-bottom:0;">
+        <div class="section-head">
+          <h2>Featured</h2>
+          <span class="idx">// hand-picked</span>
+        </div>
+        <div class="grid grid-3">
+          {featuredPosts.map((p) => (
+            <Card
+              title={p.data.title}
+              slug={postSlug(p)}
+              date={p.data.date}
+              overview={p.data.overview}
+              categories={postCategories(p)}
+              readMinutes={readTime(p.body ?? "")}
+              featured
+            />
+          ))}
+        </div>
+      </section>
+    )
+  }
 
   <section class="wrap section">
     <div class="section-head">

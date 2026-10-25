@@ -1,0 +1,29 @@
+---
+// Ships the absolute date (the no-JS fallback). In the browser, <post-date>
+// rewrites it to "5 months ago" and moves the full date into the hover title.
+import { formatDate, isoDate } from "../lib/dates";
+
+interface Props {
+  date: Date;
+}
+
+const { date } = Astro.props;
+---
+
+<post-date><time datetime={isoDate(date)}>{formatDate(date)}</time></post-date>
+
+<script>
+  import { fullDate, relativeTime } from "../lib/dates";
+
+  class PostDate extends HTMLElement {
+    connectedCallback() {
+      const time = this.querySelector("time");
+      const text = time && relativeTime(time.dateTime);
+      if (!time || !text) return;
+      time.title = fullDate(time.dateTime);
+      time.textContent = text;
+    }
+  }
+
+  customElements.define("post-date", PostDate);
+</script>

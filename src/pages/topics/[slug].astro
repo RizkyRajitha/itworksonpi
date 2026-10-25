@@ -30,8 +30,8 @@ const topics = uniqueCategories(all);
 const posts = postsByCategory(all, slug!);
 
 const siteUrl = siteOrigin(Astro.site);
-const url = `${siteUrl}/category/${slug}`;
-const image = `${siteUrl}/og/category/${slug}.png`;
+const url = `${siteUrl}/topics/${slug}`;
+const image = `${siteUrl}/og/topics/${slug}.png`;
 
 const postWord = posts.length === 1 ? "post" : "posts";
 const title = `${name} Tutorials & Guides · ${SITE_NAME}`;
@@ -87,7 +87,7 @@ const jsonLd = {
           topics.map((t) => (
             <a
               class:list={["tag", { "is-active": categorySlug(t) === slug }]}
-              href={`/category/${categorySlug(t)}`}
+              href={`/topics/${categorySlug(t)}`}
               data-umami-event="Categories"
             >
               {t}

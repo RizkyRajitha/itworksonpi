@@ -1,13 +1,13 @@
 ---
 import { getCollection } from "astro:content";
-import BaseLayout from "../layouts/BaseLayout.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
 import {
   categoryBlurb,
   categorySlug,
   postsByCategory,
   uniqueCategories,
-} from "../lib/categories";
-import { SITE_NAME, siteOrigin } from "../lib/site";
+} from "../../lib/categories";
+import { SITE_NAME, siteOrigin } from "../../lib/site";
 
 const all = await getCollection("blog");
 const topics = uniqueCategories(all)
@@ -33,7 +33,7 @@ const jsonLd = {
     itemListElement: topics.map((t, i) => ({
       "@type": "ListItem",
       position: i + 1,
-      url: `${siteUrl}/category/${t.slug}`,
+      url: `${siteUrl}/topics/${t.slug}`,
       name: t.name,
     })),
   },
@@ -66,7 +66,7 @@ const jsonLd = {
       {
         topics.map((t) => (
           <li>
-            <a class="topic-card" href={`/category/${t.slug}`} data-umami-event="Categories">
+            <a class="topic-card" href={`/topics/${t.slug}`} data-umami-event="Categories">
               <span class="topic-name">
                 <span class="tag-hash">#</span>{t.name}
               </span>
