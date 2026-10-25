@@ -360,6 +360,13 @@ a.tag:hover::before, button.tag:hover::before, .tag.is-active::before { color: v
   gap: 8px;
 }
 .card-meta .dot { width: 3px; height: 3px; border-radius: 50%; background: currentColor; opacity: 0.6; }
+/* Hide post dates until <post-date> (PostDate.astro) has swapped in "x ago",
+   so readers never see the absolute date flash first. visibility keeps the
+   space reserved, so nothing shifts. Only when JS is on: without it the
+   element never upgrades and the absolute date must stay visible. */
+@media (scripting: enabled) {
+  post-date:not(:defined) { visibility: hidden; }
+}
 .card-title {
   font-size: 19px;
   font-weight: 700;
