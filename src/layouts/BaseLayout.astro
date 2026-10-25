@@ -14,6 +14,7 @@ interface Props {
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
   keywords?: string;
   showFooter?: boolean;
+  noindex?: boolean;
 }
 
 const {
@@ -26,6 +27,7 @@ const {
   jsonLd,
   keywords,
   showFooter = true,
+  noindex = false,
 } = Astro.props;
 ---
 
@@ -42,6 +44,7 @@ const {
       jsonLd={jsonLd}
       keywords={keywords}
     />
+    {noindex && <meta name="robots" content="noindex" />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
     <meta name="generator" content={Astro.generator} />

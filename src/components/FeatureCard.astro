@@ -1,6 +1,5 @@
 ---
-import { DateTime } from "luxon";
-import { categorySlug } from "../lib/categories";
+import { categorySlug, formatDate, isoDate } from "../lib/categories";
 import PostCover from "./PostCover.astro";
 
 interface Props {
@@ -14,7 +13,6 @@ interface Props {
 
 const { title, slug, date, overview, categories, readMinutes } = Astro.props;
 
-const relative = DateTime.fromJSDate(date).toRelative();
 const dataCats = categories.map(categorySlug).join(" ");
 ---
 
@@ -29,7 +27,7 @@ const dataCats = categories.map(categorySlug).join(" ");
     <h2 class="feature-title">{title}</h2>
     <p class="feature-excerpt">{overview}</p>
     <div class="card-meta">
-      <span>{relative}</span>
+      <time datetime={isoDate(date)}>{formatDate(date)}</time>
       {
         readMinutes && (
           <>

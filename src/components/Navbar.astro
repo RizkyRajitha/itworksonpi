@@ -75,8 +75,11 @@ const active =
     document.addEventListener("keydown", (e) => {
       const tag = document.activeElement && document.activeElement.tagName;
       if (e.key === "/" && tag !== "INPUT" && tag !== "TEXTAREA") {
-        const inp = document.querySelector(".nav .nav-right .search input");
-        if (inp) {
+        // prefer the page's own search box (explore), else the navbar one
+        const inp =
+          document.getElementById("q") ||
+          document.querySelector(".nav .nav-right .search input");
+        if (inp && inp.offsetParent !== null) {
           e.preventDefault();
           inp.focus();
         }

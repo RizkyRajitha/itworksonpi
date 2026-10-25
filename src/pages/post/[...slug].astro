@@ -1,6 +1,5 @@
 ---
 import { getCollection, render } from "astro:content";
-import { DateTime } from "luxon";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ShareButtons from "../../components/ShareButtons.astro";
 import ScrollProgress from "../../components/ScrollProgress.astro";
@@ -13,6 +12,8 @@ import {
   readTime,
   categorySlug,
   sortPostsByDateDesc,
+  formatDate,
+  isoDate,
 } from "../../lib/categories";
 
 const slugOf = (id: string) => id.replace(/\.(md|mdx)$/, "");
@@ -30,8 +31,6 @@ const { Content, headings } = await render(post);
 const slug = slugOf(post.id);
 const cats = postCategories(post);
 const minutes = readTime(post.body ?? "");
-const formattedDate = DateTime.fromJSDate(post.data.date).toFormat("yyyy-MM-dd");
-const relative = DateTime.fromJSDate(post.data.date).toRelative();
 
 const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
 
@@ -118,7 +117,7 @@ const jsonLd = {
         <span class="avatar">C</span>
         <span>CodeHiRise</span>
         <span class="dot"></span>
-        <time datetime={formattedDate} title={formattedDate}>{relative}</time>
+        <time datetime={isoDate(post.data.date)}>{formatDate(post.data.date)}</time>
         <span class="dot"></span>
         <span>{minutes} min read</span>
         <span class="dot"></span>
@@ -216,8 +215,14 @@ const jsonLd = {
     (function tocHighlight() {
       const links = [...document.querySelectorAll(".toc a")];
       if (!links.length) return;
+      // getElementById, not querySelector: ids like "1-use-keyless-auth" are
+      // invalid CSS selectors and would throw.
       const sections = links
-        .map((l) => document.querySelector(l.getAttribute("href")))
+        .map((l) =>
+          document.getElementById(
+            decodeURIComponent(l.getAttribute("href").slice(1)),
+          ),
+        )
         .filter(Boolean);
       const obs = new IntersectionObserver(
         (entries) => {

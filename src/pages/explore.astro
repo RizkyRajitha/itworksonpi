@@ -24,8 +24,6 @@ const posts = all.map((p) => ({
   minutes: readTime(p.body ?? ""),
 }));
 
-const initial = Astro.url.searchParams.get("text") ?? "";
-
 const siteUrl = Astro.site?.toString().replace(/\/$/, "") ?? "";
 const url = `${siteUrl}/explore`;
 const image = `${siteUrl}/og/explore.png`;
@@ -70,7 +68,8 @@ const websiteJsonLd = {
         <input
           type="text"
           id="q"
-          value={initial}
+          name="text"
+          aria-label="Search articles"
           placeholder="Try “kubernetes”, “nginx”, “SSE”…"
           autocomplete="off"
         />
@@ -129,6 +128,11 @@ const websiteJsonLd = {
       if (!qInput || !mount) return;
       const rows = [...mount.querySelectorAll(".card")];
 
+      // The page is static, so the ?text= query (navbar search, SearchAction)
+      // has to be read in the browser.
+      const initial = new URLSearchParams(location.search).get("text") || "";
+      if (initial) qInput.value = initial;
+
       function run() {
         const q = qInput.value.trim().toLowerCase();
         let n = 0;
@@ -145,7 +149,15 @@ const websiteJsonLd = {
         if (noResults) noResults.classList.toggle("empty-hidden", n > 0);
       }
 
-      qInput.addEventListener("input", run);
+      qInput.addEventListener("input", () => {
+        run();
+        // keep the URL shareable without adding history entries
+        const url = new URL(location.href);
+        const q = qInput.value.trim();
+        if (q) url.searchParams.set("text", q);
+        else url.searchParams.delete("text");
+        history.replaceState(null, "", url);
+      });
       if (topicsBar) {
         topicsBar.addEventListener("click", (e) => {
           const b = e.target.closest("[data-filter]");
@@ -160,7 +172,8 @@ const websiteJsonLd = {
       }
 
       run();
-      qInput.focus();
+      // skip autofocus on touch devices so the keyboard doesn't pop up
+      if (!initial && matchMedia("(pointer: fine)").matches) qInput.focus();
     })();
   </script>
 </BaseLayout>

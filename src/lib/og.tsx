@@ -331,12 +331,9 @@ export async function renderOgPng(opts: OgOptions): Promise<Uint8Array> {
   const cached = pngCache.get(key);
   if (cached) return cached;
   const svg = await renderOgSvg(opts);
-  try {
-    const resvg = new Resvg(svg, { fitTo: { mode: 'width', value: 1200 } });
-    const png = new Uint8Array(resvg.render().asPng());
-    pngCache.set(key, png);
-    return png;
-  } catch (err) {
-    return new TextEncoder().encode(svg);
-  }
+  // Let render errors fail the build: a fallback would ship SVG bytes as a .png.
+  const resvg = new Resvg(svg, { fitTo: { mode: 'width', value: 1200 } });
+  const png = new Uint8Array(resvg.render().asPng());
+  pngCache.set(key, png);
+  return png;
 }
