@@ -117,12 +117,12 @@ h1, h2, h3, h4 { margin: 0; line-height: 1.1; letter-spacing: -0.02em; font-weig
   align-items: center;
   gap: 0.5em;
 }
-.kicker::before {
+/* .kicker::before {
   content: "";
   width: 18px;
   height: 1px;
   background: var(--accent-line);
-}
+} */
 
 .mono { font-family: var(--font-mono); }
 .faint { color: var(--text-faint); }
@@ -501,6 +501,8 @@ a.tag:hover::before, button.tag:hover::before, .tag.is-active::before { color: v
   font-family: var(--font-mono);
   font-size: 12.5px;
   color: var(--text-faint);
+  text-align: center;
+  padding-bottom: 30px;
 }
 
 /* page-head decorative grid (category / explore) */
