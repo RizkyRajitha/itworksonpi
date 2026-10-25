@@ -9,7 +9,6 @@ Package manager is **pnpm** (`pnpm-lock.yaml`); Node `>=22.12`. Dependencies are
 - `pnpm dev` — dev server on http://localhost:4321
 - `pnpm build` — static build to `dist/`
 - `pnpm preview` — serve the built `dist/`
-- `pnpm check:links` — after a build, verify every internal link/anchor in `dist/` resolves (exits non-zero on breakage)
 - `pnpm images` — palette-compress PNG/JPG in `public/assets` in place and convert GIFs to animated WebP (`--dry` via `node scripts/optimize-images.mjs --dry --lossy` to preview). Run it before committing new screenshots.
 
 There is no test suite and no lint/typecheck script (`@astrojs/check` was blocked by pnpm's supply-chain trust policy). The `README.md` is the unmodified Astro starter template — ignore it. `master` holds the old Next.js site; the Astro site lives on the feature branches.
@@ -24,7 +23,7 @@ Output is fully static and served from `dist/` by Cloudflare Workers static asse
 
 Response headers set in Astro endpoints are **dropped** in a static build — caching and security headers live in `public/_headers`, redirects in `public/_redirects`.
 
-There is **no client framework** — interactivity (image lightbox, explore search, topic filters, TOC highlight, code copy, hero canvas, scroll progress) is plain inline `<script is:inline>`. The site is dark-only (`<html class="dark">`, `color-scheme: dark`); there is no toggle. Inline scripts run on static HTML, so anything request-dependent (e.g. the explore page's `?text=` query) must be read in the browser, never via `Astro.url.searchParams`.
+There is **no client framework** — interactivity (image lightbox, explore search, topic filters, TOC highlight, code copy, hero canvas, scroll progress) is plain inline `<script is:inline>`. The exception is a component whose script imports from `src/lib` (e.g. `PostDate.astro`): it uses a normal bundled `<script>`, which Astro adds once per page no matter how many times the component renders. The site is dark-only (`<html class="dark">`, `color-scheme: dark`); there is no toggle. Inline scripts run on static HTML, so anything request-dependent (e.g. the explore page's `?text=` query) must be read in the browser, never via `Astro.url.searchParams`.
 
 ## Content pipeline
 
@@ -40,7 +39,9 @@ Post conventions: don't start a post with an `# h1` (the post cover renders the 
 Shared helpers — use these instead of re-implementing:
 
 - `src/lib/site.ts` — `SITE_NAME`, `TAGLINE`, `SITE_TITLE`, `DESCRIPTION`, `siteOrigin(Astro.site)` (origin without trailing slash), `postSlug(post)` (the canonical slug: file path minus extension), `postDescription(post)`.
-- `src/lib/categories.ts` — all category logic: `postCategories`, `uniqueCategories`, `postsByCategory`, `categorySlug()` (lowercase, spaces→`-`; use it for every category URL), `categoryBlurb()`, `relatedPosts()` (ranked by shared categories), plus `readTime()`, `formatDate()` / `isoDate()` (absolute dates — never "x days ago", it goes stale in a static build) and `sortPostsByDateDesc()`.
+- `src/lib/categories.ts` — all category logic: `postCategories`, `uniqueCategories`, `postsByCategory`, `categorySlug()` (lowercase, spaces→`-`; use it for every topic URL), `categoryBlurb()`, `relatedPosts()` (ranked by shared categories), plus `readTime()` and `sortPostsByDateDesc()`. Frontmatter categories are shown to readers as **topics**, at `/topics/<slug>`.
+- `src/lib/dates.ts` — `formatDate()` / `isoDate()` (build time: absolute date and `<time datetime>` value) and `relativeTime()` / `fullDate()` (browser: "5 months ago" and the hover text). Never call `relativeTime()` at build time; the text would go stale in a static build.
+- Post dates: render them with `PostDate.astro`, never a bare `<time>`. It ships the absolute date as the no-JS fallback; its `<post-date>` custom element then rewrites itself with `relativeTime()` and puts `fullDate()` in the hover `title`. Date-only frontmatter shows a date on hover; give `date` a time (`"2026-05-08T09:30:00+05:30"`) to also show the time.
 
 Because every route is `getStaticPaths` static generation, **adding or editing a post requires a rebuild** to appear.
 
@@ -48,7 +49,7 @@ Because every route is `getStaticPaths` static generation, **adding or editing a
 
 - `index.astro` — home: hero canvas, topic filter chips, featured card (newest `featured` post), post grid.
 - `explore.astro` — all posts; client-side text + topic filter. Reads `?text=` in the browser (navbar search and the home page's JSON-LD SearchAction target it).
-- `topics.astro` — index of all categories with counts; `category/[slug].astro` — one page per `uniqueCategories` entry.
+- `topics/index.astro` — index of all topics with counts; `topics/[slug].astro` — one page per `uniqueCategories` entry. The old `/category/*` URLs (also used by the Next.js site) 301 to `/topics/*` via `public/_redirects`.
 - `post/[...slug].astro` — renders MDX via `render()` + `<Content components={mdxComponents} />`; TOC, related posts, BlogPosting JSON-LD (CodeHiRise as Organization author/publisher).
 - `rss.xml.ts` — RSS via `@astrojs/rss`; `404.astro`; `robots.txt.ts` (points to `/sitemap-index.xml`; `/og/` must stay crawlable for social cards).
 - `og/[...slug].png.ts` — OG images as static files (see below).
@@ -67,7 +68,7 @@ Code highlighting is **Shiki** (`github-dark-dimmed`, `wrap: true`), configured 
 Both run in Node during `astro build`, so they may use `node:fs` — but they must not be moved to any edge/Worker runtime.
 
 - `src/lib/og.tsx` — `renderOgPng(opts: OgOptions)` builds a 1200×630 terminal-style card with **satori** (fonts: `public/noto-sans-mono-latin-400-normal.woff` and `public/inter-tight-latin-400-normal.woff`, plus the inlined logo mark), then rasterizes via **`@resvg/resvg-js`**. Render errors fail the build. `@resvg/resvg-js` is a native module — it's listed in `vite.optimizeDeps.exclude` and `vite.ssr.external` in `astro.config.mjs`; keep it there. Results are cached in-process.
-- `og/[...slug].png.ts` pre-renders one PNG per post, per category, plus `index` and `explore` cards.
+- `og/[...slug].png.ts` pre-renders one PNG per post (`/og/post/<slug>.png`), per topic (`/og/topics/<slug>.png`), plus `index` and `explore` cards.
 - `src/lib/placeholder.ts` — `getLocalImagePlaceholder(src)` returns `{ base64, width, height }` for **local** public images (remote URLs return `null`). Cached in-process. Uses plaiceholder/sharp.
 
 ## Conventions

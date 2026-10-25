@@ -1,5 +1,11 @@
 # Cloudflare static-asset redirects: <from> <to> <status>
 # The old Next.js site served its sitemap at /sitemap.xml (may still be registered in Search Console).
 /sitemap.xml /sitemap-index.xml 301
+# Topic pages used to live at /category/<slug> (on both the old Next.js site and early Astro builds).
+# The old site didn't hyphenate spaces, so "Home Automation" was /category/home%20automation.
+/category/home%20automation /topics/home-automation 301
+/category /topics 301
+/category/* /topics/:splat 301
+/og/category/* /og/topics/:splat 301
 # Wrong Part 1 URL that was published in Part 2.
 /post/going-to-production-on-cloud-infrastructure-best-practices-part-1 /post/going-production-on-cloud-part-1 301

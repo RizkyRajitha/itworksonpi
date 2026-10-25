@@ -6,14 +6,13 @@ import ScrollProgress from "../../components/ScrollProgress.astro";
 import PostImageDialog from "../../components/PostImageDialog.astro";
 import PostCover from "../../components/PostCover.astro";
 import Card from "../../components/Card.astro";
+import PostDate from "../../components/PostDate.astro";
 import { mdxComponents } from "../../components/mdx-components";
 import {
   postCategories,
   readTime,
   categorySlug,
   relatedPosts,
-  formatDate,
-  isoDate,
 } from "../../lib/categories";
 import { SITE_NAME, postDescription, postSlug, siteOrigin } from "../../lib/site";
 
@@ -85,7 +84,7 @@ const jsonLd = {
         {
           cats[0] && (
             <>
-              <a href={`/category/${categorySlug(cats[0])}`}>
+              <a href={`/topics/${categorySlug(cats[0])}`}>
                 {categorySlug(cats[0])}
               </a>
               <span class="sep">/</span>
@@ -111,7 +110,7 @@ const jsonLd = {
         <span class="avatar">C</span>
         <span>CodeHiRise</span>
         <span class="dot"></span>
-        <time datetime={isoDate(post.data.date)}>{formatDate(post.data.date)}</time>
+        <PostDate date={post.data.date} />
         <span class="dot"></span>
         <span>{minutes} min read</span>
         <span class="dot"></span>

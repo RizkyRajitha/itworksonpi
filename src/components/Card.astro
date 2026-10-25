@@ -1,6 +1,7 @@
 ---
-import { categorySlug, formatDate, isoDate } from "../lib/categories";
+import { categorySlug } from "../lib/categories";
 import PostCover from "./PostCover.astro";
+import PostDate from "./PostDate.astro";
 
 interface Props {
   title: string;
@@ -36,7 +37,7 @@ const dataSearch = `${title} ${overview} ${categories.join(" ")}`.toLowerCase();
   </div>
   <div class="card-body">
     <div class="card-meta">
-      <time datetime={isoDate(date)}>{formatDate(date)}</time>
+      <PostDate date={date} />
       {
         readMinutes && (
           <>

@@ -39,7 +39,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
       };
     }),
     ...categories.map((name) => ({
-      params: { slug: `category/${categorySlug(name)}` },
+      params: { slug: `topics/${categorySlug(name)}` },
       props: {
         title: name,
         pathLabel: `~/codehirise/topics/${categorySlug(name)}`,
