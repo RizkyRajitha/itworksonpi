@@ -1,10 +1,19 @@
 ---
+import { getLocalImagePlaceholder } from "../lib/placeholder";
+
 interface Props {
   src: string;
   alt?: string;
 }
 
 const { src, alt = "" } = Astro.props;
+
+// Local images get real width/height (no layout shift while loading) and a
+// tiny blurred preview behind them. Remote images render as-is.
+const ph = await getLocalImagePlaceholder(src);
+const blurStyle = ph
+  ? `background-image:url(${ph.base64});background-size:cover;background-repeat:no-repeat;`
+  : undefined;
 ---
 
 <figure class="figure-img">
@@ -13,10 +22,19 @@ const { src, alt = "" } = Astro.props;
     class="zoomable post-image-trigger"
     data-src={src}
     data-alt={alt}
-    aria-label="Enlarge image"
+    aria-label={alt ? `Enlarge image: ${alt}` : "Enlarge image"}
   >
-    <img src={src} alt={alt} loading="lazy" decoding="async" />
-    <span class="zoom-hint">
+    <img
+      src={src}
+      alt={alt}
+      width={ph?.width}
+      height={ph?.height}
+      loading="lazy"
+      decoding="async"
+      style={blurStyle}
+      onload={ph ? "this.style.backgroundImage='none'" : undefined}
+    />
+    <span class="zoom-hint" aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="11" cy="11" r="7"></circle>
         <path d="m21 21-4.3-4.3M11 8v6M8 11h6"></path>

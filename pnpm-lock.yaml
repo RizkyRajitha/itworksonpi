@@ -17,15 +17,12 @@ importers:
       '@astrojs/sitemap':
         specifier: 3.7.2
         version: 3.7.2
-      '@fontsource/dancing-script':
-        specifier: 5.2.8
-        version: 5.2.8
-      '@fontsource/inter-tight':
-        specifier: 5.2.7
-        version: 5.2.7
-      '@fontsource/noto-sans-mono':
-        specifier: 5.2.10
-        version: 5.2.10
+      '@fontsource-variable/inter-tight':
+        specifier: 5.3.0
+        version: 5.3.0
+      '@fontsource-variable/noto-sans-mono':
+        specifier: 5.3.0
+        version: 5.3.0
       '@resvg/resvg-js':
         specifier: 2.6.2
         version: 2.6.2
@@ -50,6 +47,10 @@ importers:
       tailwindcss:
         specifier: 4.3.0
         version: 4.3.0
+    devDependencies:
+      sharp:
+        specifier: 0.34.5
+        version: 0.34.5
 
 packages:
 
@@ -270,14 +271,11 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@fontsource/dancing-script@5.2.8':
-    resolution: {integrity: sha512-zHVVgIQ5/rAIM0VVp1QMsqvJm9INHO5/C82E9rHT6NlabjaPTFYn8wl9lT4vPWizfB0TublGQM1999kfdA+XFA==}
+  '@fontsource-variable/inter-tight@5.3.0':
+    resolution: {integrity: sha512-ZhZZ29sNZ15P1K+cUt13GeBRYON0akgmNiftshUeDLos7X7zGcRgPzt434879Xhq1QbwlW3M/apBMk7jWabwvA==}
 
-  '@fontsource/inter-tight@5.2.7':
-    resolution: {integrity: sha512-44TmSfHdNQus/3MWOMIonUEnbxwQhiaFo2sfBJEGIE4c7TN+GO6kfLzsTH4Nu52BC9HDZFl9fPQ6Cwzp9vYTtQ==}
-
-  '@fontsource/noto-sans-mono@5.2.10':
-    resolution: {integrity: sha512-YG3ev3Bc24UGd1x0THgtU3LG1j+sKahhDgo0vTpEfB0wkXD1+tGSq1fJD+QqnYLXjPhMRNe0ZKWoUi1MPH7Qdg==}
+  '@fontsource-variable/noto-sans-mono@5.3.0':
+    resolution: {integrity: sha512-EgozyWG4nG2U1OT+zfdyHP1L8O0fUFMUBOilVF9urTshqIdfeGV9/FUQxaNHdPvHtV1cQCs1Ql0W1q93SiPK2w==}
 
   '@img/colour@1.1.0':
     resolution: {integrity: sha512-Td76q7j57o/tLVdgS746cYARfSyxk8iEfRxewL9h4OMzYhbW4TAcppl0mT4eyqXddh6L/jwoM75mo7ixa/pCeQ==}
@@ -2234,11 +2232,9 @@ snapshots:
   '@esbuild/win32-x64@0.27.7':
     optional: true
 
-  '@fontsource/dancing-script@5.2.8': {}
+  '@fontsource-variable/inter-tight@5.3.0': {}
 
-  '@fontsource/inter-tight@5.2.7': {}
-
-  '@fontsource/noto-sans-mono@5.2.10': {}
+  '@fontsource-variable/noto-sans-mono@5.3.0': {}
 
   '@img/colour@1.1.0': {}
 

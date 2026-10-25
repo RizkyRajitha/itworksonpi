@@ -160,7 +160,11 @@ const jsonLd = [blogJsonLd, websiteJsonLd];
         H = cv.height = Math.max(1, r.height * dpr);
       }
       resize();
-      window.addEventListener("resize", resize);
+      let resizeTimer;
+      window.addEventListener("resize", () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(resize, 150);
+      });
 
       const N = 54;
       const rnd = (a, b) => a + Math.random() * (b - a);
@@ -179,7 +183,7 @@ const jsonLd = [blogJsonLd, websiteJsonLd];
       }
       const beams = Array.from({ length: N }, () => spawn(false));
       let t = 0;
-      let raf;
+      let raf = 0;
       function tick() {
         t += 1;
         ctx.clearRect(0, 0, W, H);
@@ -209,13 +213,29 @@ const jsonLd = [blogJsonLd, websiteJsonLd];
         }
         raf = requestAnimationFrame(tick);
       }
+      const start = () => { if (!raf) raf = requestAnimationFrame(tick); };
+      const stop = () => { cancelAnimationFrame(raf); raf = 0; };
+
       const reduce =
         window.matchMedia &&
         window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (reduce) {
-        tick();
-        cancelAnimationFrame(raf);
-      } else tick();
+        tick(); // draw one static frame
+        stop();
+        return;
+      }
+
+      // Only animate while the hero is on screen and the tab is visible.
+      let onScreen = true;
+      const sync = () => (onScreen && !document.hidden ? start() : stop());
+      if ("IntersectionObserver" in window) {
+        new IntersectionObserver(([e]) => {
+          onScreen = e.isIntersecting;
+          sync();
+        }).observe(cv);
+      }
+      document.addEventListener("visibilitychange", sync);
+      sync();
     })();
 
     // ---- topic filter ----

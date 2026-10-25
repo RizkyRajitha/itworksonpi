@@ -3,6 +3,9 @@ import '../styles/global.css';
 import MetaTags from '../components/MetaTags.astro';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
+// Same hashed files the CSS @font-face points to; preloading avoids a late font swap.
+import sansLatin from '@fontsource-variable/inter-tight/files/inter-tight-latin-wght-normal.woff2?url';
+import monoLatin from '@fontsource-variable/noto-sans-mono/files/noto-sans-mono-latin-wght-normal.woff2?url';
 
 interface Props {
   title: string;
@@ -48,6 +51,8 @@ const {
       jsonLd={jsonLd}
     />
     {noindex && <meta name="robots" content="noindex" />}
+    <link rel="preload" href={sansLatin} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={monoLatin} as="font" type="font/woff2" crossorigin />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <meta name="generator" content={Astro.generator} />
