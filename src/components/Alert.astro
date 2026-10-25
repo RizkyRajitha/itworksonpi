@@ -14,19 +14,22 @@ const classMap: Record<string, string> = {
 };
 const cls = classMap[variant] ?? "";
 
+// Solid shape in the alert colour with the symbol knocked out (.ic-glyph is
+// stroked in the page background colour, see global.css). A different shape
+// per type, so they're distinguishable without colour.
 const icons: Record<string, string> = {
-  info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg>',
+  info: '<circle cx="12" cy="12" r="10" fill="currentColor"/><path class="ic-glyph" d="M12 11v5.5M12 7.5h.01"/>',
   warning:
-    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><path d="M12 9v4M12 17h.01"></path></svg>',
+    '<path fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path class="ic-glyph" d="M12 9.5v4M12 17h.01"/>',
   success:
-    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><path d="M22 4 12 14.01l-3-3"></path></svg>',
+    '<circle cx="12" cy="12" r="10" fill="currentColor"/><path class="ic-glyph" d="m7.75 12.25 2.75 2.75 5.75-5.75"/>',
   error:
-    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M15 9l-6 6M9 9l6 6"></path></svg>',
+    '<path fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" d="M7.86 2h8.28L22 7.86v8.28L16.14 22H7.86L2 16.14V7.86z"/><path class="ic-glyph" d="m15 9-6 6M9 9l6 6"/>',
 };
 const icon = icons[variant] ?? icons.info;
 ---
 
 <div class:list={["callout", cls]}>
-  <span class="ic"><Fragment set:html={icon} /></span>
+  <span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><Fragment set:html={icon} /></svg></span>
   <div class="callout-body"><slot /></div>
 </div>
