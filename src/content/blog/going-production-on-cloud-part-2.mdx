@@ -71,7 +71,81 @@ FROM node:20.12.2
 FROM node:20.12.2-alpine@sha256:...
 ```
 
-## 4. Set Up Monitoring Before You Need It
+## 4. Enable Versioning and Soft Delete on Object Storage
+
+Object storage buckets often hold things you cannot easily recreate: user uploads, generated reports, exports, and sometimes your backups themselves. By default, a delete or an overwrite is permanent. One buggy cleanup job, a bad sync command, or a accidental deletion can wipe out data in seconds.
+
+Versioning and soft delete give you an undo button:
+
+1. **AWS S3 Versioning** keeps every version of an object. An overwrite keeps the previous version, and a delete only adds a "delete marker", so you can restore the object by removing the marker.
+2. **GCP Cloud Storage Soft Delete** keeps deleted and overwritten objects for a retention window (7 days by default, up to 90). Turn on **Object Versioning** too if you want to keep older versions beyond that window.
+3. **Azure Blob Storage** offers blob soft delete, container soft delete, and blob versioning. Enable all three on production storage accounts.
+
+```bash
+# AWS: turn on versioning for a bucket
+aws s3api put-bucket-versioning \
+  --bucket my-prod-bucket \
+  --versioning-configuration Status=Enabled
+
+# GCP: turn on versioning and keep soft-deleted objects for 30 days
+gcloud storage buckets update gs://my-prod-bucket \
+  --versioning \
+  --soft-delete-duration=30d
+```
+
+Old versions are billed as regular storage, so pair versioning with a **lifecycle rule** that expires noncurrent versions after a set period (for example, 30 days). Without one, a bucket that is overwritten often can quietly grow your bill.
+
+<Alert type="warning">
+Versioning does not protect you from someone who has permission to delete versions. Keep that permission (`s3:DeleteObjectVersion` on AWS) out of everyday roles, and for critical data such as backups, use S3 Object Lock or a GCS retention policy so that objects cannot be deleted until the retention period ends.
+</Alert>
+
+## 5. Enable Deletion Protection on Critical Resources
+
+Versioning protects the data inside a bucket. Deletion protection protects the resources themselves. A `terraform destroy` run against the wrong workspace, a cleanup script with a loose filter, or a click in the wrong console tab can remove a production load balancer or database in seconds.
+
+Most clouds have a setting that blocks deletion until someone explicitly turns it off. Deleting then becomes a deliberate two-step action instead of an accident. Turn it on for anything whose loss would cause an outage or lose data:
+
+1. **Databases**: RDS, Aurora, DynamoDB, and Cloud SQL all have a deletion protection flag.
+2. **Critical VMs**: EC2 has termination protection, and GCP Compute Engine has deletion protection on instances.
+3. **Load balancers**: AWS Application and Network Load Balancers have a deletion protection attribute.
+4. **Log groups**: CloudWatch Logs supports deletion protection on log groups. This matters most for audit and security logs, which are exactly what an attacker would want to remove.
+5. **Azure resources**: apply a `CanNotDelete` resource lock to individual resources or a whole resource group.
+
+AWS EC2 also has **stop protection**, separate from termination protection. Termination protection prevents an instance from being deleted; stop protection prevents it from being shut down. Stop protection is useful when debugging: if an instance is misbehaving and you have pulled it out of the load balancer to investigate, stopping it would wipe its memory and any instance store disks, along with the evidence. Stop protection keeps it running until you are done. It is also extra safety for single-instance workloads that should never go down by accident.
+
+If you manage infrastructure with Terraform (see the infrastructure as code section in Part 1), protect critical resources at two levels. Set the provider's protection argument so the cloud itself refuses the delete, and add a `lifecycle` block with `prevent_destroy = true` so Terraform refuses to plan the delete in the first place.
+
+```hcl
+resource "aws_lb" "main" {
+  name                       = "prod-alb"
+  load_balancer_type         = "application"
+  enable_deletion_protection = true
+  # ...
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+resource "aws_instance" "primary" {
+  ami                     = "ami-..."
+  instance_type           = "m7i.large"
+  disable_api_termination = true # termination protection
+  disable_api_stop        = true # stop protection
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+```
+
+Each layer covers a gap in the other. `prevent_destroy` catches changes that would quietly force a resource to be replaced, such as renaming a load balancer, and fails at `terraform plan` instead of halfway through an apply. But it only guards against Terraform: it does nothing against a delete from the console or CLI, and it disappears if someone removes the resource block from the code. The cloud-side flag covers those cases.
+
+<Alert type="info">
+Turning protection off should be a reviewed change, such as a pull request that flips the flag, not something done by hand in the console during an incident.
+</Alert>
+
+## 6. Set Up Monitoring Before You Need It
 
 The point of monitoring is to find out about a problem before your customers tell you about it. A reasonable starter set for any production workload covers three layers.
 
@@ -83,7 +157,7 @@ At the **application level** track error rate (5xx responses, exceptions per min
 
 Set alerts on these with sensible thresholds. The two failure modes are alerting on too little (you find out about the outage from Twitter) and alerting on too much (the team mutes the channel and misses the real fire). Iterate on thresholds based on real incident data.
 
-## 5. Centralize and Retain Logs
+## 7. Centralize and Retain Logs
 
 Logs are how you reconstruct what happened when something goes wrong. Make sure you collect logs from every critical component:
 
@@ -98,7 +172,7 @@ Centralize them somewhere you can search across services. CloudWatch Logs, an EL
 
 For retention, two to four weeks is a reasonable default for most operational logs, but compliance requirements (PCI-DSS, HIPAA, SOC 2) often dictate much longer retention for audit and security logs. Check the regulations that apply to your industry and set retention accordingly. Cold storage (S3 Glacier, GCS Archive) is much cheaper than hot retention if you only need the data for compliance.
 
-## 6. Log Before You Block: A Safer WAF Rollout
+## 8. Log Before You Block: A Safer WAF Rollout
 
 A web application firewall (WAF) is a great defensive layer, but turning one on aggressively in front of production traffic is a fast way to break legitimate users. Default rule sets can flag things like long form submissions, unusual but valid query patterns, or specific user-agent strings.
 
@@ -115,7 +189,7 @@ Skipping this analysis phase is how teams accidentally block their own checkout 
 Always keep WAF logs enabled even after switching to blocking mode. They are essential for investigating incidents and tuning rules over time.
 </Alert>
 
-## 7. Plan for Backups and Disaster Recovery
+## 9. Plan for Backups and Disaster Recovery
 
 Backups exist for the day something goes catastrophically wrong: a botched migration, a compromised account, an accidental `DELETE FROM users`. Three things matter.
 
@@ -154,7 +228,7 @@ A tight RPO (e.g. 5 minutes) demands continuous replication or WAL shipping; a n
 
 The key tradeoff: shorter RPO/RTO = higher cost. A financial transaction system might justify near-zero RPO with synchronous multi-region replication. An internal analytics dashboard might tolerate 24-hour RPO and 8-hour RTO just fine. Define these numbers before choosing your tooling, not after. They should live in your runbook.
 
-## 8. Set Up Cost Alerts Early
+## 10. Set Up Cost Alerts Early
 
 Cloud bills can spike for many innocent reasons: a runaway test, a misconfigured auto-scaler, a noisy neighbor in your shared cluster, a forgotten resource left running over a weekend. They can also spike for less innocent reasons, like a leaked key being used to spin up crypto miners.
 
@@ -174,7 +248,7 @@ To summarize the full two-part checklist:
 
 **From Part 1 (infrastructure):** a non-production mirror, segregated networks, controlled ingress and egress IPs, the right compute for each workload, externalized configuration, infrastructure as code, consistent tagging, and safer deployment strategies.
 
-**From Part 2 (operations):** keyless authentication, proper secrets management, pinned dependencies, comprehensive monitoring, centralized logs, careful WAF rollout, tested backups, and cost alerts.
+**From Part 2 (operations):** keyless authentication, proper secrets management, pinned dependencies, versioned and soft-delete-protected object storage, deletion protection on critical resources, comprehensive monitoring, centralized logs, careful WAF rollout, tested backups, and cost alerts.
 
 You will not implement everything on day one, and that is okay. Pick the ones that match your current biggest risks and work through the rest as you grow. Your future self, and your on-call rotation, will thank you.
 
