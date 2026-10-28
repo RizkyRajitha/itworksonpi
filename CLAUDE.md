@@ -77,3 +77,9 @@ Both run in Node during `astro build`, so they may use `node:fs` — but they mu
 - Fonts are the variable Fontsource packages (`Inter Tight Variable`, `Noto Sans Mono Variable`); their latin files are preloaded in `BaseLayout.astro`.
 - Analytics: `data-umami-event` attributes on links/tags drive Umami events; the Umami script is injected in `BaseLayout.astro` and only records on `codehirise.com`.
 - Respect `prefers-reduced-motion` for any new animation, and keep the `:focus-visible` styles intact.
+
+## Important instructions
+
+Do not install packages without consent of the developer
+Do not commit without consent of the developer
+Break down tasks in to small managebel peices and then ask developer to review and commit, do not implement whole feature in one go as its hard for the developer to review it.
